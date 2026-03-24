@@ -621,9 +621,23 @@
 
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+  // Pre-load photo as base64 for vCard
+  let photoBase64 = '';
+  fetch('photo.jpg')
+    .then(res => res.blob())
+    .then(blob => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // Strip the data:image/jpeg;base64, prefix
+        photoBase64 = reader.result.split(',')[1];
+      };
+      reader.readAsDataURL(blob);
+    })
+    .catch(() => { /* photo unavailable, proceed without */ });
+
   // Save contact as vCard
   function saveContact() {
-    const vcard = [
+    const lines = [
       'BEGIN:VCARD',
       'VERSION:3.0',
       'N:清田;兼明;;;',
@@ -637,8 +651,16 @@
       'ADR;TYPE=WORK:;;近見7丁目12番20号;熊本市南区;熊本県;861-4101;日本',
       'URL:https://withbt.com',
       'NOTE:株式会社清田自動車 代表取締役 / 合同会社WBT 代表社員',
-      'END:VCARD'
-    ].join('\r\n');
+    ];
+
+    if (photoBase64) {
+      // Fold base64 to 75-char lines per vCard spec
+      const folded = photoBase64.match(/.{1,75}/g).join('\r\n ');
+      lines.push('PHOTO;ENCODING=b;TYPE=JPEG:' + folded);
+    }
+
+    lines.push('END:VCARD');
+    const vcard = lines.join('\r\n');
 
     const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
     const url = URL.createObjectURL(blob);
