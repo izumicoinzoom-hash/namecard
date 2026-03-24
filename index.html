@@ -611,6 +611,7 @@
   </button>
 </div>
 
+<script src="photo-data.js"></script>
 <script>
   // Scroll reveal
   const observer = new IntersectionObserver((entries) => {
@@ -620,20 +621,6 @@
   }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
 
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-  // Pre-load photo as base64 for vCard
-  let photoBase64 = '';
-  fetch('photo.jpg')
-    .then(res => res.blob())
-    .then(blob => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // Strip the data:image/jpeg;base64, prefix
-        photoBase64 = reader.result.split(',')[1];
-      };
-      reader.readAsDataURL(blob);
-    })
-    .catch(() => { /* photo unavailable, proceed without */ });
 
   // Save contact as vCard
   function saveContact() {
@@ -649,13 +636,14 @@
       'TEL;TYPE=CELL,VOICE:080-3946-1430',
       'EMAIL;TYPE=WORK:izumi.coinzoom@gmail.com',
       'ADR;TYPE=WORK:;;近見7丁目12番20号;熊本市南区;熊本県;861-4101;日本',
-      'URL:https://withbt.com',
+      'URL;TYPE=WORK:https://www.kiyota-cars.com',
+      'item1.URL:https://withbt.com',
+      'item1.X-ABLabel:合同会社WBT',
       'NOTE:株式会社清田自動車 代表取締役 / 合同会社WBT 代表社員',
     ];
 
-    if (photoBase64) {
-      // Fold base64 to 75-char lines per vCard spec
-      const folded = photoBase64.match(/.{1,75}/g).join('\r\n ');
+    if (typeof PHOTO_BASE64 !== 'undefined' && PHOTO_BASE64) {
+      const folded = PHOTO_BASE64.match(/.{1,75}/g).join('\r\n ');
       lines.push('PHOTO;ENCODING=b;TYPE=JPEG:' + folded);
     }
 
