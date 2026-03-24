@@ -444,6 +444,25 @@
     .reveal-d3 { transition-delay: 0.18s; }
     .reveal-d4 { transition-delay: 0.24s; }
 
+    /* ===== Demo Section ===== */
+    .demo-section {
+      border: 1.5px solid rgba(230, 126, 34, 0.25);
+      animation: demoSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .demo-thanks {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 14px;
+      line-height: 1.7;
+    }
+
+    @keyframes demoSlideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     @media (min-width: 481px) {
       body { padding: 32px 16px; }
     }
@@ -555,25 +574,44 @@
     </a>
   </div>
 
-  <!-- SNS (extensible) -->
-  <div class="card reveal reveal-d3">
+  <!-- Demo Links (hidden until contact saved) -->
+  <div id="demo-section" class="card demo-section" style="display:none;">
     <div class="section-header">
-      <span class="section-title">SNS</span>
+      <span class="section-title">Try Our Services</span>
       <span class="section-line"></span>
     </div>
+    <p class="demo-thanks">連絡先の保存ありがとうございます！<br>ぜひサービスもご体験ください。</p>
     <div class="sns-grid">
-      <!--
-      <a href="https://instagram.com/YOUR_ID" target="_blank" rel="noopener" class="sns-btn">
-        <div class="sns-icon" style="background:rgba(225,48,108,0.08);">
-          <svg viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      <a href="https://withbt.com/nihongo/" target="_blank" rel="noopener" class="sns-btn">
+        <div class="sns-icon" style="background:rgba(230,126,34,0.08);">
+          <svg viewBox="0 0 24 24" fill="#e67e22" style="width:20px;height:20px;"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/><path d="M12 15l1.57-3.43L17 10l-3.43-1.57L12 5l-1.57 3.43L7 10l3.43 1.57z"/></svg>
         </div>
-        Instagram
+        <div>
+          <div style="font-weight:600;">AI日本語学習デモ</div>
+          <div style="font-size:10px;color:var(--text-muted);">Bright日本語 - JLPT対策</div>
+        </div>
         <span class="sns-arrow">›</span>
       </a>
-      -->
-      <div style="text-align:center; padding:8px; font-size:11px; color:var(--text-muted);">
-        Coming soon...
-      </div>
+      <a href="https://withbt.com/kiyota/demo/" target="_blank" rel="noopener" class="sns-btn">
+        <div class="sns-icon" style="background:rgba(66,133,244,0.08);">
+          <svg viewBox="0 0 24 24" fill="#4285f4" style="width:20px;height:20px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 12h2v5H7zm4-3h2v8h-2zm4-3h2v11h-2z"/></svg>
+        </div>
+        <div>
+          <div style="font-weight:600;">BrightBoard</div>
+          <div style="font-size:10px;color:var(--text-muted);">業務効率化ダッシュボード</div>
+        </div>
+        <span class="sns-arrow">›</span>
+      </a>
+      <a href="https://withbt.com/shuryizu/web/brightshield/" target="_blank" rel="noopener" class="sns-btn">
+        <div class="sns-icon" style="background:rgba(52,168,83,0.08);">
+          <svg viewBox="0 0 24 24" fill="#34a853" style="width:20px;height:20px;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        </div>
+        <div>
+          <div style="font-weight:600;">BrightShield</div>
+          <div style="font-size:10px;color:var(--text-muted);">セキュリティ診断</div>
+        </div>
+        <span class="sns-arrow">›</span>
+      </a>
     </div>
   </div>
 
@@ -659,6 +697,15 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
+    // Show demo section after contact save
+    const demo = document.getElementById('demo-section');
+    if (demo && demo.style.display === 'none') {
+      demo.style.display = '';
+      setTimeout(() => {
+        demo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
   }
 </script>
 
