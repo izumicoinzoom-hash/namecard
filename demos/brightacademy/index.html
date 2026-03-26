@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>BrightAcademy | 外国人材の未来を、学びで拓く。</title>
+  <meta name="description" content="BrightAcademy - 対面×eラーニングのハイブリッド教育プログラム。JLPT対策から特定技能2号取得まで。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #161616;
+      --bg-card-hover: #1c1c1c;
+      --border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f0f0f0;
+      --text-secondary: #aaa;
+      --text-muted: #666;
+      --accent: #e67e22;
+      --accent-glow: rgba(230, 126, 34, 0.15);
+      --accent-light: rgba(230, 126, 34, 0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 0 16px env(safe-area-inset-bottom, 0);
+      padding-bottom: 60px;
+    }
+
+    /* ===== Hero ===== */
+    .hero {
+      padding: 56px 8px 0;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-light);
+      border: 1px solid rgba(230, 126, 34, 0.2);
+      border-radius: 20px;
+      padding: 5px 14px;
+      margin-bottom: 20px;
+    }
+
+    .hero-logo {
+      font-family: 'Inter', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .hero-logo .bright {
+      color: var(--accent);
+    }
+
+    .hero-catch {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-top: 16px;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
+    .hero-divider {
+      width: 40px;
+      height: 2px;
+      background: var(--accent);
+      margin: 28px auto;
+      border-radius: 1px;
+    }
+
+    /* ===== Section ===== */
+    .section {
+      margin-top: 36px;
+      padding: 0 4px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ===== Pillar Cards ===== */
+    .pillar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 20px;
+      margin-bottom: 14px;
+      transition: background 0.2s;
+    }
+
+    .pillar-card:active {
+      background: var(--bg-card-hover);
+    }
+
+    .pillar-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    .pillar-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .pillar-title .bright {
+      color: var(--accent);
+    }
+
+    .pillar-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .pillar-features {
+      list-style: none;
+      margin-bottom: 18px;
+    }
+
+    .pillar-features li {
+      font-size: 13px;
+      color: var(--text-secondary);
+      padding: 5px 0;
+      padding-left: 18px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .pillar-features li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.6;
+    }
+
+    .pillar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      padding: 8px 0;
+      transition: opacity 0.2s;
+    }
+
+    .pillar-btn:active {
+      opacity: 0.7;
+    }
+
+    .pillar-btn .arrow {
+      font-size: 15px;
+      transition: transform 0.2s;
+    }
+
+    /* ===== Pricing ===== */
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 20px;
+      margin-bottom: 14px;
+    }
+
+    .pricing-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .pricing-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pricing-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .pricing-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .pricing-value {
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .pricing-highlight {
+      margin-top: 16px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(230, 126, 34, 0.15);
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+
+    .pricing-highlight-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .pricing-highlight-text strong {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ===== CTA ===== */
+    .cta-section {
+      margin-top: 36px;
+      padding: 0 4px;
+      text-align: center;
+    }
+
+    .cta-btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 12px;
+      text-align: center;
+      transition: opacity 0.2s, transform 0.1s;
+      box-shadow: 0 4px 20px rgba(230, 126, 34, 0.25);
+    }
+
+    .cta-btn:active {
+      opacity: 0.9;
+      transform: scale(0.98);
+    }
+
+    .cta-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      margin-top: 48px;
+      padding: 24px 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ===== Fade-in animation ===== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Hero -->
+    <section class="hero fade-in">
+      <div class="hero-badge">Education Platform</div>
+      <h1 class="hero-logo"><span class="bright">Bright</span>Academy</h1>
+      <p class="hero-catch">外国人材の未来を、<br>学びで拓く。</p>
+      <p class="hero-sub">対面 × eラーニングの<br>ハイブリッド教育プログラム</p>
+      <div class="hero-divider"></div>
+    </section>
+
+    <!-- 2つの柱 -->
+    <section class="section fade-in">
+      <div class="section-label">Programs</div>
+
+      <!-- 日本語版 -->
+      <div class="pillar-card">
+        <div class="pillar-icon">&#x1F4DA;</div>
+        <div class="pillar-title"><span class="bright">Bright</span> Academy 日本語版</div>
+        <div class="pillar-subtitle">AI活用のJLPT対策プラットフォーム</div>
+        <ul class="pillar-features">
+          <li>N4 ~ N1 レベル対応</li>
+          <li>語彙・文法・漢字・読解の4技能</li>
+          <li>eラーニングでいつでも学習可能</li>
+        </ul>
+        <a href="https://withbt.com/nihongo/" class="pillar-btn">
+          日本語版を体験する <span class="arrow">&rarr;</span>
+        </a>
+      </div>
+
+      <!-- 特定2号塾 -->
+      <div class="pillar-card">
+        <div class="pillar-icon">&#x1F3EB;</div>
+        <div class="pillar-title"><span class="bright">Bright</span> Academy 特定2号塾</div>
+        <div class="pillar-subtitle">特定技能2号取得を目指す外国人材向け</div>
+        <ul class="pillar-features">
+          <li>対面 + eラーニングのハイブリッド</li>
+          <li>ビジネスマナー・業界知識・試験対策</li>
+          <li>少人数制（講師1名による手厚い指導）</li>
+        </ul>
+        <a href="#" class="pillar-btn">
+          特定2号塾を見る <span class="arrow">&rarr;</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 料金 -->
+    <section class="section fade-in">
+      <div class="section-label">Pricing</div>
+      <div class="pricing-card">
+        <div class="pricing-title">料金プラン</div>
+        <div class="pricing-row">
+          <span class="pricing-label">対面コース</span>
+          <span class="pricing-value">要相談</span>
+        </div>
+        <div class="pricing-row">
+          <span class="pricing-label">eラーニング</span>
+          <span class="pricing-value">月額制</span>
+        </div>
+        <div class="pricing-highlight">
+          <div class="pricing-highlight-text">
+            <strong>8ヶ月課金上限</strong>あり。<br>
+            受講期間が長くなっても、<br>
+            8ヶ月分以上の費用は発生しません。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section fade-in">
+      <a href="mailto:izumi.coinzoom@gmail.com?subject=BrightAcademy%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" class="cta-btn">
+        お問い合わせ
+      </a>
+      <p class="cta-note">メールにてお気軽にご連絡ください</p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p class="footer-text">&copy; 2026 WBT LLC</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // Intersection Observer for fade-in
+    document.addEventListener('DOMContentLoaded', function() {
+      var els = document.querySelectorAll('.fade-in');
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1 });
+        els.forEach(function(el) { observer.observe(el); });
+      } else {
+        els.forEach(function(el) { el.classList.add('visible'); });
+      }
+    });
+  </script>
+</body>
+</html>

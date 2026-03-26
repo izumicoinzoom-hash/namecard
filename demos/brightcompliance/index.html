@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>BrightCompliance | 保険代理店のコンプライアンス管理SaaS</title>
+  <meta name="description" content="BrightCompliance - 保険代理店の態勢整備を、デジタルで。コンプライアンスチェック・教育管理・記録報告・アラート通知を一元管理。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #141414;
+      --bg-card-hover: #1a1a1a;
+      --border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f0f0f0;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666;
+      --accent: #e67e22;
+      --accent-glow: rgba(230, 126, 34, 0.15);
+      --accent-glow-strong: rgba(230, 126, 34, 0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 0 20px env(safe-area-inset-bottom, 0);
+      padding-bottom: 60px;
+    }
+
+    /* ===== Hero ===== */
+    .hero {
+      padding: 56px 0 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .logo-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #e67e22, #f5a623);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 32px rgba(230, 126, 34, 0.25);
+      position: relative;
+    }
+
+    .logo-mark svg {
+      width: 36px;
+      height: 36px;
+      fill: #fff;
+    }
+
+    .brand-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .hero-title {
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-title .bright {
+      color: var(--accent);
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      margin-top: 16px;
+      line-height: 1.7;
+    }
+
+    .hero-tagline {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 8px 20px;
+      border: 1px solid rgba(230, 126, 34, 0.3);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      background: rgba(230, 126, 34, 0.06);
+    }
+
+    /* ===== Section ===== */
+    .section {
+      margin-top: 48px;
+    }
+
+    .section-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    /* ===== Feature Cards ===== */
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .feature-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .feature-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(230, 126, 34, 0.15);
+    }
+
+    .feature-icon {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feature-icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--accent);
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .feature-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .feature-name {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .feature-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ===== Pricing ===== */
+    .pricing-card {
+      margin-top: 48px;
+      padding: 32px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pricing-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #e67e22, #f5a623);
+    }
+
+    .pricing-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 100px;
+      background: var(--accent-glow);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .pricing-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .pricing-amount {
+      font-family: 'Inter', sans-serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .pricing-amount .yen {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-right: 2px;
+    }
+
+    .pricing-amount .suffix {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    .pricing-note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ===== CTA ===== */
+    .cta-section {
+      margin-top: 48px;
+      text-align: center;
+    }
+
+    .cta-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #e67e22, #f5a623);
+      color: #fff;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 24px rgba(230, 126, 34, 0.3);
+    }
+
+    .cta-button:active {
+      transform: scale(0.97);
+    }
+
+    .cta-button svg {
+      width: 18px;
+      height: 18px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ===== Target ===== */
+    .target-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .target-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      padding: 12px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .target-list li .check {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .target-list li .check svg {
+      width: 12px;
+      height: 12px;
+      stroke: var(--accent);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      margin-top: 56px;
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer-brand {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .footer-copy {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
+      <div class="brand-name">BrightCompliance</div>
+      <h1 class="hero-title"><span class="bright">Bright</span>Compliance</h1>
+      <p class="hero-subtitle">保険代理店の態勢整備を、デジタルで。</p>
+      <span class="hero-tagline">Insurance Compliance SaaS</span>
+    </section>
+
+    <!-- Features -->
+    <section class="section">
+      <div class="section-label">Features</div>
+      <h2 class="section-title">4つの機能で<br>コンプラ業務を効率化</h2>
+      <div class="features">
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          </div>
+          <div class="feature-body">
+            <div class="feature-name">コンプライアンスチェック</div>
+            <div class="feature-desc">法令遵守状況の自動診断。<br>現状の態勢を可視化します。</div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+          </div>
+          <div class="feature-body">
+            <div class="feature-name">教育・研修管理</div>
+            <div class="feature-desc">eラーニング進捗の一元管理。<br>誰が何を完了したか一目で把握。</div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <div class="feature-body">
+            <div class="feature-name">記録・報告</div>
+            <div class="feature-desc">監査対応の記録をデジタル化。<br>紙の管理から解放されます。</div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          </div>
+          <div class="feature-body">
+            <div class="feature-name">アラート通知</div>
+            <div class="feature-desc">期限切れ・未完了を自動通知。<br>対応漏れを未然に防ぎます。</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Target -->
+    <section class="section">
+      <div class="section-label">Who it's for</div>
+      <h2 class="section-title">こんな課題はありませんか？</h2>
+      <ul class="target-list">
+        <li>
+          <span class="check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>
+          態勢整備の対応が属人化している
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>
+          研修の受講状況を把握できていない
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>
+          監査時に記録を探すのに時間がかかる
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>
+          期限管理がExcelや紙に依存している
+        </li>
+      </ul>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-card">
+      <span class="pricing-badge">Coming Soon</span>
+      <div class="pricing-label">月額利用料</div>
+      <div class="pricing-amount">
+        <span class="yen">&yen;</span>9,800<span class="suffix">〜 / 月</span>
+      </div>
+      <p class="pricing-note">代理店の規模に応じたプランをご用意予定です。<br>詳細は正式リリース時にご案内いたします。</p>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <p class="cta-text">導入のご相談・デモのご依頼など<br>お気軽にお問い合わせください。</p>
+      <a href="mailto:izumi.coinzoom@gmail.com?subject=BrightCompliance%20お問い合わせ" class="cta-button">
+        <svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        お問い合わせ
+      </a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-brand">WBT LLC</div>
+      <div class="footer-copy">&copy; 2026 WBT LLC. All rights reserved.</div>
+    </footer>
+
+  </div>
+</body>
+</html>
