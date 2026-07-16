@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrightCardデジタル名刺 お申込み・ヒアリングシート｜合同会社WBT</title>
+<style>
+  :root{
+    --ink:#1c2230;
+    --sub:#5a6272;
+    --line:#c9ccd4;
+    --line-soft:#e3e5ea;
+    --paper:#fdfcfa;
+    --accent:#8a6d3b;
+    --accent-soft:#f4efe6;
+    --danger:#a3402f;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;
+    background:#eceae5;
+    color:var(--ink);
+    font-family:"Hiragino Sans","Yu Gothic Medium","Yu Gothic","Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:13.5px;
+    line-height:1.65;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .sheet{
+    max-width:800px;
+    margin:24px auto 60px;
+    background:var(--paper);
+    padding:44px 52px 40px;
+    box-shadow:0 2px 18px rgba(0,0,0,.12);
+  }
+
+  /* ===== ヘッダー ===== */
+  .doc-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:3px solid var(--ink);
+    padding-bottom:14px;
+    margin-bottom:8px;
+  }
+  .doc-header h1{
+    font-size:21px;
+    margin:0 0 6px;
+    letter-spacing:.03em;
+    font-weight:700;
+  }
+  .doc-header .eyebrow{
+    font-size:10.5px;
+    letter-spacing:.18em;
+    color:var(--accent);
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  .doc-header .org{
+    text-align:right;
+    font-size:12px;
+    color:var(--sub);
+    line-height:1.5;
+    white-space:nowrap;
+  }
+  .doc-header .org strong{
+    display:block;
+    font-size:14px;
+    color:var(--ink);
+    font-weight:700;
+  }
+
+  .meta-row{
+    display:flex;
+    gap:24px;
+    justify-content:flex-end;
+    font-size:12px;
+    color:var(--sub);
+    margin:10px 0 26px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .meta-row .fillline{
+    display:inline-block;
+    min-width:130px;
+    border-bottom:1px solid var(--ink);
+    padding:0 4px 1px;
+  }
+
+  .lead{
+    font-size:12px;
+    color:var(--sub);
+    background:var(--accent-soft);
+    border-left:3px solid var(--accent);
+    padding:10px 14px;
+    margin:0 0 28px;
+  }
+
+  /* ===== セクション ===== */
+  section{
+    margin-bottom:30px;
+    page-break-inside:avoid;
+  }
+  .sec-title{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--ink);
+    border-bottom:1.5px solid var(--ink);
+    padding-bottom:6px;
+    margin:0 0 14px;
+  }
+  .sec-title .num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:20px;height:20px;
+    background:var(--ink);
+    color:#fff;
+    font-size:11px;
+    border-radius:2px;
+    flex:none;
+  }
+  .sec-note{
+    font-size:11px;
+    color:var(--sub);
+    font-weight:400;
+    margin-left:auto;
+  }
+
+  .field-row{
+    display:flex;
+    gap:18px;
+    margin-bottom:12px;
+    align-items:flex-end;
+  }
+  .field{
+    flex:1;
+  }
+  .field.small{flex:0 0 140px;}
+  .field.mid{flex:0 0 220px;}
+  .field label{
+    display:block;
+    font-size:11px;
+    color:var(--sub);
+    margin-bottom:3px;
+  }
+  .field label .ex{
+    color:#9aa0ab;
+    font-weight:400;
+  }
+  .fill{
+    border:none;
+    border-bottom:1px solid var(--ink);
+    height:22px;
+    width:100%;
+  }
+  .fill.tall{height:20px;}
+  .fillbox{
+    border:1px solid var(--line);
+    min-height:52px;
+    width:100%;
+    background:
+      repeating-linear-gradient(
+        transparent,transparent 20px,
+        var(--line-soft) 20px,var(--line-soft) 21px
+      );
+  }
+  .fillbox.short{min-height:36px;}
+
+  table.form-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+    margin-bottom:10px;
+  }
+  table.form-table th{
+    background:#f2f0eb;
+    border:1px solid var(--line);
+    font-weight:600;
+    font-size:11px;
+    color:var(--sub);
+    padding:6px 8px;
+    text-align:left;
+  }
+  table.form-table td{
+    border:1px solid var(--line);
+    padding:7px 8px;
+    height:20px;
+    vertical-align:top;
+  }
+
+  /* チェック */
+  .chk{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    margin-right:16px;
+    font-size:12.5px;
+    white-space:nowrap;
+  }
+  .chk .box{
+    display:inline-block;
+    width:13px;height:13px;
+    border:1.4px solid var(--ink);
+    flex:none;
+  }
+  .chk-grid{
+    display:flex;
+    flex-wrap:wrap;
+    row-gap:9px;
+    margin-bottom:8px;
+  }
+
+  /* SNS表 */
+  table.sns-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+  }
+  table.sns-table td{
+    border:1px solid var(--line);
+    padding:5px 8px;
+    vertical-align:middle;
+  }
+  table.sns-table td.name{
+    width:110px;
+    background:#f2f0eb;
+    font-weight:600;
+    color:var(--sub);
+  }
+  table.sns-table td.mark{
+    width:34px;
+    text-align:center;
+  }
+  table.sns-table td.val{
+    width:auto;
+  }
+
+  /* 掲載可否 */
+  table.consent-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+  }
+  table.consent-table th{
+    border:1px solid var(--line);
+    background:#f2f0eb;
+    padding:7px 10px;
+    font-size:11px;
+    color:var(--sub);
+    font-weight:600;
+  }
+  table.consent-table th.center,
+  table.consent-table td.center{
+    text-align:center;
+    width:100px;
+  }
+  table.consent-table td{
+    border:1px solid var(--line);
+    padding:7px 10px;
+  }
+  table.consent-table tr:nth-child(even) td:first-child{
+    background:#faf9f7;
+  }
+
+  .warn-box{
+    border:1px solid var(--danger);
+    background:#fbf1ee;
+    color:var(--danger);
+    font-size:11.5px;
+    padding:8px 12px;
+    margin-top:10px;
+    font-weight:600;
+  }
+
+  /* デザイン選択カード */
+  .design-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .design-card{
+    border:1px solid var(--line);
+    padding:10px 12px;
+    display:flex;
+    gap:9px;
+    align-items:flex-start;
+  }
+  .design-card .box{
+    width:14px;height:14px;
+    border:1.4px solid var(--ink);
+    flex:none;
+    margin-top:2px;
+  }
+  .design-card .t{
+    font-weight:700;
+    font-size:12.5px;
+  }
+  .design-card .t span{
+    font-weight:400;
+    color:var(--sub);
+    font-size:11px;
+  }
+  .design-card .d{
+    font-size:11px;
+    color:var(--sub);
+    margin-top:2px;
+  }
+
+  /* 価格表 */
+  table.price-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  table.price-table th{
+    background:var(--ink);
+    color:#fff;
+    padding:8px 10px;
+    font-size:11px;
+    text-align:left;
+    font-weight:600;
+  }
+  table.price-table td{
+    border:1px solid var(--line);
+    padding:9px 10px;
+    vertical-align:middle;
+  }
+  table.price-table td.pick{
+    width:34px;
+    text-align:center;
+  }
+  table.price-table td.price{
+    text-align:right;
+    font-weight:700;
+    font-size:15px;
+    color:var(--accent);
+    width:110px;
+  }
+  table.price-table td.material{
+    font-size:11px;
+    color:var(--sub);
+  }
+  .price-note{
+    font-size:11px;
+    color:var(--sub);
+    margin-top:8px;
+  }
+
+  table.update-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+  }
+  table.update-table th{
+    background:#f2f0eb;
+    border:1px solid var(--line);
+    padding:6px 9px;
+    font-size:11px;
+    color:var(--sub);
+    text-align:left;
+    font-weight:600;
+  }
+  table.update-table td{
+    border:1px solid var(--line);
+    padding:7px 9px;
+  }
+  table.update-table td.p{
+    text-align:right;
+    font-weight:700;
+    width:90px;
+  }
+
+  ul.terms{
+    margin:0;
+    padding-left:18px;
+    font-size:11.5px;
+    color:var(--sub);
+  }
+  ul.terms li{margin-bottom:6px;}
+  ul.terms strong{color:var(--ink);}
+
+  /* 署名 */
+  .sign-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+  .sign-box{
+    border:1px solid var(--line);
+    padding:14px 16px;
+  }
+  .sign-box h3{
+    font-size:12px;
+    margin:0 0 12px;
+    color:var(--sub);
+    font-weight:600;
+    letter-spacing:.05em;
+  }
+  .sign-line{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:14px;
+  }
+  .sign-line .lbl{
+    font-size:11px;
+    color:var(--sub);
+    flex:none;
+  }
+  .sign-line .line{
+    flex:1;
+    border-bottom:1px solid var(--ink);
+    height:22px;
+    margin-left:10px;
+  }
+
+  footer.doc-footer{
+    margin-top:34px;
+    padding-top:14px;
+    border-top:1px solid var(--line-soft);
+    font-size:10.5px;
+    color:#9aa0ab;
+    display:flex;
+    justify-content:space-between;
+  }
+
+  .print-bar{
+    max-width:800px;
+    margin:16px auto 0;
+    text-align:right;
+  }
+  .print-bar button{
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    padding:9px 20px;
+    font-size:13px;
+    border-radius:3px;
+    cursor:pointer;
+    letter-spacing:.05em;
+  }
+  .print-bar button:hover{opacity:.85;}
+
+  @media print{
+    html,body{background:#fff;}
+    .sheet{
+      box-shadow:none;
+      margin:0;
+      max-width:none;
+      padding:6mm 10mm;
+    }
+    .print-bar{display:none;}
+    @page{size:A4;margin:8mm;}
+    section{page-break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar"><button onclick="window.print()">この用紙を印刷する</button></div>
+
+<div class="sheet">
+
+  <div class="doc-header">
+    <div>
+      <p class="eyebrow">BRIGHTCARD APPLICATION SHEET</p>
+      <h1>BrightCard デジタル名刺<br>お申込み・ヒアリングシート</h1>
+    </div>
+    <div class="org">
+      発行<strong>合同会社WBT</strong>
+      担当：清田 兼明（Kemmei Kiyota）
+    </div>
+  </div>
+
+  <div class="meta-row">
+    <span>記入日：<span class="fillline">　　年　　月　　日</span></span>
+    <span>記入者氏名：<span class="fillline">&nbsp;</span></span>
+  </div>
+
+  <p class="lead">
+    このシートは、BrightCard（デジタル名刺）の制作に必要な情報を一度に集めるための申込書 兼 ヒアリングシートです。
+    ご記入いただいた内容をもとに専用ページを制作し、公開URL・QRコード・物理NFCカードを納品いたします。
+    空欄のまま提出いただいた項目は名刺に表示されませんので、公開したくない項目は無理に埋めずそのままで結構です。
+  </p>
+
+  <!-- 1. プロフィール -->
+  <section>
+    <div class="sec-title"><span class="num">1</span>プロフィール情報<span class="sec-note">掲載する内容のみご記入ください</span></div>
+
+    <div class="field-row">
+      <div class="field"><label>氏名（漢字）</label><div class="fill"></div></div>
+      <div class="field"><label>ふりがな</label><div class="fill"></div></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>ローマ字（ヘボン式） <span class="ex">例：Kemmei Kiyota</span></label><div class="fill"></div></div>
+    </div>
+
+    <table class="form-table">
+      <tr><th style="width:34%">会社名・屋号</th><th style="width:26%">役職</th><th>会社・店舗URL（任意）</th></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    </table>
+    <p class="price-note" style="margin:-4px 0 12px;">※ 複数の会社・肩書をお持ちの場合は上から順にご記入ください（最大4件）</p>
+
+    <div class="field-row">
+      <div class="field"><label>理念・キャッチコピー（座右の銘等）</label><div class="fill"></div></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>自己紹介文</label>
+        <div class="fillbox"></div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field small"><label>郵便番号</label><div class="fill">〒　　　－　　　　</div></div>
+      <div class="field mid"><label>都道府県</label><div class="fill"></div></div>
+      <div class="field"><label>市区町村</label><div class="fill"></div></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>番地・建物名</label><div class="fill"></div></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>電話番号</label><div class="fill"></div></div>
+      <div class="field"><label>メールアドレス</label><div class="fill"></div></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>自社サイトURL</label><div class="fill"></div></div>
+    </div>
+
+    <div class="field-row" style="margin-bottom:6px;">
+      <div class="field"><label style="font-size:11.5px;color:var(--ink);font-weight:600;">SNS一覧（お持ちのものにチェックし、IDまたはURLをご記入ください）</label></div>
+    </div>
+    <table class="sns-table">
+      <tr><td class="name">LINE公式</td><td class="mark">☐</td><td class="val">&nbsp;</td>
+          <td class="name">Instagram</td><td class="mark">☐</td><td class="val">&nbsp;</td></tr>
+      <tr><td class="name">LINE個人</td><td class="mark">☐</td><td class="val">&nbsp;</td>
+          <td class="name">X（Twitter）</td><td class="mark">☐</td><td class="val">&nbsp;</td></tr>
+      <tr><td class="name">Facebook</td><td class="mark">☐</td><td class="val">&nbsp;</td>
+          <td class="name">YouTube</td><td class="mark">☐</td><td class="val">&nbsp;</td></tr>
+      <tr><td class="name">TikTok</td><td class="mark">☐</td><td class="val">&nbsp;</td>
+          <td class="name">LinkedIn</td><td class="mark">☐</td><td class="val">&nbsp;</td></tr>
+      <tr><td class="name">その他</td><td class="mark">☐</td><td class="val">&nbsp;</td>
+          <td class="name">その他</td><td class="mark">☐</td><td class="val">&nbsp;</td></tr>
+    </table>
+
+    <div class="field-row" style="margin-top:14px;margin-bottom:4px;">
+      <div class="field"><label style="font-size:11.5px;color:var(--ink);font-weight:600;">事業紹介（店舗・会社名／タグ／一言紹介　※複数可）</label></div>
+    </div>
+    <table class="form-table">
+      <tr><th style="width:30%">店舗・会社名</th><th style="width:30%">タグ（例：飲食店・熊本）</th><th>一言紹介</th></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    </table>
+
+    <div class="field-row" style="margin-top:10px;">
+      <div class="field"><label>任意リンク（予約サイト・メニュー・採用ページ等）</label><div class="fill"></div></div>
+    </div>
+  </section>
+
+  <!-- 2. 掲載可否 -->
+  <section>
+    <div class="sec-title"><span class="num">2</span>掲載可否のご確認<span class="sec-note">個人情報の掲載事故防止のため必ずご記入ください</span></div>
+    <table class="consent-table">
+      <tr><th>項目</th><th class="center">掲載してよい</th><th class="center">掲載しない</th></tr>
+      <tr><td>携帯電話番号</td><td class="center">☐</td><td class="center">☐</td></tr>
+      <tr><td>住所（番地まで詳細）</td><td class="center">☐</td><td class="center">☐</td></tr>
+      <tr><td>住所（市区町村までのみ）</td><td class="center">☐</td><td class="center">☐</td></tr>
+      <tr><td>メールアドレス</td><td class="center">☐</td><td class="center">☐</td></tr>
+      <tr><td>会社名・屋号</td><td class="center">☐</td><td class="center">☐</td></tr>
+      <tr><td>顔写真</td><td class="center">☐</td><td class="center">☐</td></tr>
+      <tr><td>SNSアカウント</td><td class="center">☐</td><td class="center">☐</td></tr>
+      <tr><td>自己紹介文</td><td class="center">☐</td><td class="center">☐</td></tr>
+    </table>
+    <div class="warn-box">迷われた項目は「掲載しない」にチェックをお願いします。公開後の追加は無償修正の範囲内で対応できる場合があります。</div>
+  </section>
+
+  <!-- 3. デザイン選択 -->
+  <section>
+    <div class="sec-title"><span class="num">3</span>デザインパターンの選択<span class="sec-note">いずれか1つにチェック</span></div>
+    <div class="design-grid">
+      <div class="design-card"><span class="box">☐</span>
+        <div><div class="t">Bright <span>ダーク×写真</span></div>
+        <div class="d">全画面ヒーロー写真で力強く。建設・製造・自動車・不動産向け</div></div>
+      </div>
+      <div class="design-card"><span class="box">☐</span>
+        <div><div class="t">Paper <span>白紙面</span></div>
+        <div class="d">清潔感のある白基調。士業・医療・保険・コンサル・教育向け</div></div>
+      </div>
+      <div class="design-card"><span class="box">☐</span>
+        <div><div class="t">Editorial <span>雑誌×金</span></div>
+        <div class="d">雑誌調の高級感。ブランド志向の経営者・高級飲食・美容向け</div></div>
+      </div>
+      <div class="design-card"><span class="box">☐</span>
+        <div><div class="t">Washi <span>和紙×活版</span></div>
+        <div class="d">和の静けさと余白。伝統系士業・和食・旅館・工芸向け</div></div>
+      </div>
+      <div class="design-card" style="grid-column:1 / -1;"><span class="box">☐</span>
+        <div><div class="t">Minimal <span>白ミニマル</span></div>
+        <div class="d">余白を活かしたシンプル構成。IT・若手経営者・お写真なしの方にも最適</div></div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>アクセントカラーのご希望 <span class="ex">（例：ロゴの色。指定なければおまかせ）</span></label><div class="fill"></div></div>
+    </div>
+    <div class="field-row" style="margin-top:4px;">
+      <div class="field">
+        <label style="font-size:11.5px;color:var(--ink);font-weight:600;">顔写真の提出方法</label>
+        <div class="chk-grid" style="margin-top:6px;">
+          <span class="chk"><span class="box">☐</span>データを送付（LINE／メール添付）</span>
+          <span class="chk"><span class="box">☐</span>別途撮影を希望</span>
+          <span class="chk"><span class="box">☐</span>写真なし（頭文字モノグラム表示）</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. カード素材選択 -->
+  <section>
+    <div class="sec-title"><span class="num">4</span>物理NFCカード素材のご選択<span class="sec-note">税込・デジタル制作費込みの一括価格</span></div>
+    <table class="price-table">
+      <tr><th style="width:34px;"></th><th>素材</th><th>内容</th><th>価格（税込）</th></tr>
+      <tr>
+        <td class="pick">☐</td>
+        <td><strong>黒</strong>（無地PVC）込み</td>
+        <td class="material">NTAG215 黒無地カード</td>
+        <td class="price">¥4,900</td>
+      </tr>
+      <tr>
+        <td class="pick">☐</td>
+        <td><strong>木</strong>（チェリーウッド）込み</td>
+        <td class="material">NTAG215 木製カード</td>
+        <td class="price">¥5,400</td>
+      </tr>
+      <tr>
+        <td class="pick">☐</td>
+        <td><strong>アルミ</strong>（ヘアラインシルバー）込み</td>
+        <td class="material">NTAG215 メタリックカード</td>
+        <td class="price">¥5,900</td>
+      </tr>
+    </table>
+    <p class="price-note">
+      価格はデジタル名刺ページの制作費と、NFCカード1枚を含む一括金額です。カードをスマートフォンにかざすだけで専用ページが開きます（名入れ印刷はございません）。
+    </p>
+  </section>
+
+  <!-- 5. 更新料金のご案内 -->
+  <section>
+    <div class="sec-title"><span class="num">5</span>更新料金のご案内<span class="sec-note">公開後、内容を変更する際の都度料金</span></div>
+    <table class="update-table">
+      <tr><th>種別</th><th>内容</th><th style="text-align:right;">価格（税込）</th></tr>
+      <tr><td>軽微修正</td><td>電話・住所・役職・タグ等（同一セクション5項目まで）</td><td class="p">¥1,650</td></tr>
+      <tr><td>写真差し替え</td><td>お写真の再設定・OGP画像の確認込み</td><td class="p">¥2,200</td></tr>
+      <tr><td>構成変更</td><td>セクション追加・文章の書き直し</td><td class="p">¥2,750</td></tr>
+      <tr><td>デザイン全面変更</td><td>テンプレート切替＋全体の調整・確認</td><td class="p">¥3,300</td></tr>
+    </table>
+    <ul class="terms" style="margin-top:10px;">
+      <li><strong>初回公開から1ヶ月以内の軽微修正は1回まで無償</strong>でお受けいたします。それ以降は都度有償となります。</li>
+      <li>弊社側の不具合（表示崩れ・リンク切れ等）による修正は<strong>無償</strong>で対応いたします。会員様のご都合による情報更新・デザイン変更は上記の通り<strong>都度有償</strong>となります。</li>
+    </ul>
+  </section>
+
+  <!-- 6. ご確認事項 -->
+  <section>
+    <div class="sec-title"><span class="num">6</span>ご確認事項</div>
+    <ul class="terms">
+      <li>納品物は「<strong>公開URL</strong>」「<strong>QRコード画像</strong>」「<strong>物理NFCカード</strong>」の3点です。ページの元データ（ソースファイル）はご提供対象に含まれません。</li>
+      <li>ページの編集・更新は弊社（合同会社WBT）が承ります。お客様ご自身での書き換えはできかねますこと、あらかじめご了承ください。</li>
+      <li>ページの掲載継続は、弊社が提供するホスティング環境に基づきます。将来的に掲載を終了される場合、または内容データの書き出し（エクスポート）をご希望の場合は、別途有償にて対応いたします。</li>
+      <li>本シートにご記入いただいた内容は、BrightCard制作および今後のご案内以外の目的には使用いたしません。</li>
+    </ul>
+  </section>
+
+  <!-- 7. 署名 -->
+  <section style="margin-bottom:6px;">
+    <div class="sec-title"><span class="num">7</span>署名</div>
+    <div class="sign-grid">
+      <div class="sign-box">
+        <h3>お申込みいただく方</h3>
+        <div class="sign-line"><span class="lbl">ご署名</span><span class="line"></span></div>
+        <div class="sign-line"><span class="lbl">日付</span><span class="line"></span></div>
+      </div>
+      <div class="sign-box">
+        <h3>WBT受付欄</h3>
+        <div class="sign-line"><span class="lbl">受付担当</span><span class="line"></span></div>
+        <div class="sign-line"><span class="lbl">受付日</span><span class="line"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-footer">
+    <span>合同会社WBT ／ BrightCard デジタル名刺</span>
+    <span>ご不明点は担当・清田までお気軽にお問い合わせください</span>
+  </footer>
+
+</div>
+</body>
+</html>

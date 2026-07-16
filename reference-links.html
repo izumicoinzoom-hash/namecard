@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrightCard デザイン参考リンク集</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #161616;
+      --card-hover: #1e1e1e;
+      --accent: #e67e22;
+      --text: #f0f0f0;
+      --muted: #888;
+      --border: rgba(255,255,255,0.08);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Helvetica Neue', 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 40px 20px 80px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 40px;
+    }
+    h2 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 32px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .link-card {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: var(--text);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .link-card:hover {
+      background: var(--card-hover);
+      border-color: var(--accent);
+    }
+    .link-card .name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .link-card .desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .link-card .tags {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(230,126,34,0.12);
+      color: var(--accent);
+    }
+    .own-card {
+      border-color: var(--accent);
+      background: rgba(230,126,34,0.05);
+    }
+  </style>
+</head>
+<body>
+
+<h1>BrightCard デザイン参考リンク集</h1>
+<p class="subtitle">同友会向け無料デジタル名刺「BrightCard」の開発にあたり、デザイン・機能の参考となるサービス・サンプルページ</p>
+
+<h2>自社 / 既存名刺</h2>
+
+<a class="link-card own-card" href="https://withbt.com/card/kiyota/" target="_blank">
+  <div class="name">清田兼明 デジタル名刺（本番）</div>
+  <div class="desc">BrightCardの原型。ダークテーマ・NFC対応・vCard生成・Bright製品カード付き</div>
+  <div class="tags"><span class="tag">自社</span><span class="tag">NFC</span><span class="tag">vCard</span></div>
+</a>
+
+<a class="link-card own-card" href="./demos/brightacademy/index.html" target="_blank">
+  <div class="name">デモ: BrightAcademy 講師カード</div>
+  <div class="desc">BA講師向けデモテンプレート</div>
+  <div class="tags"><span class="tag">自社デモ</span></div>
+</a>
+
+<a class="link-card own-card" href="./demos/brightcompliance/index.html" target="_blank">
+  <div class="name">デモ: BrightCompliance 募集人カード</div>
+  <div class="desc">保険代理店募集人向けデモテンプレート</div>
+  <div class="tags"><span class="tag">自社デモ</span></div>
+</a>
+
+<h2>国内サービス</h2>
+
+<a class="link-card" href="https://prairie.cards/" target="_blank">
+  <div class="name">プレーリーカード</div>
+  <div class="desc">日本発NFC名刺。カード+プロフィールページ。デザインの日本市場適合度が高い</div>
+  <div class="tags"><span class="tag">NFC</span><span class="tag">国内</span><span class="tag">QR</span></div>
+</a>
+
+<a class="link-card" href="https://linkmee.jp/" target="_blank">
+  <div class="name">Linkmee</div>
+  <div class="desc">NFC名刺+プロフィールページ。法人プラン・管理画面あり。テンプレートが豊富</div>
+  <div class="tags"><span class="tag">NFC</span><span class="tag">国内</span><span class="tag">法人向け</span></div>
+</a>
+
+<a class="link-card" href="https://lit.link/" target="_blank">
+  <div class="name">lit.link（リットリンク）</div>
+  <div class="desc">SNSリンクまとめ型プロフィール。NFC「リットリンクカード」も展開。若年層に人気</div>
+  <div class="tags"><span class="tag">リンクまとめ</span><span class="tag">NFC</span><span class="tag">国内</span></div>
+</a>
+
+<a class="link-card" href="https://lynqu.com/" target="_blank">
+  <div class="name">Lynqu</div>
+  <div class="desc">メール署名・仮想会議背景・AIスキャンまで一体化。包括的なデジタル名刺プラットフォーム</div>
+  <div class="tags"><span class="tag">AI</span><span class="tag">メール署名</span><span class="tag">多機能</span></div>
+</a>
+
+<h2>海外サービス（UI/UX参考）</h2>
+
+<a class="link-card" href="https://blinq.me/" target="_blank">
+  <div class="name">Blinq</div>
+  <div class="desc">洗練されたカードUI。テンプレート・共有方法が豊富。フリーランス向けガイドも参考になる</div>
+  <div class="tags"><span class="tag">海外</span><span class="tag">NFC</span><span class="tag">テンプレ豊富</span></div>
+</a>
+
+<a class="link-card" href="https://www.hihello.me/digital-business-card" target="_blank">
+  <div class="name">HiHello</div>
+  <div class="desc">vCard保存・QRコード・Apple Wallet連携。UIの洗練さとアクセシビリティが参考に</div>
+  <div class="tags"><span class="tag">海外</span><span class="tag">Wallet</span><span class="tag">vCard</span></div>
+</a>
+
+<a class="link-card" href="https://www.popl.co/pages/digital-business-card" target="_blank">
+  <div class="name">Popl</div>
+  <div class="desc">NFC前提設計の代表格。チーム管理・CRM連携・分析ダッシュボード。Enterprise機能の参考</div>
+  <div class="tags"><span class="tag">海外</span><span class="tag">NFC</span><span class="tag">CRM連携</span></div>
+</a>
+
+<a class="link-card" href="https://www.mobilocard.com/" target="_blank">
+  <div class="name">Mobilo</div>
+  <div class="desc">ジオロケーション追跡・分析機能が強力。法人向け管理画面の参考に</div>
+  <div class="tags"><span class="tag">海外</span><span class="tag">分析</span><span class="tag">法人</span></div>
+</a>
+
+<a class="link-card" href="https://v1ce.co/" target="_blank">
+  <div class="name">V1CE</div>
+  <div class="desc">メタル・竹などプレミアム素材のNFCカード。物理カードデザインの参考</div>
+  <div class="tags"><span class="tag">海外</span><span class="tag">プレミアム素材</span><span class="tag">NFC</span></div>
+</a>
+
+<a class="link-card" href="https://wavecnct.com/" target="_blank">
+  <div class="name">Wave Connect</div>
+  <div class="desc">エッジtoエッジ印刷のカスタムNFCカード。$19.99〜。カスタマイズ性が高い</div>
+  <div class="tags"><span class="tag">海外</span><span class="tag">カスタム印刷</span><span class="tag">NFC</span></div>
+</a>
+
+<a class="link-card" href="https://card.biz/" target="_blank">
+  <div class="name">Card.biz</div>
+  <div class="desc">NFC名刺レビューサイト。各社の比較・ハンズオンテスト結果が参考になる</div>
+  <div class="tags"><span class="tag">比較</span><span class="tag">レビュー</span></div>
+</a>
+
+<h2>比較記事・デザインギャラリー</h2>
+
+<a class="link-card" href="https://prairie.cards/blogs/digital_business_card_lab/compare_2024" target="_blank">
+  <div class="name">デジタル名刺サービスおすすめ23選（2026年版）</div>
+  <div class="desc">プレーリーカード運営の比較記事。国内サービスの網羅的比較</div>
+  <div class="tags"><span class="tag">比較記事</span><span class="tag">国内</span></div>
+</a>
+
+<a class="link-card" href="https://www.digitalbusinesscard.com/blog/best-digital-business-cards" target="_blank">
+  <div class="name">The 20 Best Digital Business Cards（DBC）</div>
+  <div class="desc">海外20サービスの詳細比較。Tips付き</div>
+  <div class="tags"><span class="tag">比較記事</span><span class="tag">海外</span></div>
+</a>
+
+<a class="link-card" href="https://feed.link/blog/nfc-digital-business-cards/" target="_blank">
+  <div class="name">10 Best NFC Digital Business Cards in 2026</div>
+  <div class="desc">NFC特化の比較。ハードウェア＋ソフトウェアの両面から評価</div>
+  <div class="tags"><span class="tag">比較記事</span><span class="tag">NFC特化</span></div>
+</a>
+
+<a class="link-card" href="https://www.behance.net/search/projects/digital%20business%20card" target="_blank">
+  <div class="name">Behance — Digital Business Card デザイン</div>
+  <div class="desc">デザイナーのポートフォリオ。UI/ビジュアルデザインのインスピレーション</div>
+  <div class="tags"><span class="tag">デザインギャラリー</span></div>
+</a>
+
+<a class="link-card" href="https://dribbble.com/tags/digital-business-card" target="_blank">
+  <div class="name">Dribbble — Digital Business Card</div>
+  <div class="desc">UIデザインショーケース。モバイルファースト名刺のデザイントレンド</div>
+  <div class="tags"><span class="tag">デザインギャラリー</span></div>
+</a>
+
+<a class="link-card" href="https://sankoudesign.com/category/portfoliosite/" target="_blank">
+  <div class="name">SANKOU! — ポートフォリオ・プロフィールサイト集</div>
+  <div class="desc">日本のプロフィールサイト・ポートフォリオのデザインギャラリー。国内トレンドの把握に最適</div>
+  <div class="tags"><span class="tag">デザインギャラリー</span><span class="tag">国内</span></div>
+</a>
+
+<a class="link-card" href="https://bentogrids.com/" target="_blank">
+  <div class="name">Bento Grids</div>
+  <div class="desc">Bentoレイアウト（タイル型UI）のショーケース。モダンなプロフィールカードの潮流</div>
+  <div class="tags"><span class="tag">デザインギャラリー</span><span class="tag">Bento</span></div>
+</a>
+
+<h2>デザイン参考元</h2>
+
+<a class="link-card own-card" href="https://yasudayuko.com/" target="_blank">
+  <div class="name">安田佑子（yasudayuko.com）</div>
+  <div class="desc">司会・ナレーター・話し方講師。既存名刺のヒーローセクションのデザイン参考元（CSSコメントに"yasudayuko style"）</div>
+  <div class="tags"><span class="tag">原型参考</span><span class="tag">ヒーロー写真</span></div>
+</a>
+
+<a class="link-card" href="https://sankoudesign.com/web/yasudayuko/" target="_blank">
+  <div class="name">SANKOU! — yasudayuko.com 掲載ページ</div>
+  <div class="desc">SANKOU!デザインギャラリーでの紹介。デザインポイントの解説付き</div>
+  <div class="tags"><span class="tag">原型参考</span><span class="tag">ギャラリー</span></div>
+</a>
+
+<h2>有名人・タレント（lit.link）</h2>
+
+<a class="link-card" href="https://lit.link/kpp" target="_blank">
+  <div class="name">きゃりーぱみゅぱみゅ</div>
+  <div class="desc">歌手・モデル。Instagram / YouTube / TikTok / Spotify等。カラフルなブランディング</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">芸能人</span></div>
+</a>
+
+<a class="link-card" href="https://lit.link/yukikashiwagi" target="_blank">
+  <div class="name">柏木由紀</div>
+  <div class="desc">AKB48メンバー。YouTube「ゆきりんワールド」等のリンク集。アイドル系の構成参考</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">アイドル</span></div>
+</a>
+
+<a class="link-card" href="https://lit.link/shoko55mmts" target="_blank">
+  <div class="name">中川翔子</div>
+  <div class="desc">タレント・女優・アニソン歌手。SNS / 音楽 / ブログ等を網羅した構成</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">タレント</span></div>
+</a>
+
+<a class="link-card" href="https://lit.link/atsushix" target="_blank">
+  <div class="name">田村淳（ロンドンブーツ）</div>
+  <div class="desc">芸人。mixi2 / TikTok / LINE / YouTube等。多チャネル活用の参考</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">芸人</span></div>
+</a>
+
+<a class="link-card" href="https://lit.link/P0830" target="_blank">
+  <div class="name">P->★（パフォーマー）</div>
+  <div class="desc">DJ・モデル・振付師・映像クリエイター。13カ国17都市でパフォーマンス。クリエイター系の構成</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">クリエイター</span></div>
+</a>
+
+<h2>VTuber・配信者（lit.link）</h2>
+
+<a class="link-card" href="https://lit.link/Nekochan" target="_blank">
+  <div class="name">猫田リルカ</div>
+  <div class="desc">イラストレーター・VTuber・歌い手。YouTube / PIXIV FANBOX / コミッション情報</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">VTuber</span><span class="tag">イラストレーター</span></div>
+</a>
+
+<a class="link-card" href="https://lit.link/en/shiromarunuko" target="_blank">
+  <div class="name">しろまる</div>
+  <div class="desc">男の娘VTuber。お絵かき・雑談・ゲーム配信</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">VTuber</span></div>
+</a>
+
+<a class="link-card" href="https://lit.link/en/yubarirei" target="_blank">
+  <div class="name">悠針れい</div>
+  <div class="desc">Cafe Laid-Back店長・個人VTuber。店舗×VTuberの掛け合わせが面白い</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">VTuber</span><span class="tag">店舗</span></div>
+</a>
+
+<a class="link-card" href="https://lit.link/en/Kanna0218" target="_blank">
+  <div class="name">栞奈 Kanna</div>
+  <div class="desc">VTuber歌手。アルバム複数リリース。音楽系VTuberのプロフィール構成</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">VTuber</span><span class="tag">音楽</span></div>
+</a>
+
+<a class="link-card" href="https://cuppyspage.carrd.co" target="_blank">
+  <div class="name">CuppyCakiee（Carrd）</div>
+  <div class="desc">VTuber・ストリーマー。パステル系デザイン。Carrdで作ったプロフィールページ</div>
+  <div class="tags"><span class="tag">Carrd</span><span class="tag">VTuber</span><span class="tag">パステル</span></div>
+</a>
+
+<h2>デザイナー・クリエイター</h2>
+
+<a class="link-card" href="https://lit.link/SHIOdesign" target="_blank">
+  <div class="name">shio | Webデザイナー</div>
+  <div class="desc">女性起業家向けWeb制作。Instagram / Pinterest / LINE。ビジネス系lit.linkの参考</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">デザイナー</span></div>
+</a>
+
+<a class="link-card" href="https://lit.link/tokiirodesign" target="_blank">
+  <div class="name">TOKIIRO design</div>
+  <div class="desc">Web/グラフィックデザイナー。女性ヘルスケア特化。業種特化デザインの参考</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">デザイナー</span></div>
+</a>
+
+<a class="link-card" href="https://jessicahische.is/" target="_blank">
+  <div class="name">Jessica Hische</div>
+  <div class="desc">レタリングアーティスト・タイプデザイナー。個人ブランディングの金字塔。タイポグラフィが圧巻</div>
+  <div class="tags"><span class="tag">ポートフォリオ</span><span class="tag">デザイナー</span></div>
+</a>
+
+<a class="link-card" href="https://vanschneider.com/" target="_blank">
+  <div class="name">Tobias van Schneider</div>
+  <div class="desc">クリエイティブディレクター。Semplice / mymind創業者。クリーンなミニマルデザイン</div>
+  <div class="tags"><span class="tag">ポートフォリオ</span><span class="tag">ミニマル</span></div>
+</a>
+
+<a class="link-card" href="https://shoya-kajita.com/" target="_blank">
+  <div class="name">Shoya Kajita</div>
+  <div class="desc">Webデベロッパー・CGクリエイター（横浜）。Awwwards受賞。日本人クリエイターの個人サイト参考</div>
+  <div class="tags"><span class="tag">ポートフォリオ</span><span class="tag">国内</span><span class="tag">受賞</span></div>
+</a>
+
+<a class="link-card" href="https://linktr.ee/draplin" target="_blank">
+  <div class="name">Draplin Design Co.（Aaron Draplin）</div>
+  <div class="desc">有名グラフィックデザイナー。オレンジ+ダークグレーのブランドカラー。グッズ・コース販売</div>
+  <div class="tags"><span class="tag">Linktree</span><span class="tag">デザイナー</span></div>
+</a>
+
+<a class="link-card" href="https://linktr.ee/Takayuki_Yoshida" target="_blank">
+  <div class="name">Takayuki Yoshida</div>
+  <div class="desc">モーショングラフィッククリエイター / アートディレクター。「100 Japanese Motion Graphic Creators」選出</div>
+  <div class="tags"><span class="tag">Linktree</span><span class="tag">モーション</span></div>
+</a>
+
+<a class="link-card" href="https://linktr.ee/paiheme" target="_blank">
+  <div class="name">paiheme</div>
+  <div class="desc">デザイナー・クリエイター。ビジュアルデザインのリンク集</div>
+  <div class="tags"><span class="tag">Linktree</span><span class="tag">デザイナー</span></div>
+</a>
+
+<h2>海外セレブ（Linktree）</h2>
+
+<a class="link-card" href="https://linktr.ee/selenagomez" target="_blank">
+  <div class="name">Selena Gomez</div>
+  <div class="desc">歌手・女優。音楽 / Rare Beauty / ドキュメンタリー。グレー背景のミニマルデザイン</div>
+  <div class="tags"><span class="tag">Linktree</span><span class="tag">セレブ</span><span class="tag">ミニマル</span></div>
+</a>
+
+<a class="link-card" href="https://linktr.ee/katyperry" target="_blank">
+  <div class="name">Katy Perry</div>
+  <div class="desc">ミュージシャン。統一感のある赤テーマ。ブランドカラーの使い方が参考に</div>
+  <div class="tags"><span class="tag">Linktree</span><span class="tag">セレブ</span><span class="tag">カラーテーマ</span></div>
+</a>
+
+<a class="link-card" href="https://linktr.ee/jamieoliver" target="_blank">
+  <div class="name">Jamie Oliver</div>
+  <div class="desc">セレブシェフ。白+グレーのミニマル構成。ビジネス系プロフィールの参考</div>
+  <div class="tags"><span class="tag">Linktree</span><span class="tag">セレブ</span><span class="tag">ミニマル</span></div>
+</a>
+
+<h2>Bentoレイアウト（bento.me）</h2>
+
+<a class="link-card" href="https://bento.me/antonshakirov" target="_blank">
+  <div class="name">Anton Shakirov</div>
+  <div class="desc">デザイナー。タイル型レイアウトで各SNSをビジュアルに配置</div>
+  <div class="tags"><span class="tag">Bento</span><span class="tag">デザイナー</span></div>
+</a>
+
+<a class="link-card" href="https://bento.me/oliagozha" target="_blank">
+  <div class="name">Olia Gozha</div>
+  <div class="desc">デザイナー。洗練されたBentoグリッドの使い方</div>
+  <div class="tags"><span class="tag">Bento</span><span class="tag">デザイナー</span></div>
+</a>
+
+<a class="link-card" href="https://bento.me/explore" target="_blank">
+  <div class="name">Bento.me Explore（ギャラリー）</div>
+  <div class="desc">全ユーザーのプロフィールを閲覧可能。レイアウトパターンの参考に</div>
+  <div class="tags"><span class="tag">Bento</span><span class="tag">ギャラリー</span></div>
+</a>
+
+<h2>プレーリーカード 個人プロフィール</h2>
+
+<a class="link-card" href="https://my.prairie.cards/u/soichiro" target="_blank">
+  <div class="name">吉村 創一朗</div>
+  <div class="desc">Studio Prairie事業責任者。元LINE PM / Lovegraph CXO。写真・旅行・コーチング</div>
+  <div class="tags"><span class="tag">プレーリー</span><span class="tag">ビジネス</span></div>
+</a>
+
+<a class="link-card" href="https://my.prairie.cards/u/daicche" target="_blank">
+  <div class="name">片山 大地</div>
+  <div class="desc">プレーリーカード代表。元リクルート→Gifty→メルカリ。サービス代表自身のカード</div>
+  <div class="tags"><span class="tag">プレーリー</span><span class="tag">経営者</span></div>
+</a>
+
+<h2>インフルエンサー・その他</h2>
+
+<a class="link-card" href="https://lit.link/en/futaritrip" target="_blank">
+  <div class="name">旅する2人</div>
+  <div class="desc">旅行系インフルエンサー。合計75万フォロワー。SNSマーケ会社運営。多チャネル構成の参考</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">インフルエンサー</span></div>
+</a>
+
+<a class="link-card" href="https://lit.link/en/moenishiyama" target="_blank">
+  <div class="name">Moe Nishiyama</div>
+  <div class="desc">編集者。アート・デザイン・都市領域のリサーチ。知的プロフィールの構成参考</div>
+  <div class="tags"><span class="tag">lit.link</span><span class="tag">編集者</span></div>
+</a>
+
+<a class="link-card" href="https://linktr.ee/m1nm1n" target="_blank">
+  <div class="name">みんみん</div>
+  <div class="desc">ゲーム会社キャラクターデザイナー・NFTクリエイター</div>
+  <div class="tags"><span class="tag">Linktree</span><span class="tag">イラストレーター</span></div>
+</a>
+
+<a class="link-card" href="https://linktr.ee/aozami" target="_blank">
+  <div class="name">Aozami</div>
+  <div class="desc">日本のデジタルイラストレーター。Instagram / TikTok / Twitch</div>
+  <div class="tags"><span class="tag">Linktree</span><span class="tag">イラストレーター</span></div>
+</a>
+
+<h2>テンプレート集・例文ギャラリー</h2>
+
+<a class="link-card" href="https://deckof.carrd.co" target="_blank">
+  <div class="name">Deck of Carrd — 52例厳選ギャラリー</div>
+  <div class="desc">手作業で厳選されたCarrd.coプロフィール52例。1ページ完結デザインの宝庫</div>
+  <div class="tags"><span class="tag">Carrd</span><span class="tag">ギャラリー</span></div>
+</a>
+
+<a class="link-card" href="https://templates.carrd.co" target="_blank">
+  <div class="name">Carrd — 公式テンプレート集</div>
+  <div class="desc">プロフィール / ポートフォリオ / LP等のテンプレート。シンプル1ページの参考</div>
+  <div class="tags"><span class="tag">Carrd</span><span class="tag">テンプレート</span></div>
+</a>
+
+<a class="link-card" href="https://www.awwwards.com/websites/single-page/" target="_blank">
+  <div class="name">Awwwards — Single Page Sites</div>
+  <div class="desc">受賞歴のある1ページサイト集。デザインクオリティの上限参考</div>
+  <div class="tags"><span class="tag">デザインギャラリー</span><span class="tag">受賞</span></div>
+</a>
+
+<a class="link-card" href="https://www.wallofportfolios.in/minimal" target="_blank">
+  <div class="name">Wall of Portfolios — Minimal</div>
+  <div class="desc">ミニマリストポートフォリオのギャラリー。余白とタイポグラフィの使い方</div>
+  <div class="tags"><span class="tag">デザインギャラリー</span><span class="tag">ミニマル</span></div>
+</a>
+
+</body>
+</html>

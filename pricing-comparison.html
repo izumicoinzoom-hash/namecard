@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrightCard 価格帯 市場比較</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --surface:#ffffff; --ink:#0f172a; --ink2:#475569; --ink3:#94a3b8;
+    --line:#e2e8f0; --line2:#eef2f6;
+    --A:#2563eb;  /* 量産デジタル名刺 */
+    --B:#d97706;  /* 専用デザイン制作 */
+    --paper:#64748b; /* 紙名刺アンカー */
+    --dec:#059669; /* ¥9,800 決定 */
+    --rej:#dc2626; /* ¥22,000 却下 */
+    --A-w:#dbeafe; --B-w:#fef3c7; --dec-w:#d1fae5; --rej-w:#fee2e2;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0b1220; --surface:#131c2e; --ink:#e8eef7; --ink2:#a7b4c8; --ink3:#64748b;
+      --line:#243044; --line2:#1b2740;
+      --A:#60a5fa; --B:#fbbf24; --paper:#94a3b8; --dec:#34d399; --rej:#f87171;
+      --A-w:#1e3a5f; --B-w:#4a3410; --dec-w:#0f3d2e; --rej-w:#4a1414; }
+  }
+  :root[data-theme="dark"]{ --bg:#0b1220; --surface:#131c2e; --ink:#e8eef7; --ink2:#a7b4c8; --ink3:#64748b; --line:#243044; --line2:#1b2740; --A:#60a5fa; --B:#fbbf24; --paper:#94a3b8; --dec:#34d399; --rej:#f87171; --A-w:#1e3a5f; --B-w:#4a3410; --dec-w:#0f3d2e; --rej-w:#4a1414; }
+  :root[data-theme="light"]{ --bg:#f6f7f9; --surface:#ffffff; --ink:#0f172a; --ink2:#475569; --ink3:#94a3b8; --line:#e2e8f0; --line2:#eef2f6; --A:#2563eb; --B:#d97706; --paper:#64748b; --dec:#059669; --rej:#dc2626; --A-w:#dbeafe; --B-w:#fef3c7; --dec-w:#d1fae5; --rej-w:#fee2e2; }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:32px 20px 100px}
+  h1{font-size:26px;font-weight:800;letter-spacing:.02em;line-height:1.3}
+  .sub{color:var(--ink2);font-size:13px;margin-top:6px}
+  h2{font-size:19px;font-weight:800;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  h2 .num{font-size:12px;font-weight:700;color:#fff;background:var(--ink);width:24px;height:24px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+  section{margin-top:40px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 22px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .lead{color:var(--ink2);font-size:14px;margin:6px 0 20px}
+
+  /* insight two markets */
+  .markets{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+  @media(max-width:640px){.markets{grid-template-columns:1fr}}
+  .mk{border-radius:14px;padding:16px 18px;border:1px solid var(--line)}
+  .mk.A{background:var(--A-w);border-color:transparent}
+  .mk.B{background:var(--B-w);border-color:transparent}
+  .mk h3{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .mk .price{font-size:22px;font-weight:800;margin:8px 0 2px;letter-spacing:.01em}
+  .mk .desc{font-size:12.5px;color:var(--ink2)}
+  .mk .tag{font-size:11px;font-weight:700;margin-top:10px;padding:3px 9px;border-radius:999px;display:inline-block;background:rgba(0,0,0,.06)}
+  :root[data-theme="dark"] .mk .tag,@media (prefers-color-scheme:dark){.mk .tag{background:rgba(255,255,255,.1)}}
+
+  /* range chart */
+  .chart{margin-top:10px}
+  .axis{position:relative;height:22px;margin:0 0 2px}
+  .axis .tick{position:absolute;top:0;transform:translateX(-50%);font-size:10.5px;color:var(--ink3);white-space:nowrap}
+  .axis .tick::after{content:'';position:absolute;left:50%;top:16px;width:1px;height:6px;background:var(--line)}
+  .plot{position:relative;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .gridline{position:absolute;top:0;bottom:0;width:1px;background:var(--line2)}
+  .row{position:relative;height:46px;display:flex;align-items:center}
+  .row+.row{border-top:1px solid var(--line2)}
+  .bar{position:absolute;height:16px;border-radius:5px;opacity:.92}
+  .bar.A{background:var(--A)} .bar.B{background:var(--B)} .bar.paper{background:var(--paper)}
+  .rlabel{position:absolute;left:8px;font-size:12px;font-weight:600;z-index:3;text-shadow:0 1px 2px var(--surface),0 0 2px var(--surface)}
+  .rmax{position:absolute;font-size:10.5px;color:var(--ink3);transform:translateX(6px);z-index:2;white-space:nowrap}
+  /* markers */
+  .marker{position:absolute;top:-6px;bottom:0;width:2px;z-index:5}
+  .marker.dec{background:var(--dec)}
+  .marker.rej{background:var(--rej);background-image:linear-gradient(var(--rej) 55%,transparent 55%);background-size:2px 9px}
+  .mtag{position:absolute;top:-24px;transform:translateX(-50%);font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap;color:#fff}
+  .mtag.dec{background:var(--dec)} .mtag.rej{background:var(--rej)}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12px;color:var(--ink2)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .note{font-size:11.5px;color:var(--ink3);margin-top:8px}
+
+  /* decision banner */
+  .decide{background:linear-gradient(135deg,var(--dec),#047857);color:#fff;border-radius:16px;padding:20px 22px;margin-top:18px}
+  .decide .big{font-size:30px;font-weight:800;letter-spacing:.01em}
+  .decide .cap{font-size:12px;opacity:.9;font-weight:700;letter-spacing:.05em}
+  .decide .fees{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .decide .fee{background:rgba(255,255,255,.16);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600}
+  .decide .fee b{font-weight:800}
+
+  /* tables */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:12px}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
+  th,td{text-align:left;padding:11px 13px;vertical-align:top}
+  thead th{background:var(--line2);font-size:11px;font-weight:800;color:var(--ink2);letter-spacing:.03em;position:sticky;top:0}
+  tbody tr+tr{border-top:1px solid var(--line2)}
+  td .svc{font-weight:700;color:var(--ink)}
+  td a.svc:hover{color:var(--A);text-decoration:underline}
+  .prc{font-weight:800;white-space:nowrap}
+  .prc.buy{color:var(--dec)} .prc.sub{color:var(--B)}
+  .model{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .model.buy{background:var(--dec-w);color:var(--dec)}
+  .model.sub{background:var(--B-w);color:var(--B)}
+  .model.free{background:var(--A-w);color:var(--A)}
+  .whatg{color:var(--ink2);font-size:12px}
+  .grp-label{font-size:12px;font-weight:800;letter-spacing:.04em;color:#fff;padding:5px 12px;border-radius:8px;display:inline-block;margin:26px 0 2px}
+  .grp-label.A{background:var(--A)} .grp-label.B{background:var(--B)} .grp-label.C{background:#7c3aed} .grp-label.U{background:var(--paper)}
+  .takeaway{font-size:12.5px;color:var(--ink2);background:var(--line2);border-left:3px solid var(--ink3);padding:9px 13px;border-radius:0 8px 8px 0;margin-top:10px}
+  .foot{margin-top:44px;font-size:11.5px;color:var(--ink3);border-top:1px solid var(--line);padding-top:16px}
+  a{color:inherit}
+  .toggle{position:fixed;top:14px;right:14px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;color:var(--ink);z-index:20}
+</style>
+</head>
+<body>
+<button class="toggle" onclick="var r=document.documentElement;var d=(r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'));r.setAttribute('data-theme',d==='dark'?'light':'dark')">◐ 表示切替</button>
+<div class="wrap">
+
+  <h1>BrightCard 価格帯 市場比較</h1>
+  <div class="sub">同友会会員向けデジタル名刺の「売り切り価格」を、実在サービス44件の実売価格で検証（Sonnet並列10体調査・2026-07-13）。商品名クリックで実物ページへ。</div>
+
+  <!-- ===== 核心 ===== -->
+  <section>
+    <h2><span class="num">1</span>核心：価格が「高く見える」理由は比較対象のズレ</h2>
+    <p class="lead">市場は2つに割れていて、会員さんが頭の中で比べるのは<strong>安い方（A）</strong>。でも中身は<strong>高い方（B）</strong>。この錯覚が「¥22,000は高すぎ」の正体。</p>
+    <div class="markets">
+      <div class="mk A">
+        <h3><span class="dot" style="background:var(--A)"></span>A. NFCデジタル名刺（量産品）</h3>
+        <div class="price">¥2,980 〜 4,980</div>
+        <div class="desc">プレーリーカード・lit.link・MEET等。専用デザインでも¥3,980。更新は無料。高級素材のみ¥14,000〜16,500。</div>
+        <div class="tag">👀 会員が「デジタル名刺いくら？」で想起する市場</div>
+      </div>
+      <div class="mk B">
+        <h3><span class="dot" style="background:var(--B)"></span>B. 専用デザイン1ページ制作</h3>
+        <div class="price">¥20,000 〜 38,000</div>
+        <div class="desc">ココナラ中央値。ランサーズ¥30,000〜58,000、士業LP¥70,000〜。手作り・写真ヒーロー・vCard実装。</div>
+        <div class="tag">🎯 BrightCardの“中身”が実際に該当する市場</div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:14px">＝ BrightCardは A の顔をして B の中身を持つハイブリッド。会員はAの¥5,000にアンカーするので、B相当の¥22,000は<strong>4〜7倍</strong>に見えて高く感じる。</p>
+  </section>
+
+  <!-- ===== 位置チャート ===== -->
+  <section>
+    <h2><span class="num">2</span>売り切り価格マップ（実売レンジ＋2つの候補）</h2>
+    <p class="lead">横軸は対数の円。各バーは実売レンジ。<b style="color:var(--dec)">緑＝確定¥4,900〜5,900（物理カード込み）</b>／<b style="color:var(--rej)">赤破線＝当初案¥22,000（却下）</b>。改定後は量産NFC名刺(¥2,980〜4,980)とほぼ同価格帯に着地＝同じ値段で「専用デザイン＋カード」。</p>
+    <div class="card chart">
+      <!-- axis -->
+      <div class="axis">
+        <span class="tick" style="left:0%">¥1,000</span>
+        <span class="tick" style="left:23.9%">¥3,000</span>
+        <span class="tick" style="left:34.9%">¥5,000</span>
+        <span class="tick" style="left:50%">¥10,000</span>
+        <span class="tick" style="left:73.9%">¥30,000</span>
+        <span class="tick" style="left:84.9%">¥50,000</span>
+        <span class="tick" style="left:100%">¥100,000</span>
+      </div>
+      <div class="plot" id="plot">
+        <!-- gridlines -->
+        <div class="gridline" style="left:23.9%"></div>
+        <div class="gridline" style="left:34.9%"></div>
+        <div class="gridline" style="left:50%"></div>
+        <div class="gridline" style="left:73.9%"></div>
+        <div class="gridline" style="left:84.9%"></div>
+        <!-- markers (full height) -->
+        <div class="marker rej" style="left:67.1%"><span class="mtag rej">¥22,000 却下</span></div>
+        <div class="marker dec" style="left:34.5%"><span class="mtag dec">¥4,900〜 確定</span></div>
+
+        <div class="row"><div class="bar A" style="left:23.9%;width:11%"></div><span class="rlabel" style="left:23.9%">量産NFCデジタル名刺</span><span class="rmax" style="left:34.9%">…高級素材で¥16,500まで</span></div>
+        <div class="row"><div class="bar paper" style="left:23.9%;width:50%"></div><span class="rlabel" style="left:23.9%">紙名刺 オリジナルデザイン</span><span class="rmax" style="left:73.9%">…フルオーダー¥50,000</span></div>
+        <div class="row"><div class="bar B" style="left:60.9%;width:18.1%"></div><span class="rlabel" style="left:34.9%">ココナラ 専用プロフサイト制作</span></div>
+        <div class="row"><div class="bar B" style="left:60.9%;width:27.3%"></div><span class="rlabel" style="left:34.9%">ランサーズ/CW 1ページLP制作</span><span class="rmax" style="left:88.2%">…相場¥100,000</span></div>
+        <div class="row"><div class="bar B" style="left:76.9%;width:11%"></div><span class="rlabel" style="left:50.5%">中小ペラHP制作（テンプレ型）</span></div>
+        <div class="row"><div class="bar B" style="left:84.9%;width:15.1%"></div><span class="rlabel" style="left:56%">士業 プロフ撮影＋LP</span><span class="rmax" style="left:100%">→¥150,000</span></div>
+      </div>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--A)"></span>A 量産デジタル名刺</span>
+        <span><span class="dot" style="background:var(--B)"></span>B 専用デザイン制作</span>
+        <span><span class="dot" style="background:var(--paper)"></span>紙名刺（比較アンカー）</span>
+        <span><span class="dot" style="background:var(--dec)"></span>¥4,900〜 確定（カード込み）</span>
+        <span><span class="dot" style="background:var(--rej)"></span>¥22,000 却下</span>
+      </div>
+      <p class="note">※ 対数軸。バーは各市場の中心レンジ、右の淡い注記が例外的な上限。月額サブスク型（リンク集ツール・海外サービス）は単位が違うため §5 に別掲。</p>
+    </div>
+
+    <div class="decide">
+      <div class="cap">確定価格（改定・物理NFCカード同梱の全部入り）</div>
+      <div class="big">¥4,900 〜 5,900 <span style="font-size:14px;font-weight:700">税込・カード込み</span></div>
+      <div style="font-size:12.5px;opacity:.92;margin-top:4px">デジタル制作¥9,800→半額¥4,900に。実購入で判明したカード原価（黒¥136／木¥296／アルミ¥1,000）を上乗せ。量産NFC名刺(¥2,980〜4,980)と同価格帯で「専用デザイン＋物理カード」を出す＝明確な差別化。</div>
+      <div class="fees">
+        <span class="fee">黒(無地PVC)込み <b>¥4,900</b></span>
+        <span class="fee">木(チェリーウッド)込み <b>¥5,400</b></span>
+        <span class="fee">アルミ(メタリック)込み <b>¥5,900</b></span>
+      </div>
+      <div class="fees" style="margin-top:8px">
+        <span class="fee">軽微 <b>¥1,650</b></span>
+        <span class="fee">写真差替 <b>¥2,200</b></span>
+        <span class="fee">構成変更 <b>¥2,750</b></span>
+        <span class="fee">デザイン全変更 <b>¥3,300</b></span>
+        <span class="fee">初回1ヶ月 軽微1回 <b>無償</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 詳細 A ===== -->
+  <section>
+    <h2><span class="num">3</span>詳細：実在サービスの全データ（実物リンク付き）</h2>
+
+    <div class="grp-label A">A. 量産NFC/QRデジタル名刺 — ここが会員の“相場観”</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>サービス</th><th>価格</th><th>課金</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td><a class="svc" href="https://prairie.cards/products/prairie-card" target="_blank" rel="noopener">プレーリーカード</a></td><td class="prc buy">¥3,480〜4,980</td><td><span class="model buy">買い切り</span></td><td class="whatg">NFCカード＋プロフィールページ。更新無料。木製¥3,980/黒メタル¥14,980。</td></tr>
+        <tr><td><a class="svc" href="https://shop.lit.link/products/original-cards" target="_blank" rel="noopener">リットリンク∞カード（オリジナル）</a></td><td class="prc buy">¥3,980</td><td><span class="model buy">買い切り</span></td><td class="whatg">好きなデザインで作るNFCカード＋ページ。<b>清田さんの商品に最も近い“個別デザイン”枠</b>。ロゴ非表示+330円。</td></tr>
+        <tr><td><a class="svc" href="https://www.meet-meet.com/consumer/" target="_blank" rel="noopener">MEET タッチ名刺</a></td><td class="prc buy">¥2,980〜6,980</td><td><span class="model buy">買い切り</span></td><td class="whatg">NFC内蔵・アプリ不要でタッチ共有。カスタムページ。</td></tr>
+        <tr><td><a class="svc" href="https://danroinc.com/en/" target="_blank" rel="noopener">ENカード</a></td><td class="prc buy">¥3,300〜16,500</td><td><span class="model buy">買い切り</span></td><td class="whatg">背景・文字色カスタム可。設定代行「おまかせ」あり。上位は素材＋代行込み。</td></tr>
+        <tr><td><a class="svc" href="https://hankomans.com/item/digitalmeishi/" target="_blank" rel="noopener">はんこまん NFC名刺</a></td><td class="prc buy">¥2,980</td><td><span class="model buy">買い切り</span></td><td class="whatg">テンプレ5色。紙名刺セット+2,100円、データ入力代行+3,000円。</td></tr>
+        <tr><td class="svc">United Card</td><td class="prc buy">¥3,000〜3,300</td><td><span class="model buy">買い切り</span></td><td class="whatg">アプリ不要ページ。刻印+550円。</td></tr>
+        <tr><td class="svc">digime</td><td class="prc buy">¥2,970〜8,900</td><td><span class="model buy">買い切り</span></td><td class="whatg">NFCカード＋ページ。素材グレードで変動。</td></tr>
+        <tr><td class="svc">Misell</td><td class="prc buy">¥4,000〜6,000<br><span style="font-weight:600;font-size:11px">＋月¥550/枚</span></td><td><span class="model sub">買+月額</span></td><td class="whatg">カード買い切り＋継続月額の併用型。</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">量産市場はほぼ全社が<b>月額0円の買い切り</b>。標準¥2,980〜4,980、専用デザインでも¥3,980〜4,980が相場。天井は高級素材の¥14,000〜16,500。更新は無料が普通。</p>
+
+    <div class="grp-label B">B. 専用デザインの1ページ制作 — BrightCardの“中身”の相場</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>サービス</th><th>価格</th><th>課金</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td><a class="svc" href="https://coconala.com/services/1794643" target="_blank" rel="noopener">ココナラ｜完全カスタムのプロフサイト（Veulx）</a></td><td class="prc buy">¥20,000</td><td><span class="model buy">買い切り</span></td><td class="whatg">HTML/JS/CSSの専用デザイン・レスポンシブ・修正3回。<b>本商品に最も近い比較対象</b>。ホスティング代行+5,000。</td></tr>
+        <tr><td><a class="svc" href="https://coconala.com/services/1645289" target="_blank" rel="noopener">ココナラ｜スタイリッシュなプロフページ</a></td><td class="prc buy">¥28,000</td><td><span class="model buy">買い切り</span></td><td class="whatg">lit.linkベースの専用デザイン。写真・SNSリンク。以降の更新は都度追加課金。</td></tr>
+        <tr><td><a class="svc" href="https://coconala.com/services/3301113" target="_blank" rel="noopener">ココナラ｜名刺代わりHP（WordPress・1P）</a></td><td class="prc buy">¥38,000</td><td><span class="model buy">買い切り</span></td><td class="whatg">校正・写真補正・SEO・SSL・1ヶ月サポート。別途ドメイン/サーバー代。</td></tr>
+        <tr><td><a class="svc" href="https://www.lancers.jp/menu/detail/151087" target="_blank" rel="noopener">ランサーズ｜LP/TOPページ制作（個人）</a></td><td class="prc buy">¥5,000〜16,250</td><td><span class="model buy">買い切り</span></td><td class="whatg">1枚のデザイン込み制作。最短即日。ボリュームで加算。</td></tr>
+        <tr><td><a class="svc" href="https://www.lancers.jp/menu/browse/graphics_design/landing_page_design" target="_blank" rel="noopener">ランサーズ｜LP制作パッケージ</a></td><td class="prc buy">¥16,500〜58,000</td><td><span class="model buy">買い切り</span></td><td class="whatg">最安¥16,500、中間帯¥39,000〜58,000が最も出品が厚い。公式相場は¥100,000〜。</td></tr>
+        <tr><td class="svc">クラウドワークス｜LP制作（公式相場）</td><td class="prc buy">¥30,000〜100,000</td><td><span class="model buy">買い切り</span></td><td class="whatg">デザインのみ¥50,000〜、コーディングのみ¥30,000〜、フルで¥100,000〜/ページ。</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">専用デザイン制作の実売は<b>¥20,000〜38,000（ココナラ中央値）</b>。¥22,000はこの相場の下限〜中位で“制作代行”としては妥当だった。¥9,800はこの<b>半額以下</b>＝会員には強い割安感。</p>
+
+    <div class="grp-label U">比較アンカー：紙名刺デザイン＋制作会社ペラHP＋士業パッケージ</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>サービス</th><th>価格</th><th>課金</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td class="svc">ラクスル / プリントパック（印刷実費）</td><td class="prc buy">¥499〜890/100枚</td><td><span class="model buy">都度</span></td><td class="whatg">テンプレ利用・印刷実費のみ。デザイン費0円。＝下限アンカー。</td></tr>
+        <tr><td class="svc">紙名刺 オリジナルデザイン依頼（ココナラ/ランサーズ）</td><td class="prc buy">¥3,000〜30,000</td><td><span class="model buy">買い切り</span></td><td class="whatg">個別デザイン。フルオーダー（複数案・ロゴ込み）で¥20,000〜50,000。</td></tr>
+        <tr><td><a class="svc" href="https://www.goodeveryday.jp/" target="_blank" rel="noopener">グッドエブリデイ（熊本）ライトプラン</a></td><td class="prc buy">初期¥38,500<br><span style="font-weight:600;font-size:11px">＋月¥2,500〜</span></td><td><span class="model sub">初期+月額</span></td><td class="whatg">地元・格安制作会社の1ページHP。サーバー/ドメイン込み保守月額。</td></tr>
+        <tr><td class="svc">ペライチ制作代行（格安業者）</td><td class="prc buy">¥33,000〜55,000</td><td><span class="model buy">買い切り</span></td><td class="whatg">テンプレ型制作代行。ペライチ本体の月額は別。</td></tr>
+        <tr><td class="svc">OPS ビジネスプロフィール写真</td><td class="prc buy">¥22,000</td><td><span class="model buy">買い切り</span></td><td class="whatg">撮影1回60分。＝¥22,000は“プロ撮影1回分”と同額。</td></tr>
+        <tr><td class="svc">あきばれHP 士業パック</td><td class="prc buy">初期¥65,780<br><span style="font-weight:600;font-size:11px">＋月¥6,490</span></td><td><span class="model sub">初期+月額</span></td><td class="whatg">士業テンプレHP。最低4ヶ月契約。</td></tr>
+        <tr><td class="svc">アイコムオフィス｜撮影＋名刺パッケージ</td><td class="prc buy">¥50,000〜150,000</td><td><span class="model buy">買い切り</span></td><td class="whatg">士業向け。撮影＋名刺デザイン・印刷100枚のセット。上限アンカー。</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">物理コストを含む紙のフルオーダーでも“専用1点物”は¥3万未満に収まることが多い。印刷不要（URL＋QRのみ）のBrightCardで¥22,000は<b>プロ撮影1回分</b>と同額＝会員の体感では割高だった。</p>
+
+    <div class="grp-label C">C. リンク集ツール／海外サービス — “月額サブスク”で単位が違う</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>サービス</th><th>価格</th><th>課金</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td><a class="svc" href="https://lit.link/" target="_blank" rel="noopener">lit.link＋</a></td><td class="prc sub">月¥680〜860</td><td><span class="model sub">サブスク</span></td><td class="whatg">無料プランあり。＋は追加課金。年払い¥8,160。</td></tr>
+        <tr><td><a class="svc" href="https://linktr.ee/" target="_blank" rel="noopener">Linktree</a></td><td class="prc sub">月¥0〜5,250</td><td><span class="model free">無料〜サブスク</span></td><td class="whatg">Free/Starter$8/Pro$15/Premium$35。年払い割引あり。</td></tr>
+        <tr><td class="svc">Lnk.Bio</td><td class="prc buy">¥1,500〜3,750</td><td><span class="model buy">買い切り</span></td><td class="whatg">ライフタイム課金（この業態では異質な買い切り）。</td></tr>
+        <tr><td><a class="svc" href="https://hihello.com/pricing" target="_blank" rel="noopener">HiHello</a></td><td class="prc sub">月¥0〜1,240</td><td><span class="model free">無料〜サブスク</span></td><td class="whatg">ページ本体は無料〜。年払いで25%引き。</td></tr>
+        <tr><td><a class="svc" href="https://popl.co/" target="_blank" rel="noopener">Popl</a></td><td class="prc sub">月¥0〜2,320<br><span style="font-weight:600;font-size:11px">＋カード¥3,100〜7,750</span></td><td><span class="model free">無料+買い切り</span></td><td class="whatg">ページ無料〜サブスク＋物理カードは別会計の買い切り。</td></tr>
+        <tr><td><a class="svc" href="https://v1ce.co/pages/pricing" target="_blank" rel="noopener">V1CE</a></td><td class="prc buy">カード¥5,580〜21,700</td><td><span class="model buy">買い切り</span></td><td class="whatg">基本プロフは永年無料。素材でカード価格差大。</td></tr>
+        <tr><td><a class="svc" href="https://mobilo.com/" target="_blank" rel="noopener">Mobilo</a></td><td class="prc buy">カード¥6,050〜21,550</td><td><span class="model buy">買い切り</span></td><td class="whatg">プラスチック¥6,050／木¥12,250／メタル¥21,550。Proは任意月額。</td></tr>
+      </tbody>
+    </table></div>
+    <p class="takeaway">海外6社は例外なく<b>「ページ無料〜低額サブスク」＋「物理カードだけ買い切り」の二階建て</b>。“ページ制作費を一括で買い切り”という一体型モデルは類例が少なく、だからこそ差別化余地でもある。</p>
+  </section>
+
+  <!-- ===== 更新料 ===== -->
+  <section>
+    <h2><span class="num">4</span>更新料の市場照合</h2>
+    <p class="lead">スポット更新の相場は<b>¥3,000〜10,000/回</b>（簡易修正¥5,000程度）。直接競合(A)は更新無料なので、BrightCardは「初回1ヶ月1回無償」で摩擦を下げる設計。</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>参照</th><th>価格</th><th>課金</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td class="svc">プレーリーカード等（直接競合）</td><td class="prc buy">¥0</td><td><span class="model free">更新無料</span></td><td class="whatg">セルフ編集で情報更新は無料。＝摩擦点。</td></tr>
+        <tr><td class="svc">HP更新代行（ココナラ・スポット）</td><td class="prc buy">¥3,000〜</td><td><span class="model buy">都度</span></td><td class="whatg">基本1回¥3,000〜、オプションで¥1,000〜50,000。</td></tr>
+        <tr><td class="svc">HP更新・修正代行（業界相場）</td><td class="prc buy">¥3,000〜10,000</td><td><span class="model buy">都度</span></td><td class="whatg">1作業。簡単なテキスト・画像修正は¥5,000程度。</td></tr>
+        <tr><td class="svc">Web保守契約（中小HP）</td><td class="prc sub">月¥5,000〜20,000</td><td><span class="model sub">月額保守</span></td><td class="whatg">維持＋簡易更新込みの継続契約。</td></tr>
+        <tr style="background:var(--dec-w)"><td class="svc" style="color:var(--dec)">▶ BrightCard（改定・半額）</td><td class="prc buy" style="color:var(--dec)">¥1,650〜3,300</td><td><span class="model buy">都度</span></td><td class="whatg">軽微¥1,650／写真¥2,200／構成¥2,750／デザイン全変更¥3,300。初回1ヶ月の軽微1回無償。市場スポット相場（¥3,000〜10,000）の下限を更に下回る布教水準。</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <div class="foot">
+    調査：Sonnet並列10体（国内デジタル名刺／NFCカード物販／ココナラ／ランサーズ・CW／リンク集ツール／中小ペラHP／海外サービス／紙名刺／士業プロフLP＋撮影／更新保守 の10角度・実在44件）。価格は税込目安、外貨は¥150/$換算。取得日 2026-07-13。数値は各出典ページの当日表示に基づく。<br>
+    元設計・料金の詳細は <code>digital-namecard/BRIGHTCARD-TEMPLATE-DESIGN.md</code> §6。
+  </div>
+</div>
+</body>
+</html>

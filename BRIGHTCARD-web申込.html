@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BrightCard デジタル名刺 Web申込フォーム｜合同会社WBT</title>
+<meta name="description" content="BrightCardデジタル名刺のお申込みフォームです。入力後、内容をコピーしてLINEまたはメールで送信してください。">
+<style>
+  :root{
+    --ink:#1c2230;
+    --sub:#5a6272;
+    --line:#c9ccd4;
+    --line-soft:#e3e5ea;
+    --paper:#fdfcfa;
+    --bg:#eceae5;
+    --accent:#8a6d3b;
+    --accent-soft:#f4efe6;
+    --danger:#a3402f;
+    --danger-soft:#fbf1ee;
+    --ok:#2f7d5c;
+    --ok-soft:#eaf5ef;
+    --radius:10px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#eef0f5;
+      --sub:#aab0bd;
+      --line:#3c414f;
+      --line-soft:#2a2e38;
+      --paper:#1c2028;
+      --bg:#0e1015;
+      --accent:#d3ac74;
+      --accent-soft:#31291b;
+      --danger:#e2897a;
+      --danger-soft:#3a2320;
+      --ok:#7fd2ac;
+      --ok-soft:#182e25;
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Hiragino Sans","Yu Gothic Medium","Yu Gothic","Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:15px;
+    line-height:1.7;
+    padding-bottom:90px;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  a{color:var(--accent);}
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:22px 16px 40px;
+  }
+  @media (min-width:640px){
+    .wrap{padding:36px 32px 48px;}
+  }
+
+  /* ===== ヘッダー ===== */
+  .doc-header{
+    background:var(--paper);
+    border-radius:var(--radius);
+    padding:22px 20px;
+    margin-bottom:16px;
+    box-shadow:0 1px 8px rgba(0,0,0,.06);
+  }
+  .doc-header .eyebrow{
+    font-size:10.5px;
+    letter-spacing:.16em;
+    color:var(--accent);
+    font-weight:700;
+    margin:0 0 6px;
+  }
+  .doc-header h1{
+    font-size:20px;
+    margin:0 0 10px;
+    letter-spacing:.02em;
+    font-weight:700;
+    line-height:1.4;
+  }
+  .doc-header .org{
+    font-size:12px;
+    color:var(--sub);
+  }
+  .lead{
+    font-size:12.5px;
+    color:var(--sub);
+    background:var(--accent-soft);
+    border-left:3px solid var(--accent);
+    border-radius:0 6px 6px 0;
+    padding:12px 14px;
+    margin:12px 0 0;
+  }
+  .lead strong{color:var(--ink);}
+
+  /* ===== セクション ===== */
+  section.card{
+    background:var(--paper);
+    border-radius:var(--radius);
+    padding:20px 18px;
+    margin-bottom:14px;
+    box-shadow:0 1px 8px rgba(0,0,0,.06);
+  }
+  .sec-title{
+    display:flex;
+    align-items:baseline;
+    gap:9px;
+    font-size:15px;
+    font-weight:700;
+    color:var(--ink);
+    border-bottom:1.5px solid var(--line);
+    padding-bottom:9px;
+    margin:0 0 16px;
+  }
+  .sec-title .num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:21px;height:21px;
+    background:var(--ink);
+    color:var(--paper);
+    font-size:11px;
+    border-radius:5px;
+    flex:none;
+  }
+  .sec-note{
+    font-size:11px;
+    color:var(--sub);
+    font-weight:400;
+    margin-left:auto;
+    text-align:right;
+  }
+
+  .field{margin-bottom:14px;}
+  .field label{
+    display:block;
+    font-size:12.5px;
+    color:var(--sub);
+    margin-bottom:5px;
+    font-weight:600;
+  }
+  .field label .req{
+    color:var(--danger);
+    font-weight:700;
+    margin-left:2px;
+  }
+  .field label .ex,
+  .field label .opt{
+    color:#9aa0ab;
+    font-weight:400;
+    margin-left:4px;
+  }
+  .field-row{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+  @media (min-width:520px){
+    .field-row.cols-2{grid-template-columns:1fr 1fr;}
+    .field-row.cols-3{grid-template-columns:1fr 1fr 1fr;}
+    .field-row.addr{grid-template-columns:120px 1fr 1fr;}
+  }
+
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="url"],
+  input[type="search"],
+  textarea,
+  select{
+    width:100%;
+    padding:12px 13px;
+    font-size:16px;
+    font-family:inherit;
+    color:var(--ink);
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  input:focus,textarea:focus,select:focus{
+    outline:2px solid var(--accent);
+    outline-offset:1px;
+  }
+  textarea{resize:vertical;min-height:76px;line-height:1.6;}
+  input[type="color"]{
+    width:56px;height:44px;
+    padding:3px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--bg);
+  }
+
+  /* ===== 動的行（会社・事業・リンク） ===== */
+  .rows{display:flex;flex-direction:column;gap:10px;margin-bottom:10px;}
+  .row-box{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 12px 4px;
+    background:var(--bg);
+    position:relative;
+  }
+  .row-box .row-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  @media (min-width:560px){
+    .row-box .row-grid.g2{grid-template-columns:1fr 1fr;}
+    .row-box .row-grid.g3{grid-template-columns:1.2fr 1fr 1fr;}
+  }
+  .row-box .row-remove{
+    display:block;
+    width:100%;
+    margin-top:8px;
+    padding:9px;
+    font-size:12px;
+    color:var(--danger);
+    background:transparent;
+    border:1px dashed var(--danger);
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .row-box .row-remove:hover{background:var(--danger-soft);}
+  .btn-add{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:11px 16px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--accent);
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+    border-radius:8px;
+    cursor:pointer;
+  }
+  .btn-add:hover{opacity:.85;}
+  .btn-add:disabled{opacity:.4;cursor:not-allowed;}
+  .row-hint{font-size:11px;color:var(--sub);margin:-4px 0 10px;}
+
+  /* ===== SNS ===== */
+  .sns-list{display:flex;flex-direction:column;gap:8px;}
+  .sns-item{
+    display:grid;
+    grid-template-columns:auto 92px 1fr;
+    align-items:center;
+    gap:10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:9px 10px;
+    background:var(--bg);
+  }
+  .sns-item input[type="checkbox"]{
+    width:20px;height:20px;
+    accent-color:var(--accent);
+  }
+  .sns-item .sns-label{font-size:12.5px;font-weight:600;color:var(--ink);}
+  .sns-item input[type="text"]{padding:9px 10px;font-size:14.5px;}
+  .sns-item.checked{border-color:var(--accent);background:var(--accent-soft);}
+
+  /* ===== 掲載可否トグル ===== */
+  .publish-toggle{
+    display:inline-flex;
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+    margin-top:6px;
+  }
+  .publish-toggle label{
+    margin:0;
+    padding:9px 14px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--sub);
+    background:var(--bg);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .publish-toggle label:first-child{border-right:1px solid var(--line);}
+  .publish-toggle input{position:absolute;opacity:0;width:0;height:0;}
+  .publish-toggle input:checked + span{color:var(--ink);}
+  .publish-toggle label.on-selected,
+  .publish-toggle label:has(input:checked){
+    background:var(--accent-soft);
+  }
+  .publish-toggle label:has(input:checked) span::before{content:"✓ ";}
+
+  /* ===== デザイン選択カード ===== */
+  .pick-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  @media (min-width:560px){
+    .pick-grid.cols-2{grid-template-columns:1fr 1fr;}
+  }
+  .pick-card{
+    display:block;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:13px 14px;
+    cursor:pointer;
+    background:var(--bg);
+    transition:border-color .12s, background .12s;
+  }
+  .pick-card input{position:absolute;opacity:0;width:0;height:0;}
+  .pick-card:has(input:checked){
+    border-color:var(--accent);
+    background:var(--accent-soft);
+  }
+  .pick-card .t{
+    font-weight:700;
+    font-size:13.5px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .pick-card .t .dot{
+    width:16px;height:16px;
+    border-radius:50%;
+    border:1.5px solid var(--sub);
+    flex:none;
+  }
+  .pick-card:has(input:checked) .t .dot{
+    border-color:var(--accent);
+    background:var(--accent);
+    box-shadow:inset 0 0 0 3px var(--accent-soft);
+  }
+  .pick-card .t small{font-weight:400;color:var(--sub);font-size:11.5px;}
+  .pick-card .d{font-size:11.5px;color:var(--sub);margin-top:4px;}
+  .pick-card .price{
+    float:right;
+    font-weight:700;
+    color:var(--accent);
+    font-size:15px;
+  }
+
+  .chk-grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .chk-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    border:1.5px solid var(--line);
+    border-radius:20px;
+    padding:9px 14px;
+    font-size:12.5px;
+    cursor:pointer;
+    background:var(--bg);
+  }
+  .chk-pill input{position:absolute;opacity:0;width:0;height:0;}
+  .chk-pill:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:600;}
+
+  .terms{margin:0;padding-left:18px;font-size:11.5px;color:var(--sub);}
+  .terms li{margin-bottom:6px;}
+  .terms strong{color:var(--ink);}
+
+  .err-msg{
+    display:none;
+    font-size:12px;
+    color:var(--danger);
+    background:var(--danger-soft);
+    border:1px solid var(--danger);
+    border-radius:6px;
+    padding:8px 12px;
+    margin-top:8px;
+  }
+  .err-msg.show{display:block;}
+  input.invalid{border-color:var(--danger);}
+
+  /* ===== 送信バー ===== */
+  .submit-bar{
+    position:sticky;
+    bottom:0;
+    left:0;right:0;
+    background:var(--paper);
+    border-top:1px solid var(--line);
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    box-shadow:0 -2px 10px rgba(0,0,0,.08);
+    z-index:20;
+    margin-top:6px;
+  }
+  .btn-submit{
+    display:block;
+    width:100%;
+    max-width:760px;
+    margin:0 auto;
+    padding:16px;
+    font-size:15.5px;
+    font-weight:700;
+    letter-spacing:.03em;
+    color:#fff;
+    background:var(--ink);
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  .btn-submit:hover{opacity:.9;}
+
+  /* ===== 結果パネル ===== */
+  #resultPanel{margin-top:18px;}
+  #resultPanel[hidden]{display:none;}
+  .result-card{
+    background:var(--ok-soft);
+    border:1px solid var(--ok);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:14px;
+  }
+  .result-card h2{
+    font-size:15px;
+    margin:0 0 10px;
+    color:var(--ok);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .summary-box{
+    white-space:pre-wrap;
+    word-break:break-word;
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-size:12.5px;
+    line-height:1.7;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:14px;
+    max-height:360px;
+    overflow:auto;
+    color:var(--ink);
+  }
+  .action-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+    margin-top:14px;
+  }
+  @media (min-width:560px){
+    .action-grid{grid-template-columns:1fr 1fr 1fr;}
+  }
+  .action-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:14px 10px;
+    font-size:13.5px;
+    font-weight:700;
+    border-radius:9px;
+    border:none;
+    cursor:pointer;
+    text-decoration:none;
+    color:#fff;
+    text-align:center;
+  }
+  .action-btn.copy{background:var(--accent);}
+  .action-btn.line{background:#06c755;}
+  .action-btn.mail{background:var(--ink);}
+  .action-btn:hover{opacity:.9;}
+  .toast{
+    display:none;
+    margin-top:10px;
+    font-size:12px;
+    color:var(--ok);
+    font-weight:600;
+  }
+  .toast.show{display:block;}
+  .next-note{
+    font-size:12px;
+    color:var(--sub);
+    margin-top:12px;
+    padding-top:12px;
+    border-top:1px solid var(--line-soft);
+  }
+
+  details.cardjs-box{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px 16px;
+  }
+  details.cardjs-box summary{
+    cursor:pointer;
+    font-weight:700;
+    font-size:13.5px;
+    padding:4px 0;
+  }
+  details.cardjs-box .cardjs-note{
+    font-size:11.5px;
+    color:var(--sub);
+    margin:8px 0 10px;
+  }
+  pre.cardjs-pre{
+    white-space:pre-wrap;
+    word-break:break-word;
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-size:11.5px;
+    line-height:1.6;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px;
+    max-height:340px;
+    overflow:auto;
+    margin:0 0 10px;
+  }
+
+  footer.doc-footer{
+    margin-top:22px;
+    padding:14px 4px 0;
+    font-size:10.5px;
+    color:var(--sub);
+    text-align:center;
+  }
+
+  @media print{
+    .submit-bar{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="doc-header">
+    <p class="eyebrow">BRIGHTCARD WEB APPLICATION</p>
+    <h1>BrightCard デジタル名刺<br>Web申込フォーム</h1>
+    <div class="org">発行：合同会社WBT　担当：清田 兼明（Kemmei Kiyota）</div>
+    <p class="lead">
+      ご記入いただいた内容で専用デザインの名刺ページ＋物理NFCカードを制作します。<strong>掲載したくない項目は空欄のままで結構です。</strong>
+      最後まで入力したら「内容を作成する」ボタンを押し、表示された内容を<strong>コピーしてLINEまたはメールで清田まで送信</strong>してください（この画面から自動送信はされません）。
+    </p>
+  </div>
+
+  <form id="applyForm" novalidate>
+
+    <!-- 1. プロフィール -->
+    <section class="card">
+      <div class="sec-title"><span class="num">1</span>プロフィール情報<span class="sec-note">掲載する内容のみご記入ください</span></div>
+
+      <div class="field-row cols-2">
+        <div class="field">
+          <label for="nameJa">氏名（漢字）<span class="req">必須</span></label>
+          <input type="text" id="nameJa" name="nameJa" placeholder="例：清田 兼明" autocomplete="name" required>
+          <div class="err-msg" id="nameJaErr">氏名（漢字）は必須項目です。ご入力ください。</div>
+        </div>
+        <div class="field">
+          <label for="nameRomaji">ローマ字（ヘボン式）<span class="ex">例：Kemmei Kiyota</span></label>
+          <input type="text" id="nameRomaji" name="nameRomaji" placeholder="Kemmei Kiyota" autocomplete="off">
+        </div>
+      </div>
+      <div class="field-row cols-2">
+        <div class="field">
+          <label for="kanaLast">ふりがな（姓）</label>
+          <input type="text" id="kanaLast" name="kanaLast" placeholder="きよた">
+        </div>
+        <div class="field">
+          <label for="kanaFirst">ふりがな（名）</label>
+          <input type="text" id="kanaFirst" name="kanaFirst" placeholder="けんめい">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>会社名・役職<span class="opt">（任意・最大4件・追加できます）</span></label>
+        <div class="rows" id="positionRows"></div>
+        <button type="button" class="btn-add" id="addPosition">＋ 会社・肩書を追加</button>
+        <p class="row-hint">複数の会社・肩書をお持ちの場合は上から順にご記入ください（最大4件）</p>
+      </div>
+
+      <div class="field">
+        <label for="tagline">理念・キャッチコピー<span class="opt">（座右の銘等）</span></label>
+        <input type="text" id="tagline" name="tagline" placeholder="例：感謝と縁で架ける信頼の和">
+      </div>
+      <div class="field">
+        <label for="about">自己紹介文</label>
+        <textarea id="about" name="about" rows="4" placeholder="お客様やご紹介先に伝えたい自己紹介文をご自由にご記入ください"></textarea>
+      </div>
+    </section>
+
+    <!-- 2. 連絡先 -->
+    <section class="card">
+      <div class="sec-title"><span class="num">2</span>連絡先<span class="sec-note">掲載可否は各項目でご選択ください</span></div>
+
+      <div class="field-row addr">
+        <div class="field">
+          <label for="postal">郵便番号</label>
+          <input type="text" id="postal" name="postal" placeholder="860-0806" inputmode="numeric" autocomplete="postal-code">
+        </div>
+        <div class="field">
+          <label for="region">都道府県</label>
+          <input type="text" id="region" name="region" placeholder="熊本県" autocomplete="address-level1">
+        </div>
+        <div class="field">
+          <label for="locality">市区町村</label>
+          <input type="text" id="locality" name="locality" placeholder="熊本市中央区" autocomplete="address-level2">
+        </div>
+      </div>
+      <div class="field">
+        <label for="street">番地・建物名</label>
+        <input type="text" id="street" name="street" placeholder="花畑町1-1" autocomplete="address-line1">
+      </div>
+      <div class="field">
+        <span style="display:block;font-size:12.5px;color:var(--sub);font-weight:600;margin-bottom:2px;">住所をこの名刺に掲載する</span>
+        <div class="publish-toggle" data-toggle="address">
+          <label><input type="radio" name="pubAddress" value="yes" checked><span>掲載する</span></label>
+          <label><input type="radio" name="pubAddress" value="no"><span>掲載しない</span></label>
+        </div>
+      </div>
+
+      <div class="field-row cols-2">
+        <div class="field">
+          <label for="phone">電話番号</label>
+          <input type="tel" id="phone" name="phone" placeholder="090-0000-0000" autocomplete="tel">
+          <div class="publish-toggle" data-toggle="phone">
+            <label><input type="radio" name="pubPhone" value="yes" checked><span>掲載する</span></label>
+            <label><input type="radio" name="pubPhone" value="no"><span>掲載しない</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">メールアドレス</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email">
+          <div class="publish-toggle" data-toggle="email">
+            <label><input type="radio" name="pubEmail" value="yes" checked><span>掲載する</span></label>
+            <label><input type="radio" name="pubEmail" value="no"><span>掲載しない</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="website">自社サイトURL</label>
+        <input type="url" id="website" name="website" placeholder="https://example.com" autocomplete="url">
+      </div>
+    </section>
+
+    <!-- 3. SNS -->
+    <section class="card">
+      <div class="sec-title"><span class="num">3</span>SNS<span class="sec-note">お持ちのものだけチェック</span></div>
+      <div class="sns-list" id="snsList"></div>
+    </section>
+
+    <!-- 4. 事業紹介 -->
+    <section class="card">
+      <div class="sec-title"><span class="num">4</span>事業紹介<span class="sec-note">複数の店舗・事業がある場合</span></div>
+      <div class="rows" id="businessRows"></div>
+      <button type="button" class="btn-add" id="addBusiness">＋ 事業を追加</button>
+    </section>
+
+    <!-- 5. 任意リンク -->
+    <section class="card">
+      <div class="sec-title"><span class="num">5</span>任意リンク<span class="sec-note">予約サイト・メニュー・採用ページ等</span></div>
+      <div class="rows" id="linkRows"></div>
+      <button type="button" class="btn-add" id="addLink">＋ リンクを追加</button>
+    </section>
+
+    <!-- 6. デザイン選択 -->
+    <section class="card">
+      <div class="sec-title"><span class="num">6</span>デザインパターンの選択<span class="sec-note">いずれか1つ</span></div>
+      <div class="pick-grid cols-2" id="designPicks">
+        <label class="pick-card">
+          <input type="radio" name="design" value="bright">
+          <div class="t"><span class="dot"></span>Bright <small>ダーク×写真</small></div>
+          <div class="d">全画面ヒーロー写真で力強く。建設・製造・自動車・不動産向け</div>
+        </label>
+        <label class="pick-card">
+          <input type="radio" name="design" value="paper" checked>
+          <div class="t"><span class="dot"></span>Paper <small>白紙面</small></div>
+          <div class="d">清潔感のある白基調。士業・医療・保険・コンサル・教育向け</div>
+        </label>
+        <label class="pick-card">
+          <input type="radio" name="design" value="editorial">
+          <div class="t"><span class="dot"></span>Editorial <small>雑誌×金</small></div>
+          <div class="d">雑誌調の高級感。ブランド志向の経営者・高級飲食・美容向け</div>
+        </label>
+        <label class="pick-card">
+          <input type="radio" name="design" value="washi">
+          <div class="t"><span class="dot"></span>Washi <small>和紙×活版</small></div>
+          <div class="d">和の静けさと余白。伝統系士業・和食・旅館・工芸向け</div>
+        </label>
+        <label class="pick-card" style="grid-column:1 / -1;">
+          <input type="radio" name="design" value="minimal">
+          <div class="t"><span class="dot"></span>Minimal <small>白ミニマル</small></div>
+          <div class="d">余白を活かしたシンプル構成。IT・若手経営者・お写真なしの方にも最適</div>
+        </label>
+      </div>
+
+      <div class="field-row cols-2" style="margin-top:6px;">
+        <div class="field">
+          <label for="accent">アクセントカラー<span class="ex">指定なければおまかせ</span></label>
+          <input type="color" id="accent" name="accent" value="#8a6d3b">
+        </div>
+        <div class="field">
+          <label for="slug">URLスラッグ<span class="opt">（任意・半角英数）</span></label>
+          <input type="text" id="slug" name="slug" placeholder="例：kiyota-kemmei" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>顔写真の提出方法</label>
+        <div class="chk-grid" id="photoMethod">
+          <label class="chk-pill"><input type="radio" name="photoMethod" value="line" checked><span>LINEで送付</span></label>
+          <label class="chk-pill"><input type="radio" name="photoMethod" value="email"><span>メールで送付</span></label>
+          <label class="chk-pill"><input type="radio" name="photoMethod" value="later"><span>後日提出</span></label>
+          <label class="chk-pill"><input type="radio" name="photoMethod" value="none"><span>写真なし（モノグラム表示）</span></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. カード素材 -->
+    <section class="card">
+      <div class="sec-title"><span class="num">7</span>物理NFCカード素材<span class="sec-note">税込・デジタル制作費込み</span></div>
+      <div class="pick-grid" id="materialPicks">
+        <label class="pick-card">
+          <input type="radio" name="material" value="black" checked>
+          <div class="t"><span class="dot"></span>黒（無地PVC）<span class="price">¥4,900</span></div>
+          <div class="d">NTAG215 黒無地カード</div>
+        </label>
+        <label class="pick-card">
+          <input type="radio" name="material" value="wood">
+          <div class="t"><span class="dot"></span>木（チェリーウッド）<span class="price">¥5,400</span></div>
+          <div class="d">NTAG215 木製カード</div>
+        </label>
+        <label class="pick-card">
+          <input type="radio" name="material" value="aluminum">
+          <div class="t"><span class="dot"></span>アルミ（ヘアラインシルバー）<span class="price">¥5,900</span></div>
+          <div class="d">NTAG215 メタリックカード</div>
+        </label>
+      </div>
+      <p class="row-hint" style="margin-top:8px;">価格はデジタル名刺ページの制作費とNFCカード1枚を含む一括金額です。カードをスマートフォンにかざすだけで専用ページが開きます（名入れ印刷はございません）。</p>
+    </section>
+
+    <!-- 8. ご確認事項 -->
+    <section class="card">
+      <div class="sec-title"><span class="num">8</span>ご確認事項</div>
+      <ul class="terms">
+        <li>納品物は「<strong>公開URL</strong>」「<strong>QRコード画像</strong>」「<strong>物理NFCカード</strong>」の3点です。ページのソースファイルは納品対象に含まれません。編集・更新は弊社（合同会社WBT）が承ります。</li>
+        <li>更新は都度課金となります（軽微修正 ¥1,650〜。初回公開から1ヶ月以内の軽微修正は1回まで無償）。</li>
+      </ul>
+    </section>
+
+    <div class="submit-bar">
+      <button type="submit" class="btn-submit" id="submitBtn">この内容で申込内容を作成する</button>
+    </div>
+  </form>
+
+  <!-- ===== 結果パネル ===== -->
+  <div id="resultPanel" hidden>
+    <div class="result-card">
+      <h2>✓ 申込内容を作成しました</h2>
+      <div class="summary-box" id="summaryText"></div>
+      <div class="action-grid">
+        <button type="button" class="action-btn copy" id="copyBtn">内容をコピー</button>
+        <a href="#" class="action-btn line" id="lineBtn" target="_blank" rel="noopener">LINEで送る</a>
+        <a href="#" class="action-btn mail" id="mailBtn">メールで送る</a>
+      </div>
+      <div class="toast" id="copyToast">コピーしました。LINEで清田さんに貼り付けて送ってください。</div>
+      <p class="next-note">
+        「内容をコピー」を押した後は、LINEのトーク画面（清田兼明）を開いて貼り付けて送信してください。「LINEで送る」「メールで送る」ボタンは各アプリを直接開き、本文が自動で入力された状態になります（送信は手動です）。
+      </p>
+    </div>
+
+    <details class="cardjs-box">
+      <summary>清田さん用データ（card.js）を見る・コピーする</summary>
+      <p class="cardjs-note">このテキストをそのまま <code>members/&lt;slug&gt;/card.js</code> に貼り付ければ制作に使えます。</p>
+      <pre class="cardjs-pre" id="cardjsText"></pre>
+      <button type="button" class="action-btn copy" id="copyCardjsBtn" style="width:100%;">card.js をコピー</button>
+      <div class="toast" id="cardjsToast">card.js をコピーしました。</div>
+    </details>
+  </div>
+
+  <footer class="doc-footer">合同会社WBT ／ BrightCard デジタル名刺　ご不明点は担当・清田までお気軽にお問い合わせください</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ▼▼ 清田さんが送信先を変更する場合はここを書き換えてください ▼▼
+  const WBT_CONTACT_EMAIL = "izumi.coinzoom@gmail.com";
+  // ▲▲
+
+  const MATERIALS = {
+    black:    { label: "黒（無地PVC）",         price: "¥4,900" },
+    wood:     { label: "木（チェリーウッド）",   price: "¥5,400" },
+    aluminum: { label: "アルミ（ヘアラインシルバー）", price: "¥5,900" },
+  };
+  const DESIGNS = {
+    bright:    "Bright（ダーク×写真）",
+    paper:     "Paper（白紙面）",
+    editorial: "Editorial（雑誌×金）",
+    washi:     "Washi（和紙×活版）",
+    minimal:   "Minimal（白ミニマル）",
+  };
+  const PHOTO_METHODS = {
+    line:  "LINEで送付",
+    email: "メールで送付",
+    later: "後日提出",
+    none:  "写真なし（モノグラム表示）",
+  };
+  const SNS_TYPES = [
+    { type: "line-official", label: "LINE公式" },
+    { type: "line",           label: "LINE個人" },
+    { type: "whatsapp",       label: "WhatsApp" },
+    { type: "instagram",      label: "Instagram" },
+    { type: "x",               label: "X（Twitter）" },
+    { type: "facebook",       label: "Facebook" },
+    { type: "youtube",        label: "YouTube" },
+    { type: "tiktok",         label: "TikTok" },
+    { type: "linkedin",       label: "LinkedIn" },
+    { type: "github",         label: "GitHub" },
+  ];
+
+  const $ = (sel, ctx) => (ctx || document).querySelector(sel);
+  const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
+
+  /* ---------- 動的行: 会社・肩書（最大4） ---------- */
+  const positionRows = $("#positionRows");
+  const addPositionBtn = $("#addPosition");
+  let positionCount = 0;
+  const MAX_POSITIONS = 4;
+
+  function addPositionRow(){
+    if (positionCount >= MAX_POSITIONS) return;
+    positionCount++;
+    const box = document.createElement("div");
+    box.className = "row-box position-row";
+    box.innerHTML =
+      '<div class="row-grid g3">' +
+      '<div class="field" style="margin-bottom:0;"><label>会社名・屋号</label><input type="text" class="pos-company" placeholder="株式会社◯◯"></div>' +
+      '<div class="field" style="margin-bottom:0;"><label>役職</label><input type="text" class="pos-role" placeholder="代表"></div>' +
+      '<div class="field" style="margin-bottom:0;"><label>会社・店舗URL<span class="opt">任意</span></label><input type="url" class="pos-url" placeholder="https://"></div>' +
+      '</div>' +
+      '<button type="button" class="row-remove">この行を削除</button>';
+    box.querySelector(".row-remove").addEventListener("click", function(){
+      box.remove();
+      positionCount--;
+      updateAddButtons();
+    });
+    positionRows.appendChild(box);
+    updateAddButtons();
+  }
+  function updateAddButtons(){
+    addPositionBtn.disabled = positionCount >= MAX_POSITIONS;
+    addPositionBtn.textContent = positionCount >= MAX_POSITIONS
+      ? "会社・肩書は最大4件までです"
+      : "＋ 会社・肩書を追加";
+  }
+  addPositionBtn.addEventListener("click", addPositionRow);
+  addPositionRow(); // 初期1行
+
+  /* ---------- 動的行: 事業紹介 ---------- */
+  const businessRows = $("#businessRows");
+  $("#addBusiness").addEventListener("click", function(){
+    const box = document.createElement("div");
+    box.className = "row-box business-row";
+    box.innerHTML =
+      '<div class="row-grid g2">' +
+      '<div class="field" style="margin-bottom:0;"><label>店舗・会社名</label><input type="text" class="biz-name" placeholder="Don Espaco"></div>' +
+      '<div class="field" style="margin-bottom:0;"><label>役職</label><input type="text" class="biz-role" placeholder="オーナー"></div>' +
+      '</div>' +
+      '<div class="row-grid g2" style="margin-top:10px;">' +
+      '<div class="field" style="margin-bottom:0;"><label>タグ<span class="ex">例：飲食店・熊本</span></label><input type="text" class="biz-tags" placeholder="飲食店、熊本"></div>' +
+      '<div class="field" style="margin-bottom:0;"><label>一言紹介</label><input type="text" class="biz-desc" placeholder="一言紹介"></div>' +
+      '</div>' +
+      '<button type="button" class="row-remove">この行を削除</button>';
+    box.querySelector(".row-remove").addEventListener("click", () => box.remove());
+    businessRows.appendChild(box);
+  });
+
+  /* ---------- 動的行: 任意リンク ---------- */
+  const linkRows = $("#linkRows");
+  $("#addLink").addEventListener("click", function(){
+    const box = document.createElement("div");
+    box.className = "row-box link-row";
+    box.innerHTML =
+      '<div class="row-grid g2">' +
+      '<div class="field" style="margin-bottom:0;"><label>ラベル</label><input type="text" class="link-label" placeholder="ご予約はこちら"></div>' +
+      '<div class="field" style="margin-bottom:0;"><label>URL</label><input type="url" class="link-url" placeholder="https://"></div>' +
+      '</div>' +
+      '<button type="button" class="row-remove">この行を削除</button>';
+    box.querySelector(".row-remove").addEventListener("click", () => box.remove());
+    linkRows.appendChild(box);
+  });
+
+  /* ---------- SNS 一覧を生成 ---------- */
+  const snsList = $("#snsList");
+  SNS_TYPES.forEach(function(s, i){
+    const item = document.createElement("div");
+    item.className = "sns-item";
+    item.dataset.snsType = s.type;
+    const cbId = "sns_cb_" + i;
+    const valId = "sns_val_" + i;
+    item.innerHTML =
+      '<input type="checkbox" id="' + cbId + '" class="sns-cb">' +
+      '<label class="sns-label" for="' + cbId + '">' + s.label + '</label>' +
+      '<input type="text" id="' + valId + '" class="sns-val" placeholder="IDまたはURL" disabled>';
+    const cb = item.querySelector(".sns-cb");
+    const val = item.querySelector(".sns-val");
+    cb.addEventListener("change", function(){
+      val.disabled = !cb.checked;
+      item.classList.toggle("checked", cb.checked);
+      if (cb.checked) val.focus();
+    });
+    snsList.appendChild(item);
+  });
+
+  /* ---------- ユーティリティ ---------- */
+  function val(id){
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : "";
+  }
+  function radioVal(name){
+    const el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : "";
+  }
+  function isPublish(name){
+    return radioVal(name) !== "no";
+  }
+  function todayStr(){
+    const d = new Date();
+    const p = n => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+  function nowStr(){
+    const d = new Date();
+    const p = n => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+
+  function collectPositions(){
+    return $$(".position-row").map(function(row){
+      return {
+        company: row.querySelector(".pos-company").value.trim(),
+        role: row.querySelector(".pos-role").value.trim(),
+        url: row.querySelector(".pos-url").value.trim(),
+      };
+    }).filter(p => p.company || p.role || p.url);
+  }
+  function collectBusinesses(){
+    return $$(".business-row").map(function(row){
+      const tagsRaw = row.querySelector(".biz-tags").value.trim();
+      const tags = tagsRaw
+        ? tagsRaw.split(/[、,・]+/).map(t => t.trim()).filter(Boolean)
+        : [];
+      return {
+        name: row.querySelector(".biz-name").value.trim(),
+        role: row.querySelector(".biz-role").value.trim(),
+        url: "",
+        image: "",
+        tags: tags,
+        desc: row.querySelector(".biz-desc").value.trim(),
+      };
+    }).filter(b => b.name || b.role || b.desc || b.tags.length);
+  }
+  function collectLinks(){
+    return $$(".link-row").map(function(row){
+      return {
+        label: row.querySelector(".link-label").value.trim(),
+        url: row.querySelector(".link-url").value.trim(),
+        desc: "",
+      };
+    }).filter(l => l.label || l.url);
+  }
+  function collectSns(){
+    return $$(".sns-item").filter(function(item){
+      return item.querySelector(".sns-cb").checked && item.querySelector(".sns-val").value.trim();
+    }).map(function(item){
+      return { type: item.dataset.snsType, id: item.querySelector(".sns-val").value.trim() };
+    });
+  }
+
+  function slugify(romaji){
+    if (!romaji) return "";
+    return romaji.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+
+  /* ---------- サマリー生成 ---------- */
+  function buildSummary(data){
+    const lines = [];
+    lines.push("【BrightCard デジタル名刺 お申込み】");
+    lines.push("");
+    lines.push("■ プロフィール");
+    lines.push("氏名（漢字）: " + (data.nameJa || "（未記入）"));
+    lines.push("ふりがな: " + ((data.kanaLast || data.kanaFirst) ? (data.kanaLast + " " + data.kanaFirst).trim() : "（未記入）"));
+    lines.push("ローマ字: " + (data.nameRomaji || "（未記入）"));
+    lines.push("");
+
+    if (data.positions.length){
+      lines.push("■ 会社・肩書");
+      data.positions.forEach(function(p, i){
+        let l = (i + 1) + ". " + (p.company || "（会社名未記入）");
+        if (p.role) l += " / " + p.role;
+        if (p.url) l += "（" + p.url + "）";
+        lines.push(l);
+      });
+      lines.push("");
+    }
+
+    if (data.tagline){
+      lines.push("■ 理念・キャッチコピー");
+      lines.push(data.tagline);
+      lines.push("");
+    }
+    if (data.about){
+      lines.push("■ 自己紹介");
+      lines.push(data.about);
+      lines.push("");
+    }
+
+    const contactLines = [];
+    if (data.addressDisplay && data.pubAddress) contactLines.push("住所: " + data.addressDisplay);
+    if (data.phone && data.pubPhone) contactLines.push("電話: " + data.phone);
+    if (data.email && data.pubEmail) contactLines.push("メール: " + data.email);
+    if (data.website) contactLines.push("自社サイト: " + data.website);
+    if (contactLines.length){
+      lines.push("■ 連絡先（掲載可の項目のみ）");
+      contactLines.forEach(l => lines.push(l));
+      lines.push("");
+    }
+
+    if (data.sns.length){
+      lines.push("■ SNS");
+      data.sns.forEach(function(s){
+        const label = (SNS_TYPES.find(t => t.type === s.type) || {}).label || s.type;
+        lines.push(label + ": " + s.id);
+      });
+      lines.push("");
+    }
+
+    if (data.businesses.length){
+      lines.push("■ 事業紹介");
+      data.businesses.forEach(function(b, i){
+        let l = (i + 1) + ". " + (b.name || "（名称未記入）");
+        if (b.role) l += " / " + b.role;
+        if (b.tags.length) l += " / タグ:" + b.tags.join("・");
+        if (b.desc) l += " — " + b.desc;
+        lines.push(l);
+      });
+      lines.push("");
+    }
+
+    if (data.links.length){
+      lines.push("■ 任意リンク");
+      data.links.forEach(function(l, i){
+        lines.push((i + 1) + ". " + (l.label || "リンク") + ": " + l.url);
+      });
+      lines.push("");
+    }
+
+    lines.push("■ デザイン");
+    lines.push("テンプレート: " + (DESIGNS[data.design] || data.design));
+    lines.push("アクセントカラー: " + data.accent);
+    if (data.slug) lines.push("URLスラッグ希望: " + data.slug);
+    lines.push("顔写真の提出方法: " + (PHOTO_METHODS[data.photoMethod] || data.photoMethod));
+    lines.push("");
+
+    lines.push("■ 物理NFCカード素材");
+    const m = MATERIALS[data.material];
+    lines.push((m ? m.label : data.material) + "　" + (m ? m.price : "") + "（税込・デジタル制作費込み）");
+    lines.push("");
+
+    lines.push("---");
+    lines.push("送信日時: " + nowStr());
+    lines.push("送信元: BrightCard Web申込フォーム");
+
+    return lines.join("\n");
+  }
+
+  /* ---------- card.js 生成 ---------- */
+  function buildCardJs(data){
+    const obj = {
+      schemaVersion: 1,
+      slug: data.slug || slugify(data.nameRomaji) || "",
+      design: {
+        template: data.design || "paper",
+        accent: data.accent || "#8a6d3b",
+        photoPosition: "center top",
+      },
+      name: {
+        ja: data.nameJa || "",
+        en: data.nameRomaji || "",
+        kana: { last: data.kanaLast || "", first: data.kanaFirst || "" },
+      },
+      positions: data.positions,
+      tagline: data.tagline || "",
+      about: data.about || "",
+      philosophy: { label: "", text: "" },
+      contacts: {
+        address: {
+          postal: data.pubAddress ? data.postal : "",
+          region: data.pubAddress ? data.region : "",
+          locality: data.pubAddress ? data.locality : "",
+          street: data.pubAddress ? data.street : "",
+          display: data.pubAddress ? data.addressDisplay : "",
+        },
+        phone: data.pubPhone ? data.phone : "",
+        email: data.pubEmail ? data.email : "",
+        website: data.website || "",
+      },
+      sns: data.sns,
+      businesses: data.businesses,
+      links: data.links,
+      vcard: {
+        filename: slugify(data.nameRomaji) || "",
+        org: "",
+        note: "",
+      },
+      updates: [
+        { date: todayStr(), note: "Web申込フォームより受信（未制作・材質:" + data.material + "／写真:" + data.photoMethod + "）" },
+      ],
+    };
+    const json = JSON.stringify(obj, null, 2);
+    return "// BrightCard 会員データ（Web申込フォームより自動生成）\n" +
+      "// 生成日時: " + nowStr() + "\n" +
+      "// このファイルを members/<slug>/card.js として保存してください。\n" +
+      "window.CARD = " + json + ";\n";
+  }
+
+  /* ---------- コピー（クリップボードAPI＋フォールバック） ---------- */
+  function copyText(text, onDone){
+    if (navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).then(function(){ onDone(true); }, function(){ fallbackCopy(text, onDone); });
+    } else {
+      fallbackCopy(text, onDone);
+    }
+  }
+  function fallbackCopy(text, onDone){
+    try{
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.top = "-9999px";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      onDone(ok);
+    }catch(e){
+      onDone(false);
+    }
+  }
+  function showToast(el){
+    el.classList.add("show");
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove("show"), 4000);
+  }
+
+  /* ---------- 送信（フォーム構築） ---------- */
+  const form = $("#applyForm");
+  const resultPanel = $("#resultPanel");
+  const nameJaInput = $("#nameJa");
+  const nameJaErr = $("#nameJaErr");
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const nameJa = nameJaInput.value.trim();
+    if (!nameJa){
+      nameJaErr.classList.add("show");
+      nameJaInput.classList.add("invalid");
+      nameJaInput.focus();
+      nameJaInput.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    nameJaErr.classList.remove("show");
+    nameJaInput.classList.remove("invalid");
+
+    const postal = val("postal");
+    const region = val("region");
+    const locality = val("locality");
+    const street = val("street");
+    const addressDisplay = [region, locality, street].filter(Boolean).join("");
+
+    const data = {
+      nameJa: nameJa,
+      nameRomaji: val("nameRomaji"),
+      kanaLast: val("kanaLast"),
+      kanaFirst: val("kanaFirst"),
+      positions: collectPositions(),
+      tagline: val("tagline"),
+      about: val("about"),
+      postal: postal,
+      region: region,
+      locality: locality,
+      street: street,
+      addressDisplay: addressDisplay,
+      pubAddress: isPublish("pubAddress"),
+      phone: val("phone"),
+      pubPhone: isPublish("pubPhone"),
+      email: val("email"),
+      pubEmail: isPublish("pubEmail"),
+      website: val("website"),
+      sns: collectSns(),
+      businesses: collectBusinesses(),
+      links: collectLinks(),
+      design: radioVal("design") || "paper",
+      accent: val("accent") || "#8a6d3b",
+      slug: val("slug"),
+      photoMethod: radioVal("photoMethod") || "later",
+      material: radioVal("material") || "black",
+    };
+
+    const summary = buildSummary(data);
+    const cardjs = buildCardJs(data);
+
+    $("#summaryText").textContent = summary;
+    $("#cardjsText").textContent = cardjs;
+
+    const lineBtn = $("#lineBtn");
+    lineBtn.href = "https://line.me/R/msg/text/?" + encodeURIComponent(summary);
+
+    const mailBtn = $("#mailBtn");
+    const subject = "BrightCard 申込：" + nameJa;
+    mailBtn.href = "mailto:" + encodeURIComponent(WBT_CONTACT_EMAIL) +
+      "?subject=" + encodeURIComponent(subject) +
+      "&body=" + encodeURIComponent(summary);
+
+    resultPanel.hidden = false;
+    resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    $("#copyBtn").onclick = function(){
+      copyText(summary, function(ok){
+        showToast($("#copyToast"));
+        if (!ok){
+          alert("自動コピーに失敗しました。上のテキストを長押し/選択して手動でコピーしてください。");
+        }
+      });
+    };
+    $("#copyCardjsBtn").onclick = function(){
+      copyText(cardjs, function(ok){
+        showToast($("#cardjsToast"));
+        if (!ok){
+          alert("自動コピーに失敗しました。上のテキストを長押し/選択して手動でコピーしてください。");
+        }
+      });
+    };
+  });
+
+})();
+</script>
+
+</body>
+</html>

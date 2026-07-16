@@ -1,0 +1,161 @@
+/**
+ * BrightCard runtime v1 — templates/washi.css
+ * 「Washi」テンプレ（和紙／AI生成背景＋額装二重罫フレーム・落款）。
+ * PATTERN-MOCKUP.html の .washi 系レイアウトを実ランタイムへ移植。
+ * Products / From WBT 枠は存在しない。
+ */
+
+:root {
+  --bc-accent: #a5341f;
+  --bc-accent-dark: #7d2717;
+  --bc-accent-light: rgba(165, 52, 31, 0.08);
+  --bc-accent-glow: rgba(165, 52, 31, 0.2);
+  --bc-accent-border: rgba(165, 52, 31, 0.22);
+  --bc-bg: #f3ecdd;
+  --bc-bg-card: #fbf7ee;
+  --bc-text-primary: #2b2620;
+  --bc-text-secondary: #5c5346;
+  --bc-text-muted: #8a8070;
+  --bc-border: rgba(43, 38, 32, 0.12);
+  --bc-gold: #c9ab6e;
+}
+
+.bc-washi { scroll-behavior: smooth; }
+
+.bc-root {
+  font-family: 'Noto Sans JP', 'Shippori Mincho', 'Noto Serif JP', serif;
+  background: var(--bc-bg);
+  color: var(--bc-text-primary);
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.bc-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: linear-gradient(90deg, var(--bc-accent), var(--bc-accent-dark)); z-index: 200; }
+
+/* ===== Hero: AI背景 + 額装二重罫フレーム + 落款 ===== */
+.bc-hero { position: relative; width: 100%; min-height: 100svh; overflow: hidden; background: var(--bc-bg); }
+
+.bc-washi-bg { position: absolute; inset: 0; z-index: 0; background: var(--bc-bg); }
+.bc-washi-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.bc-washi-inner {
+  position: relative; z-index: 2; max-width: 480px; margin: 0 auto;
+  min-height: 100svh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 56px 24px;
+}
+
+.bc-washi-frame {
+  position: relative; width: 58%; max-width: 260px; aspect-ratio: 3/4;
+  padding: 8px; background: var(--bc-bg-card);
+  box-shadow: 0 14px 34px rgba(90,70,30,.25);
+  border: 1px solid var(--bc-gold);
+  outline: 3px solid var(--bc-bg-card);
+  outline-offset: -11px;
+  flex-shrink: 0;
+}
+.bc-washi-photo { position: absolute; inset: 8px; overflow: hidden; }
+.bc-washi-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bc-washi-photo .bc-monogram { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 50% 40%, var(--bc-accent-light), var(--bc-bg-card) 70%); }
+.bc-washi-photo .bc-monogram span { font-family: 'Shippori Mincho', 'Noto Serif JP', serif; font-size: min(16vw, 90px); font-weight: 800; color: var(--bc-accent); opacity: .4; line-height: 1; user-select: none; }
+
+.bc-washi-body {
+  margin-top: 26px; text-align: center; width: 100%;
+  padding: 24px 22px 30px; border-radius: 6px;
+  background: rgba(251,247,238,.82);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.bc-washi-body.bc-no-overlay { background: none; backdrop-filter: none; }
+
+.bc-washi-seal {
+  display: inline-block; font-family: 'Shippori Mincho', serif; font-size: 12px;
+  color: #fff; background: var(--bc-accent); padding: 5px 10px; border-radius: 3px;
+  letter-spacing: .15em; margin-bottom: 12px;
+}
+.bc-washi-ja { font-family: 'Shippori Mincho', 'Noto Serif JP', serif; font-size: 27px; font-weight: 800; letter-spacing: .14em; color: var(--bc-text-primary); }
+.bc-washi-en { font: 500 10px/1 'Inter', sans-serif; letter-spacing: .2em; color: var(--bc-text-muted); margin-top: 8px; }
+.bc-washi-reading { font-size: 11px; color: var(--bc-text-muted); letter-spacing: .12em; margin-top: 6px; }
+.bc-washi-titles { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; }
+.bc-washi-title-item { font-size: 11px; color: var(--bc-text-secondary); line-height: 1.8; }
+.bc-washi-title-item .bc-company { font-weight: 600; color: var(--bc-text-primary); }
+.bc-washi-title-item .bc-company a { color: inherit; text-decoration: none; border-bottom: 1px dashed rgba(43,38,32,.3); }
+.bc-washi-title-item .bc-role { font-size: 10px; color: var(--bc-text-muted); margin-left: 6px; }
+.bc-washi-tag { font-family: 'Shippori Mincho', serif; font-size: 12px; color: var(--bc-text-primary); margin-top: 14px; line-height: 1.9; white-space: pre-wrap; }
+
+@media (min-width: 640px) { .bc-washi-ja { font-size: 34px; } }
+
+/* ===== Section common ===== */
+.bc-section { padding: 56px 24px; max-width: 640px; margin: 0 auto; position: relative; }
+.bc-section-label { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--bc-accent); margin-bottom: 22px; display: flex; align-items: center; gap: 12px; }
+.bc-section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, var(--bc-accent-border), transparent); }
+
+/* ===== About / Philosophy ===== */
+.bc-about-text { font-size: 14px; color: var(--bc-text-secondary); line-height: 2.1; white-space: pre-wrap; }
+.bc-philosophy { margin-top: 22px; padding: 22px; background: var(--bc-bg-card); border-radius: 6px; border: 1px solid var(--bc-border); }
+.bc-philosophy-label { font-size: 10px; font-weight: 600; color: var(--bc-accent); letter-spacing: 0.1em; margin-bottom: 8px; }
+.bc-philosophy-text { font-family: 'Shippori Mincho', 'Noto Serif JP', serif; font-size: 19px; font-weight: 700; letter-spacing: 0.08em; line-height: 1.7; color: var(--bc-text-primary); }
+
+/* ===== Businesses ===== */
+.bc-biz-grid { display: grid; gap: 14px; }
+.bc-biz-card { display: block; background: var(--bc-bg-card); border: 1px solid var(--bc-border); border-radius: 6px; padding: 18px; text-decoration: none; color: inherit; transition: transform 0.2s ease, border-color 0.2s ease; }
+.bc-biz-card[href]:hover, .bc-biz-card[href]:active { transform: translateY(-2px); border-color: var(--bc-accent-border); }
+.bc-biz-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.bc-biz-icon { width: 46px; height: 46px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--bc-accent-light); border: 1px solid var(--bc-border); overflow: hidden; }
+.bc-biz-icon svg { width: 22px; height: 22px; color: var(--bc-accent); }
+.bc-biz-icon img { width: 100%; height: 100%; object-fit: cover; }
+.bc-biz-name { font-family: 'Shippori Mincho', 'Noto Serif JP', serif; font-size: 14px; font-weight: 700; }
+.bc-biz-role { font-size: 11px; color: var(--bc-text-muted); margin-top: 2px; }
+.bc-biz-desc { font-size: 12px; color: var(--bc-text-secondary); line-height: 1.7; margin-top: 10px; }
+.bc-biz-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.bc-tag { font-size: 10px; color: var(--bc-text-secondary); padding: 3px 10px; border-radius: 999px; background: var(--bc-accent-light); border: 1px solid var(--bc-border); }
+.bc-biz-arrow { margin-left: auto; color: var(--bc-text-muted); flex-shrink: 0; }
+.bc-biz-arrow svg { width: 16px; height: 16px; }
+
+/* ===== Links ===== */
+.bc-link-grid { display: flex; flex-direction: column; gap: 10px; }
+.bc-link-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--bc-bg-card); border: 1px solid var(--bc-border); border-radius: 6px; text-decoration: none; color: inherit; transition: transform 0.15s ease, border-color 0.15s ease; }
+.bc-link-card:hover, .bc-link-card:active { transform: translateY(-1px); border-color: var(--bc-accent-border); }
+.bc-link-icon { width: 32px; height: 32px; border-radius: 4px; background: var(--bc-accent-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.bc-link-icon svg { width: 16px; height: 16px; color: var(--bc-accent); }
+.bc-link-text { flex: 1; min-width: 0; }
+.bc-link-label { font-size: 13px; font-weight: 600; }
+.bc-link-desc { font-size: 11px; color: var(--bc-text-muted); margin-top: 1px; }
+
+/* ===== Contact ===== */
+.bc-contact-grid { display: flex; flex-direction: column; gap: 1px; background: var(--bc-border); border-radius: 6px; overflow: hidden; }
+.bc-contact-row { display: flex; align-items: center; gap: 14px; padding: 15px 16px; background: var(--bc-bg-card); font-size: 13px; color: var(--bc-text-secondary); }
+.bc-contact-icon { width: 32px; height: 32px; border-radius: 4px; background: var(--bc-accent-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--bc-accent); }
+.bc-contact-icon svg { width: 16px; height: 16px; }
+.bc-contact-row a { color: var(--bc-text-secondary); text-decoration: none; border-bottom: 1px dashed rgba(43,38,32,.2); word-break: break-all; }
+.bc-contact-row a:hover { color: var(--bc-accent); }
+
+/* ===== Floating SNS ===== */
+.bc-floating-sns { position: fixed; right: 14px; top: 50%; transform: translateY(-50%); z-index: 60; display: flex; flex-direction: column; gap: 10px; transition: opacity 0.35s ease, transform 0.35s ease; }
+.bc-floating-sns.bc-hidden { opacity: 0; pointer-events: none; transform: translateY(-50%) translateX(16px); }
+.bc-floating-item { position: relative; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(251,247,238,0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--bc-border); color: var(--bc-text-primary); text-decoration: none; transition: transform 0.15s ease; cursor: pointer; }
+.bc-floating-item:active { transform: scale(0.92); }
+.bc-floating-item svg { width: 20px; height: 20px; fill: currentColor; }
+.bc-floating-item.bc-save { background: var(--bc-accent); border-color: var(--bc-accent); color: #fff; }
+.bc-floating-item.bc-save svg { fill: #fff; stroke: none; }
+.bc-sns-badge { position: absolute; bottom: -3px; right: -3px; font-size: 8px; font-weight: 700; padding: 2px 5px; border-radius: 999px; background: var(--bc-accent); color: #fff; line-height: 1.2; white-space: nowrap; }
+
+/* ===== Footer ===== */
+.bc-footer { text-align: center; padding: 32px 24px 110px; font-family: 'Inter', sans-serif; font-size: 10px; color: var(--bc-text-muted); letter-spacing: 0.08em; }
+.bc-footer .bc-powered-by { margin-top: 8px; font-size: 9px; }
+.bc-footer .bc-powered-by a { color: var(--bc-accent); text-decoration: none; }
+
+/* ===== Fixed Bottom CTA ===== */
+.bc-fixed-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 55; padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0)); background: rgba(243,236,221,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--bc-border); }
+.bc-fixed-bottom-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; max-width: 420px; margin: 0 auto; padding: 14px; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; font-family: 'Noto Sans JP', sans-serif; cursor: pointer; background: linear-gradient(135deg, var(--bc-accent), var(--bc-accent-dark)); color: #fff; box-shadow: 0 2px 16px var(--bc-accent-glow); transition: transform 0.15s ease; -webkit-appearance: none; }
+.bc-fixed-bottom-btn:active { transform: scale(0.97); }
+.bc-fixed-bottom-btn svg { width: 18px; height: 18px; fill: #fff; }
+
+/* ===== Reveal ===== */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-d1 { transition-delay: 0.08s; }
+.reveal-d2 { transition-delay: 0.16s; }
+.reveal-d3 { transition-delay: 0.24s; }
+
+@media (min-width: 640px) { .bc-biz-grid { grid-template-columns: 1fr 1fr; } }

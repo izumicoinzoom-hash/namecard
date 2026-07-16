@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>BrightCard 写真比較</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    padding: 24px;
+  }
+  h1 { font-size: 18px; font-weight: 500; margin-bottom: 16px; opacity: .85; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  .card {
+    background: #111;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #222;
+  }
+  .label {
+    padding: 10px 14px;
+    font-size: 13px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #222;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .label small { opacity: .5; font-size: 11px; }
+
+  .hero {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .hero-photo {
+    position: absolute; inset: 0; z-index: 1;
+  }
+  .hero-photo img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+  .hero-photo::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom,
+      transparent 30%,
+      rgba(10,10,10,0.3) 55%,
+      rgba(10,10,10,0.85) 80%,
+      rgba(10,10,10,0.98) 100%);
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 20px 18px 24px;
+  }
+  .hero-name-en {
+    font-size: 11px;
+    letter-spacing: .2em;
+    opacity: .7;
+    margin-bottom: 4px;
+  }
+  .hero-name-ja {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    margin-bottom: 10px;
+  }
+  .hero-title-item {
+    font-size: 11px;
+    opacity: .85;
+    margin-bottom: 2px;
+  }
+  .hero-title-item .role {
+    opacity: .6;
+    margin-left: 6px;
+  }
+  .hero-tagline {
+    font-size: 11px;
+    line-height: 1.6;
+    opacity: .75;
+    margin-top: 10px;
+    border-top: 1px solid rgba(255,255,255,.12);
+    padding-top: 10px;
+  }
+</style>
+</head>
+<body>
+  <h1>BrightCard 写真比較 — クリックで等倍プレビュー</h1>
+  <div class="grid">
+
+    <div class="card">
+      <div class="label">オリジナル <small>780×1040 / 腕組みフル</small></div>
+      <div class="hero">
+        <div class="hero-photo"><img src="photo-original.jpg" alt=""></div>
+        <div class="hero-content">
+          <div class="hero-name-en">KEMMEI KIYOTA</div>
+          <div class="hero-name-ja">清田 兼明</div>
+          <div class="hero-title-item">株式会社清田自動車 <span class="role">代表取締役</span></div>
+          <div class="hero-title-item">合同会社WBT <span class="role">代表社員</span></div>
+          <div class="hero-tagline">情の伝播 — テクノロジーと人の温もりで、明日をもっと明るくする。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">v2 <small>780×720 / 腕の輪郭わずかに残る・温度微</small></div>
+      <div class="hero">
+        <div class="hero-photo"><img src="photo-v2.jpg" alt=""></div>
+        <div class="hero-content">
+          <div class="hero-name-en">KEMMEI KIYOTA</div>
+          <div class="hero-name-ja">清田 兼明</div>
+          <div class="hero-title-item">株式会社清田自動車 <span class="role">代表取締役</span></div>
+          <div class="hero-title-item">合同会社WBT <span class="role">代表社員</span></div>
+          <div class="hero-tagline">情の伝播 — テクノロジーと人の温もりで、明日をもっと明るくする。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">v3 <small>780×620 / 肩から上のみ・暖色寄せ</small></div>
+      <div class="hero">
+        <div class="hero-photo"><img src="photo-v3.jpg" alt=""></div>
+        <div class="hero-content">
+          <div class="hero-name-en">KEMMEI KIYOTA</div>
+          <div class="hero-name-ja">清田 兼明</div>
+          <div class="hero-title-item">株式会社清田自動車 <span class="role">代表取締役</span></div>
+          <div class="hero-title-item">合同会社WBT <span class="role">代表社員</span></div>
+          <div class="hero-tagline">情の伝播 — テクノロジーと人の温もりで、明日をもっと明るくする。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">v4 <small>660×780 / 縦長・腕組み残しタイト</small></div>
+      <div class="hero">
+        <div class="hero-photo"><img src="photo-v4.jpg" alt=""></div>
+        <div class="hero-content">
+          <div class="hero-name-en">KEMMEI KIYOTA</div>
+          <div class="hero-name-ja">清田 兼明</div>
+          <div class="hero-title-item">株式会社清田自動車 <span class="role">代表取締役</span></div>
+          <div class="hero-title-item">合同会社WBT <span class="role">代表社員</span></div>
+          <div class="hero-tagline">情の伝播 — テクノロジーと人の温もりで、明日をもっと明るくする。</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

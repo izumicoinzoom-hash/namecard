@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>米川 昌志 | Masashi Yonekawa</title>
+  <meta name="description" content="米川昌志 - 株式会社ヨネカワ 代表 / Don Espaco ～楽々酒唄～">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #c0392b;
+      --accent-dark: #96281b;
+      --accent-light: rgba(192, 57, 43, 0.08);
+      --accent-glow: rgba(192, 57, 43, 0.25);
+      --bg: #0a0a0a;
+      --bg-card: #141414;
+      --bg-card-hover: #1a1a1a;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.4);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(192, 57, 43, 0.2);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+    html::-webkit-scrollbar { display: none; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== Hero Section ===== */
+    .hero {
+      position: relative;
+      width: 100%;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+    }
+
+    .hero-photo {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+    }
+
+    .hero-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .hero-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 30%,
+        rgba(10, 10, 10, 0.3) 55%,
+        rgba(10, 10, 10, 0.85) 80%,
+        var(--bg) 100%
+      );
+      z-index: 2;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      padding: 0 24px 48px;
+    }
+
+    .hero-name-en {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .hero-name-ja {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .hero-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hero-title-item {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .hero-title-item .company {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .hero-title-item .role {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-left: 6px;
+    }
+
+    .hero-tagline {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      border-left: 2px solid var(--accent);
+      padding-left: 14px;
+    }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+
+    .hero-scroll-hint .scroll-line {
+      width: 1px;
+      height: 24px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ===== Section Common ===== */
+    .section {
+      padding: 64px 24px;
+      position: relative;
+    }
+
+    .section-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--border-accent), transparent);
+    }
+
+    /* ===== About Section ===== */
+    .about-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 2;
+    }
+
+    .about-philosophy {
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .about-philosophy-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .about-philosophy-text {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, var(--accent), #e74c3c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ===== Shop Card ===== */
+    .shop-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .shop-visual {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #2a0a0a, #1b0808);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .shop-visual-placeholder {
+      font-family: 'Inter', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: rgba(192, 57, 43, 0.4);
+    }
+
+    .shop-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .shop-info {
+      padding: 20px;
+    }
+
+    .shop-name {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+
+    .shop-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .shop-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .shop-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .shop-tag {
+      font-size: 10px;
+      color: var(--text-secondary);
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+    }
+
+    /* ===== SNS Grid ===== */
+    .sns-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .sns-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+    }
+
+    .sns-card:active {
+      transform: scale(0.97);
+      background: var(--bg-card-hover);
+    }
+
+    .sns-card .sns-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sns-card .sns-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .sns-card .sns-label {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .sns-card .sns-handle {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .sns-card.instagram .sns-icon {
+      background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    }
+    .sns-card.instagram .sns-icon svg { fill: #fff; }
+
+    .sns-card.x .sns-icon {
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .sns-card.x .sns-icon svg { fill: #fff; }
+
+    .sns-card.facebook .sns-icon {
+      background: #1877F2;
+    }
+    .sns-card.facebook .sns-icon svg { fill: #fff; }
+
+    .sns-card.line .sns-icon {
+      background: #06C755;
+    }
+    .sns-card.line .sns-icon svg { fill: #fff; }
+
+    .sns-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    /* ===== Contact ===== */
+    .contact-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: var(--bg-card);
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .contact-row .c-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .contact-row a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      text-align: center;
+      padding: 32px 24px 100px;
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.1em;
+    }
+
+    .footer .powered-by {
+      margin-top: 8px;
+      font-size: 9px;
+      color: rgba(255,255,255,0.2);
+    }
+
+    .footer .powered-by a {
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+    }
+
+    /* ===== Fixed Bottom CTA ===== */
+    .fixed-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0));
+      z-index: 99;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+    }
+
+    .fixed-bottom-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Noto Sans JP', sans-serif;
+      background: linear-gradient(135deg, var(--accent), #e74c3c);
+      color: #fff;
+      box-shadow: 0 2px 16px rgba(192, 57, 43, 0.35);
+      transition: all 0.2s ease;
+      -webkit-appearance: none;
+    }
+
+    .fixed-bottom-btn:active { transform: scale(0.97); }
+
+    .fixed-bottom-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+    }
+
+    /* ===== Scroll Reveal ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+
+    /* ===== Bright Series Ad Section ===== */
+    .bright-series-section {
+      padding-top: 32px;
+      padding-bottom: 24px;
+    }
+
+    .bright-series-lead {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    .bright-series-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bright-series-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .bright-series-card:active {
+      transform: scale(0.98);
+      background: var(--bg-card-hover);
+    }
+
+    .bs-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      border: 1px solid;
+    }
+
+    .bs-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .bs-name {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .bs-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    .bs-arrow {
+      color: var(--text-muted);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="hero-photo">
+    <!-- TODO: 写真が届いたら photo.jpg を配置 -->
+    <img src="photo.jpg" alt="米川 昌志" onerror="this.parentElement.style.background='linear-gradient(135deg, #1a1a1a, #0a0a0a)'">
+  </div>
+  <div class="hero-content">
+    <div class="hero-name-en reveal">Masashi Yonekawa</div>
+    <h1 class="hero-name-ja reveal reveal-d1">米川 昌志</h1>
+    <div class="hero-titles reveal reveal-d2">
+      <div class="hero-title-item">
+        <span class="company">株式会社ヨネカワ</span>
+        <span class="role">代表</span>
+      </div>
+      <div class="hero-title-item">
+        <span class="company">Don Espaco ～楽々酒唄～</span>
+        <span class="role">オーナー</span>
+      </div>
+    </div>
+    <p class="hero-tagline reveal reveal-d3">
+      感謝と縁で架ける信頼の和
+    </p>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ===== Shop ===== -->
+<section class="section">
+  <div class="section-label reveal">Shop</div>
+  <div class="shop-card reveal reveal-d1">
+    <div class="shop-visual">
+      <!-- TODO: 店舗写真が届いたら差し替え -->
+      <span class="shop-visual-placeholder">Don Espaco</span>
+    </div>
+    <div class="shop-info">
+      <div class="shop-name">Don Espaco ～楽々酒唄～</div>
+      <div class="shop-subtitle">熊本市中央区花畑町</div>
+      <div class="shop-desc">
+        <!-- TODO: 店舗紹介文が届いたら差し替え -->
+        熊本・花畑町の飲食店。楽しい酒と唄で、人と人をつなぐお店。
+      </div>
+      <div class="shop-tags">
+        <span class="shop-tag">飲食店</span>
+        <span class="shop-tag">花畑町</span>
+        <span class="shop-tag">熊本</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SNS ===== -->
+<section class="section">
+  <div class="section-label reveal">Social</div>
+  <div class="sns-grid reveal reveal-d1">
+
+    <!-- Instagram — TODO: アカウント名が届いたらhrefとhandleを更新 -->
+    <a href="#" class="sns-card instagram">
+      <div class="sns-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </div>
+      <div>
+        <div class="sns-label">Instagram</div>
+        <div class="sns-handle">@---</div>
+      </div>
+    </a>
+
+    <!-- TODO: 追加SNSがあればここに追加 -->
+
+  </div>
+</section>
+
+<!-- ===== About ===== -->
+<section class="section">
+  <div class="section-label reveal">About</div>
+  <div class="about-text reveal reveal-d1">
+    <!-- TODO: 自己紹介文が届いたら差し替え -->
+    熊本市中央区花畑町で飲食店「Don Espaco ～楽々酒唄～」を経営。<br>
+    熊本県中小企業家同友会 青年経営者部会 第19期 部会長。
+  </div>
+  <div class="about-philosophy reveal reveal-d2">
+    <div class="about-philosophy-label">座右の銘</div>
+    <div class="about-philosophy-text">感謝と縁で架ける信頼の和</div>
+  </div>
+</section>
+
+<!-- ===== Contact ===== -->
+<section class="section">
+  <div class="section-label reveal">Contact</div>
+  <div class="contact-grid reveal reveal-d1">
+    <div class="contact-row">
+      <span class="c-icon">📍</span>
+      <span>熊本市中央区花畑町</span>
+    </div>
+    <!-- TODO: 電話番号が届いたら差し替え -->
+    <div class="contact-row">
+      <span class="c-icon">📞</span>
+      <a href="tel:000-0000-0000">000-0000-0000</a>
+    </div>
+    <!-- TODO: メールアドレスが届いたら差し替え -->
+    <div class="contact-row">
+      <span class="c-icon">✉️</span>
+      <a href="mailto:example@example.com">example@example.com</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Bright Series ===== -->
+<section class="section bright-series-section">
+  <div class="section-label reveal">From WBT</div>
+  <p class="bright-series-lead reveal reveal-d1">中小企業の「明日」を、もっと明るく。</p>
+  <div class="bright-series-grid reveal reveal-d2">
+    <a href="https://withbt.com/brightboard-kouteikanri.html" target="_blank" rel="noopener" class="bright-series-card">
+      <div class="bs-icon" style="background: linear-gradient(135deg, rgba(52,152,219,0.15), rgba(52,152,219,0.05)); border-color: rgba(52,152,219,0.3);">
+        <span>📋</span>
+      </div>
+      <div class="bs-text">
+        <div class="bs-name">BrightBoard</div>
+        <div class="bs-desc">自動車業界の業務を、ひとつのボードに。</div>
+      </div>
+      <span class="bs-arrow">›</span>
+    </a>
+    <a href="https://withbt.com/training.html" target="_blank" rel="noopener" class="bright-series-card">
+      <div class="bs-icon" style="background: linear-gradient(135deg, rgba(241,196,15,0.15), rgba(241,196,15,0.05)); border-color: rgba(241,196,15,0.3);">
+        <span>🎓</span>
+      </div>
+      <div class="bs-text">
+        <div class="bs-name">BrightAcademy</div>
+        <div class="bs-desc">外国人材の日本語教育を、もっと身近に。</div>
+      </div>
+      <span class="bs-arrow">›</span>
+    </a>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<div class="footer">
+  &copy; 2026 Masashi Yonekawa
+  <div class="powered-by">Powered by <a href="https://withbt.com" target="_blank" rel="noopener">BrightCard</a></div>
+</div>
+
+<!-- ===== Fixed Bottom CTA ===== -->
+<div class="fixed-bottom">
+  <button onclick="saveContact()" class="fixed-bottom-btn">
+    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-1c0-2.66-5.33-4-8-4zm9-3h-2v-2c0-.55-.45-1-1-1s-1 .45-1 1v2h-2c-.55 0-1 .45-1 1s.45 1 1 1h2v2c0 .55.45 1 1 1s1-.45 1-1v-2h2c.55 0 1-.45 1-1s-.45-1-1-1z"/></svg>
+    連絡先に保存
+  </button>
+</div>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Save contact as vCard
+  function saveContact() {
+    const lines = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      'N:米川;昌志;;;',
+      'FN:米川 昌志',
+      'X-PHONETIC-LAST-NAME:ヨネカワ',
+      'X-PHONETIC-FIRST-NAME:マサシ',
+      'ORG:株式会社ヨネカワ;',
+      'TITLE:代表',
+      // TODO: 電話番号・メール・住所が届いたら更新
+      'TEL;TYPE=CELL,VOICE:000-0000-0000',
+      'EMAIL;TYPE=WORK:example@example.com',
+      'ADR;TYPE=WORK:;;花畑町;熊本市中央区;熊本県;;日本',
+      'NOTE:株式会社ヨネカワ 代表 / Don Espaco ～楽々酒唄～ オーナー',
+      'END:VCARD'
+    ];
+    const vcard = lines.join('\r\n');
+
+    const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'yonekawa_masashi.vcf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+</script>
+
+</body>
+</html>

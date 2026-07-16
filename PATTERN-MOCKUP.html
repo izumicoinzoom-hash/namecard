@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrightCard パターン検討モック（フレーム内配置）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@500;700;900&family=Inter:wght@400;500;600;700;800&family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --photo: url("members/kiyota-sample/photo.jpg");
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    font-family:'Noto Sans JP',sans-serif;
+    background:#0e0f12;
+    color:#e8e8ea;
+    padding:32px 20px 80px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page-head{ max-width:1200px; margin:0 auto 12px; }
+  .page-head h1{ font-size:20px; font-weight:800; letter-spacing:.04em; }
+  .page-head p{ font-size:13px; color:#9aa0a8; margin-top:8px; line-height:1.8; }
+  .page-head .note{ font-size:12px; color:#f0b429; margin-top:10px; }
+
+  /* SVGノイズ（生成背景の質感を仮に足す） */
+  .grain::after{
+    content:''; position:absolute; inset:0; z-index:3; pointer-events:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+    opacity:.05; mix-blend-mode:overlay;
+  }
+
+  .grid{
+    max-width:1200px; margin:24px auto 0;
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:28px;
+  }
+  .cell{ display:flex; flex-direction:column; gap:10px; }
+  .cell-head{ display:flex; align-items:baseline; gap:10px; }
+  .cell-head .n{ font-size:15px; font-weight:800; letter-spacing:.05em; }
+  .cell-head .t{ font-size:11px; color:#8b909a; }
+  .cell-sub{ font-size:11px; color:#7f858e; line-height:1.7; }
+
+  /* 端末フレーム */
+  .phone{
+    position:relative;
+    width:100%; aspect-ratio:9/17;
+    border-radius:26px; overflow:hidden;
+    background:#000;
+    box-shadow:0 20px 50px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.06);
+  }
+  .scene{ position:absolute; inset:0; overflow:hidden; }
+
+  /* 共通：フレーム内の顔写真 */
+  .portrait{
+    background-image:var(--photo);
+    background-size:cover; background-position:center 20%;
+  }
+
+  /* ===== 1. Bright（暗・シネマ／角丸縦フレーム／下寄せ） ===== */
+  .bright .scene{
+    background:#0a0a0a url("members/_assets/backgrounds/bright/01.png") center/cover no-repeat;
+  }
+  .bright .portrait{
+    position:absolute; top:8%; left:50%; transform:translateX(-50%);
+    width:64%; aspect-ratio:3/4; border-radius:18px;
+    box-shadow:0 20px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08);
+  }
+  .bright .body{ position:absolute; left:0; right:0; bottom:0; padding:22px 20px 26px;
+    background:linear-gradient(180deg,transparent,rgba(10,10,10,.9) 45%); z-index:4; }
+  .bright .en{ font:600 9px/1 'Inter'; letter-spacing:.28em; text-transform:uppercase; color:#f97316; }
+  .bright .ja{ font-size:24px; font-weight:900; letter-spacing:.08em; margin:8px 0 4px; }
+  .bright .pos{ font-size:11px; color:rgba(255,255,255,.72); line-height:1.7; }
+  .bright .tag{ font-size:10px; color:rgba(255,255,255,.6); margin-top:12px; padding-left:10px; border-left:2px solid #ea580c; line-height:1.7; }
+
+  /* ===== 2. Aura（柔光ボケ／円アバター／中央対称） ===== */
+  .aura .scene{
+    background:#f4f0f6 url("members/_assets/backgrounds/aura/01.png") center/cover no-repeat;
+  }
+  .aura .portrait{
+    position:absolute; top:16%; left:50%; transform:translateX(-50%);
+    width:52%; aspect-ratio:1/1; border-radius:50%;
+    box-shadow:0 16px 36px rgba(120,120,160,.28), 0 0 0 6px rgba(255,255,255,.7);
+  }
+  .aura .body{ position:absolute; left:0; right:0; top:56%; text-align:center; padding:0 22px; color:#2a2f3a; z-index:4; }
+  .aura .en{ font:600 9px/1 'Inter'; letter-spacing:.28em; text-transform:uppercase; color:#7b86a8; }
+  .aura .ja{ font-size:24px; font-weight:900; letter-spacing:.08em; margin:8px 0 6px; color:#20242e; }
+  .aura .pos{ font-size:11px; color:#5a6070; line-height:1.8; }
+  .aura .tag{ font-size:10px; color:#6c7385; margin-top:14px; line-height:1.8; }
+
+  /* ===== 3. Editorial（雑誌／左に縦フレーム・右に見出し／金線） ===== */
+  .editorial .scene{ background:#f7f4ee url("members/_assets/backgrounds/editorial/01.png") center/cover no-repeat; }
+  .editorial .portrait{
+    position:absolute; top:0; bottom:0; left:0; width:52%;
+    border-radius:0; background-position:center 18%;
+  }
+  .editorial .portrait::after{ content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent 70%,rgba(247,244,238,.6)); }
+  .editorial .body{ position:absolute; top:0; right:0; width:52%; height:100%; padding:26px 18px; z-index:4;
+    display:flex; flex-direction:column; justify-content:center; color:#26221c; }
+  .editorial .kicker{ font:600 8px/1 'Inter'; letter-spacing:.3em; text-transform:uppercase; color:#b08948; padding-bottom:8px; border-bottom:1px solid #cdb489; margin-bottom:12px; }
+  .editorial .ja{ font-family:'Noto Serif JP',serif; font-size:26px; font-weight:900; line-height:1.25; letter-spacing:.04em; }
+  .editorial .en{ font:500 9px/1 'Inter'; letter-spacing:.2em; color:#8a7a5e; margin-top:8px; }
+  .editorial .pos{ font-size:10px; color:#5c5347; line-height:1.9; margin-top:16px; }
+  .editorial .tag{ font-family:'Noto Serif JP',serif; font-size:11px; color:#3a352c; margin-top:14px; line-height:1.9; }
+
+  /* ===== 4. Washi（和紙／額装フレーム／墨・金箔） ===== */
+  .washi .scene{
+    background:#f3ecdd url("members/_assets/backgrounds/washi/01.png") center/cover no-repeat;
+  }
+  .washi .washi-tex{ display:none; }
+  .washi .frame{
+    position:absolute; top:10%; left:50%; transform:translateX(-50%);
+    width:60%; aspect-ratio:3/4; padding:8px; z-index:2;
+    background:#fbf7ee; box-shadow:0 12px 30px rgba(90,70,30,.25);
+    border:1px solid #c9ab6e; outline:3px solid #fbf7ee; outline-offset:-11px;
+  }
+  .washi .frame .portrait{ position:absolute; inset:8px; }
+  .washi .body{ position:absolute; left:0; right:0; bottom:0; padding:20px 20px 24px; text-align:center; z-index:4; color:#2b2620; }
+  .washi .seal{ display:inline-block; font-family:'Shippori Mincho',serif; font-size:11px; color:#fff; background:#a5341f; padding:4px 8px; border-radius:3px; letter-spacing:.15em; margin-bottom:10px; }
+  .washi .ja{ font-family:'Shippori Mincho','Noto Serif JP',serif; font-size:25px; font-weight:800; letter-spacing:.14em; }
+  .washi .pos{ font-size:10px; color:#5c5346; line-height:1.9; margin-top:8px; }
+  .washi .tag{ font-family:'Shippori Mincho',serif; font-size:11px; color:#403a30; margin-top:12px; line-height:1.9; }
+
+  /* ===== 5. Minimal（ほぼ無地／小さめ円／余白主体） ===== */
+  .minimal .scene{
+    background:#fbfbfc url("members/_assets/backgrounds/minimal/01.png") center/cover no-repeat;
+  }
+  .minimal .portrait{
+    position:absolute; top:14%; left:28px;
+    width:38%; aspect-ratio:1/1; border-radius:50%;
+    box-shadow:0 8px 22px rgba(0,0,0,.1);
+  }
+  .minimal .body{ position:absolute; left:28px; right:28px; top:46%; z-index:4; color:#14161a; }
+  .minimal .en{ font:600 9px/1 'Inter'; letter-spacing:.26em; text-transform:uppercase; color:#0284c7; }
+  .minimal .ja{ font-size:27px; font-weight:800; letter-spacing:.04em; margin:10px 0 8px; }
+  .minimal .rule{ width:34px; height:2px; background:#0284c7; margin:14px 0; }
+  .minimal .pos{ font-size:11px; color:#5b626c; line-height:1.9; }
+  .minimal .tag{ font-size:10px; color:#767c86; margin-top:16px; line-height:1.9; }
+
+  .badge-gen{ position:absolute; top:10px; left:10px; z-index:6;
+    font:600 8px/1 'Inter'; letter-spacing:.08em; color:#fff;
+    background:rgba(0,0,0,.42); padding:5px 8px; border-radius:6px; backdrop-filter:blur(4px); }
+  .editorial .badge-gen,.aura .badge-gen,.washi .badge-gen,.minimal .badge-gen{ background:rgba(0,0,0,.3); }
+</style>
+</head>
+<body>
+  <div class="page-head">
+    <h1>BrightCard — デザインパターン検討モック</h1>
+    <p>合成方式＝<strong>フレーム内配置</strong>（生成背景の上に枠付きで顔写真／切り抜き不要）。清田さんの実写真を全パターンに配置。フレームの形・レイアウト・世界観をパターンごとに変えています。</p>
+    <p class="note">※ 背景は各パターンの雰囲気をCSSで仮置きしたものです。本番は「AI生成画像」をこの背景枠に差し込みます（左上バッジ＝生成背景の置き場所）。</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- Bright -->
+    <div class="cell">
+      <div class="cell-head"><span class="n">1. Bright</span><span class="t">暗・シネマ</span></div>
+      <div class="cell-sub">角丸縦フレーム＋下寄せ。製造・整備・経営者向け。accent色の光を背景生成に効かせる。</div>
+      <div class="phone bright"><div class="scene grain">
+        <span class="badge-gen">AI背景</span>
+        <div class="portrait"></div>
+        <div class="body">
+          <div class="en">Kemmei Kiyota</div>
+          <div class="ja">清田 兼明</div>
+          <div class="pos">株式会社清田自動車 代表取締役<br>合同会社WBT 代表社員</div>
+          <div class="tag">情の伝播 — テクノロジーと人の温もりで、明日をもっと明るく。</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Aura -->
+    <div class="cell">
+      <div class="cell-head"><span class="n">2. Aura</span><span class="t">柔光ボケ</span></div>
+      <div class="cell-sub">円アバター＋中央対称。士業・サービス業向け。淡いグラデ／光の粒を生成。</div>
+      <div class="phone aura"><div class="scene grain">
+        <span class="badge-gen">AI背景</span>
+        <div class="portrait"></div>
+        <div class="body">
+          <div class="en">Kemmei Kiyota</div>
+          <div class="ja">清田 兼明</div>
+          <div class="pos">株式会社清田自動車 代表取締役<br>合同会社WBT 代表社員</div>
+          <div class="tag">情の伝播 — 明日をもっと明るく。</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Editorial -->
+    <div class="cell">
+      <div class="cell-head"><span class="n">3. Editorial</span><span class="t">雑誌</span></div>
+      <div class="cell-sub">左に縦フレーム・右に明朝見出し／金の細線。ブランド志向・こだわり派向け。</div>
+      <div class="phone editorial"><div class="scene">
+        <span class="badge-gen">AI背景</span>
+        <div class="portrait"></div>
+        <div class="body">
+          <div class="kicker">Business Card</div>
+          <div class="ja">清田 兼明</div>
+          <div class="en">Kemmei Kiyota</div>
+          <div class="pos">株式会社清田自動車 代表取締役<br>合同会社WBT 代表社員</div>
+          <div class="tag">情の伝播。</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Washi -->
+    <div class="cell">
+      <div class="cell-head"><span class="n">4. Washi</span><span class="t">和・伝統</span></div>
+      <div class="cell-sub">額装フレーム＋墨・金箔・落款。和／伝統／年配層向け。和紙テクスチャを生成。</div>
+      <div class="phone washi"><div class="scene">
+        <span class="badge-gen">AI背景</span>
+        <div class="washi-tex"></div>
+        <div class="frame"><div class="portrait"></div></div>
+        <div class="body">
+          <div class="seal">清田</div>
+          <div class="ja">清田 兼明</div>
+          <div class="pos">株式会社清田自動車 代表取締役<br>合同会社WBT 代表社員</div>
+          <div class="tag">情の伝播</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Minimal -->
+    <div class="cell">
+      <div class="cell-head"><span class="n">5. Minimal</span><span class="t">白・余白</span></div>
+      <div class="cell-sub">小さめ円＋余白主体・一点アクセント。IT・若手経営者・写真なし対応。</div>
+      <div class="phone minimal"><div class="scene">
+        <span class="badge-gen">AI背景</span>
+        <div class="portrait"></div>
+        <div class="body">
+          <div class="en">Kemmei Kiyota</div>
+          <div class="ja">清田 兼明</div>
+          <div class="rule"></div>
+          <div class="pos">株式会社清田自動車 代表取締役<br>合同会社WBT 代表社員</div>
+          <div class="tag">情の伝播 — 明日をもっと明るく。</div>
+        </div>
+      </div></div>
+    </div>
+
+  </div>
+</body>
+</html>
