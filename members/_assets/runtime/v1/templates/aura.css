@@ -150,3 +150,13 @@
 .reveal-d3 { transition-delay: 0.24s; }
 
 @media (min-width: 640px) { .bc-biz-grid { grid-template-columns: 1fr 1fr; } }
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .bc-root * {
+    animation: none !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .reveal-d1, .reveal-d2, .reveal-d3 { transition-delay: 0ms !important; }
+}
