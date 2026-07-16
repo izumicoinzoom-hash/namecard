@@ -36,7 +36,7 @@
   function resolveBackgroundSrc(bg) {
     if (!bg || typeof bg !== "object") return "";
     if (nonEmpty(bg.src)) return bg.src;
-    if (nonEmpty(bg.ref)) return "../_assets/backgrounds/" + bg.ref + ".png";
+    if (nonEmpty(bg.ref)) return "../_assets/backgrounds/" + bg.ref + ".webp";
     return "";
   }
 
