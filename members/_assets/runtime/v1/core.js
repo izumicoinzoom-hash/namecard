@@ -56,7 +56,7 @@
       errors.push("name.ja が空です（唯一の必須項目）");
     }
 
-    var validTemplates = ["bright", "aura", "editorial", "washi", "minimal", "onyx", "alloy", "kiln", "flux", "kinari"];
+    var validTemplates = ["bright", "aura", "editorial", "washi", "minimal", "onyx", "alloy", "kiln", "flux", "kinari", "owner-editorial"];
     var tpl = get(card, "design.template");
     if (!isNonEmpty(tpl)) {
       warnings.push("design.template が未指定です（既定の bright を使用）");

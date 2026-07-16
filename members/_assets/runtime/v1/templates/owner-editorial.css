@@ -1,0 +1,833 @@
+/**
+ * BrightCard runtime v1 — templates/owner-editorial.css
+ * 「Owner Editorial」テンプレ（清田兼明本人＝最上位オーナー版）。
+ * _proto.html の <style> を移植。全セレクタは .bc-owner-editorial 配下にスコープし、
+ * 他テンプレへ漏れないようにする。.bc-owner-editorial クラスは
+ * <html>（CSS変数注入・overscroll対策）とラッパーdiv（構造）の両方に付与される
+ * （owner-editorial.js参照）。backdrop-filterは使わない（_protoも不使用）。
+ * boot.js は design.template === "owner-editorial" のときのみこのCSSを読み込む。
+ */
+
+.bc-owner-editorial {
+  --bc-oe-bg: #0a0a0a;
+  --bc-oe-panel: #0c0c0b;
+  --bc-oe-ink: #f4f2ec;
+  --bc-oe-ink-mut: rgba(244, 242, 236, 0.66);
+  --bc-oe-ink-faint: rgba(244, 242, 236, 0.4);
+  --bc-oe-line: rgba(244, 242, 236, 0.13);
+  --bc-oe-line-soft: rgba(244, 242, 236, 0.07);
+  --bc-oe-serif: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", Georgia, serif;
+  --bc-oe-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bc-oe-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --bc-oe-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --bc-oe-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* --bc-oe-accent 系は owner-editorial.js が design.accent から注入 */
+  background: var(--bc-oe-bg);
+  color: var(--bc-oe-ink);
+}
+
+/* ラッパーdiv側の構造・下部白抜け防止（htmlにも同名クラスが付くため二重で黒地になる） */
+div.bc-owner-editorial {
+  position: relative;
+  min-height: 100svh;
+  font-family: var(--bc-oe-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+.bc-owner-editorial *,
+.bc-owner-editorial *::before,
+.bc-owner-editorial *::after {
+  box-sizing: border-box;
+}
+.bc-owner-editorial img,
+.bc-owner-editorial svg {
+  max-width: 100%;
+  display: block;
+}
+.bc-owner-editorial a {
+  color: var(--bc-oe-accent, #e8703a);
+  text-decoration: none;
+}
+.bc-owner-editorial a:focus-visible,
+.bc-owner-editorial button:focus-visible {
+  outline: 2px solid var(--bc-oe-accent, #e8703a);
+  outline-offset: 3px;
+}
+
+.bc-owner-editorial .bc-oe-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ===== Sticky-stack 章遷移 ===== */
+.bc-owner-editorial .bc-oe-stack {
+  position: relative;
+}
+.bc-owner-editorial .bc-oe-chapter {
+  position: sticky;
+  top: 0;
+  min-height: 100svh;
+  background: var(--bc-oe-panel);
+  border-top: 1px solid var(--bc-oe-line);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(64px + env(safe-area-inset-top, 0)) 24px calc(96px + env(safe-area-inset-bottom, 0));
+}
+.bc-owner-editorial .bc-oe-chapter.bc-oe-hero {
+  border-top: none;
+}
+.bc-owner-editorial .bc-oe-chap-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 34rem;
+  margin: 0 auto;
+  width: 100%;
+}
+.bc-owner-editorial .bc-oe-ghost {
+  position: absolute;
+  z-index: 0;
+  font-family: var(--bc-oe-serif);
+  font-weight: 600;
+  font-size: clamp(9rem, 44vw, 20rem);
+  line-height: 0.72;
+  color: var(--bc-oe-ink);
+  opacity: 0.05;
+  top: -0.06em;
+  right: -0.04em;
+  pointer-events: none;
+  user-select: none;
+}
+.bc-owner-editorial .bc-oe-kick {
+  font-family: var(--bc-oe-mono);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--bc-oe-accent, #e8703a);
+}
+
+/* ===== Hero — full-bleed 二重露光写真 + オーバーラップ氏名ロックアップ ===== */
+.bc-owner-editorial .bc-oe-hero {
+  justify-content: flex-end;
+}
+.bc-owner-editorial .bc-oe-hero .bc-oe-chap-inner {
+  padding-bottom: 2px;
+}
+.bc-owner-editorial .bc-oe-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  will-change: transform;
+  background: var(--bc-oe-bg);
+}
+.bc-owner-editorial .bc-oe-hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 18%;
+}
+.bc-owner-editorial .bc-oe-hero-monogram {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(120% 100% at 50% 20%, #1b1a17 0%, #0a0a0a 70%);
+  font-family: var(--bc-oe-serif);
+  font-weight: 800;
+  font-size: clamp(80px, 30vw, 220px);
+  color: var(--bc-oe-accent, #e8703a);
+}
+.bc-owner-editorial .bc-oe-hero-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--bc-oe-bg) 2%, rgba(10, 10, 10, 0.88) 19%, rgba(10, 10, 10, 0.3) 45%, rgba(10, 10, 10, 0) 66%),
+    radial-gradient(130% 66% at 62% 30%, var(--bc-oe-accent-light, rgba(232, 112, 58, 0.1)), transparent 60%);
+}
+.bc-owner-editorial .bc-oe-name-en {
+  font-family: var(--bc-oe-mono);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--bc-oe-accent, #e8703a);
+  margin: 0 0 8px;
+}
+.bc-owner-editorial .bc-oe-name-ja {
+  font-family: var(--bc-oe-serif);
+  font-weight: 600;
+  font-size: clamp(3rem, 17vw, 5rem);
+  line-height: 0.98;
+  letter-spacing: 0.02em;
+  margin: 0 0 6px;
+  text-wrap: balance;
+  text-shadow: 0 2px 34px rgba(0, 0, 0, 0.6);
+}
+.bc-owner-editorial .bc-oe-reading {
+  font-family: var(--bc-oe-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--bc-oe-ink-faint);
+  margin: 0 0 18px;
+}
+.bc-owner-editorial .bc-oe-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+.bc-owner-editorial .bc-oe-t {
+  font-size: 12.5px;
+  color: var(--bc-oe-ink-mut);
+}
+.bc-owner-editorial .bc-oe-t b {
+  color: var(--bc-oe-ink);
+  font-weight: 600;
+}
+.bc-owner-editorial .bc-oe-tag {
+  font-family: var(--bc-oe-serif);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--bc-oe-ink-mut);
+  line-height: 1.7;
+  border-left: 2px solid var(--bc-oe-accent, #e8703a);
+  padding-left: 14px;
+  margin: 0;
+  white-space: pre-wrap;
+}
+.bc-owner-editorial .bc-oe-scrollhint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(26px + env(safe-area-inset-bottom, 0));
+  text-align: center;
+  z-index: 2;
+  font-family: var(--bc-oe-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bc-oe-ink-faint);
+}
+.bc-owner-editorial .bc-oe-scrollhint span {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--bc-oe-accent, #e8703a);
+  animation: bc-oe-bob 1.8s var(--bc-oe-ease) infinite;
+}
+@keyframes bc-oe-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* ===== Philosophy ===== */
+.bc-owner-editorial .bc-oe-philo-label {
+  font-family: var(--bc-oe-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bc-oe-accent, #e8703a);
+  margin-top: 18px;
+}
+.bc-owner-editorial .bc-oe-pull {
+  font-family: var(--bc-oe-serif);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 7.5vw, 2.6rem);
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  text-wrap: balance;
+  margin: 18px 0 0;
+  white-space: pre-wrap;
+}
+
+/* ===== Ventures (credit lines) ===== */
+.bc-owner-editorial .bc-oe-credits {
+  margin-top: 22px;
+  border-top: 1px solid var(--bc-oe-line);
+}
+.bc-owner-editorial .bc-oe-credit {
+  display: block;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--bc-oe-line);
+  color: inherit;
+  position: relative;
+}
+.bc-owner-editorial .bc-oe-role {
+  font-family: var(--bc-oe-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bc-oe-accent, #e8703a);
+}
+.bc-owner-editorial .bc-oe-co {
+  font-family: var(--bc-oe-serif);
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-top: 6px;
+  line-height: 1.2;
+  color: var(--bc-oe-ink);
+}
+.bc-owner-editorial .bc-oe-arr {
+  color: var(--bc-oe-ink-faint);
+  font-size: 1rem;
+  margin-left: 8px;
+}
+.bc-owner-editorial .bc-oe-desc {
+  font-size: 12.5px;
+  color: var(--bc-oe-ink-mut);
+  margin-top: 6px;
+}
+
+/* ===== Works / Products（任意章） ===== */
+.bc-owner-editorial .bc-oe-lead {
+  color: var(--bc-oe-ink-mut);
+  font-size: 13.5px;
+  line-height: 1.8;
+  margin: 16px 0 0;
+  max-width: 28rem;
+}
+.bc-owner-editorial .bc-oe-products {
+  margin-top: 22px;
+  border-top: 1px solid var(--bc-oe-line);
+}
+.bc-owner-editorial .bc-oe-product {
+  display: block;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--bc-oe-line);
+  color: inherit;
+}
+.bc-owner-editorial .bc-oe-p-cat {
+  font-family: var(--bc-oe-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bc-oe-accent, #e8703a);
+}
+.bc-owner-editorial .bc-oe-p-name {
+  font-family: var(--bc-oe-serif);
+  font-weight: 600;
+  font-size: 1.35rem;
+  margin-top: 6px;
+  line-height: 1.2;
+  color: var(--bc-oe-ink);
+}
+.bc-owner-editorial .bc-oe-p-desc {
+  font-size: 12.5px;
+  color: var(--bc-oe-ink-mut);
+  margin-top: 6px;
+  line-height: 1.7;
+}
+.bc-owner-editorial .bc-oe-p-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+.bc-owner-editorial .bc-oe-p-price {
+  font-family: var(--bc-oe-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  color: var(--bc-oe-ink-mut);
+}
+.bc-owner-editorial .bc-oe-p-cta {
+  font-family: var(--bc-oe-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bc-oe-accent, #e8703a);
+  white-space: nowrap;
+}
+.bc-owner-editorial a.bc-oe-product:active .bc-oe-p-cta {
+  opacity: 0.7;
+}
+
+/* ===== Contact ===== */
+.bc-owner-editorial .bc-oe-rows {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--bc-oe-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.bc-owner-editorial .bc-oe-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px 15px;
+  background: var(--bc-oe-panel);
+  font-size: 13.5px;
+  color: var(--bc-oe-ink-mut);
+}
+.bc-owner-editorial .bc-oe-row svg {
+  width: 17px;
+  height: 17px;
+  color: var(--bc-oe-accent, #e8703a);
+  flex: 0 0 auto;
+}
+.bc-owner-editorial .bc-oe-row a {
+  color: var(--bc-oe-ink-mut);
+  border-bottom: 1px dashed rgba(244, 242, 236, 0.18);
+  word-break: break-all;
+}
+.bc-owner-editorial .bc-oe-sns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.bc-owner-editorial .bc-oe-sns a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 13px;
+  border: 1px solid var(--bc-oe-line);
+  border-radius: 999px;
+  font-family: var(--bc-oe-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bc-oe-ink-mut);
+  transition: color 0.2s, border-color 0.2s;
+}
+.bc-owner-editorial .bc-oe-sns a:active {
+  color: var(--bc-oe-accent, #e8703a);
+  border-color: var(--bc-oe-accent-dark, #c14e1e);
+}
+.bc-owner-editorial .bc-oe-sns svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+/* Primary Save button */
+.bc-owner-editorial .bc-oe-save-wrap {
+  margin-top: 26px;
+}
+.bc-owner-editorial .bc-oe-save,
+.bc-owner-editorial .bc-oe-ctabar button {
+  position: relative;
+  width: 100%;
+  min-height: 58px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--bc-oe-accent, #e8703a), var(--bc-oe-accent-dark, #c14e1e));
+  color: #0a0a0a;
+  font-family: var(--bc-oe-sans);
+  display: grid;
+  place-items: center;
+  -webkit-appearance: none;
+  box-shadow: 0 2px 20px var(--bc-oe-accent-glow, rgba(232, 112, 58, 0.24));
+  transition: transform 0.09s var(--bc-oe-ease), box-shadow 0.3s;
+}
+.bc-owner-editorial .bc-oe-ctabar button {
+  min-height: 48px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.bc-owner-editorial .bc-oe-save:active,
+.bc-owner-editorial .bc-oe-ctabar button:active {
+  transform: scale(0.97);
+}
+.bc-owner-editorial .bc-oe-layer {
+  grid-area: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 700;
+  transition: opacity 0.16s var(--bc-oe-ease);
+}
+.bc-owner-editorial .bc-oe-ctabar .bc-oe-layer {
+  font-size: 14px;
+}
+.bc-owner-editorial .bc-oe-layer svg {
+  width: 19px;
+  height: 19px;
+  fill: currentColor;
+}
+.bc-owner-editorial .bc-oe-l-idle {
+  opacity: 1;
+}
+.bc-owner-editorial .bc-oe-l-done {
+  opacity: 0;
+}
+.bc-owner-editorial [data-state="done"] {
+  background: #0a0a0a;
+  color: var(--bc-oe-ink);
+  box-shadow: 0 0 0 1px var(--bc-oe-accent, #e8703a), 0 0 26px var(--bc-oe-accent-glow, rgba(232, 112, 58, 0.28));
+}
+.bc-owner-editorial [data-state="done"] .bc-oe-l-idle {
+  opacity: 0;
+}
+.bc-owner-editorial [data-state="done"] .bc-oe-l-done {
+  opacity: 1;
+}
+.bc-owner-editorial .bc-oe-save-note {
+  font-size: 11.5px;
+  color: var(--bc-oe-ink-faint);
+  text-align: center;
+  margin-top: 10px;
+  opacity: 0;
+  transition: opacity 0.3s 0.1s;
+  height: 0;
+  overflow: hidden;
+}
+.bc-owner-editorial .bc-oe-save[data-state="done"] ~ .bc-oe-save-note {
+  opacity: 1;
+  height: auto;
+}
+
+.bc-owner-editorial .bc-oe-qr {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  border: 1px solid var(--bc-oe-line);
+  border-radius: 12px;
+}
+.bc-owner-editorial .bc-oe-qr-code {
+  width: 118px;
+  height: 118px;
+  flex: 0 0 auto;
+  padding: 9px;
+  background: #f4f2ec;
+  border-radius: 8px;
+  line-height: 0;
+}
+.bc-owner-editorial .bc-oe-qr-code svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  shape-rendering: crispEdges;
+}
+.bc-owner-editorial .bc-oe-cap {
+  font-size: 12px;
+  color: var(--bc-oe-ink-mut);
+}
+.bc-owner-editorial .bc-oe-cap b {
+  color: var(--bc-oe-accent, #e8703a);
+  font-family: var(--bc-oe-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: block;
+}
+
+.bc-owner-editorial .bc-oe-foot {
+  font-family: var(--bc-oe-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--bc-oe-ink-faint);
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--bc-oe-line-soft);
+}
+.bc-owner-editorial .bc-oe-powered-by {
+  margin-top: 6px;
+  font-size: 10px;
+}
+.bc-owner-editorial .bc-oe-powered-by a {
+  color: var(--bc-oe-ink-faint);
+}
+
+/* ===== 固定スクロールスパイ ===== */
+.bc-owner-editorial .bc-oe-spy {
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top, 0));
+  right: 16px;
+  z-index: 50;
+  font-family: var(--bc-oe-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--bc-oe-ink-faint);
+  mix-blend-mode: difference;
+}
+.bc-owner-editorial .bc-oe-spy b {
+  color: var(--bc-oe-ink);
+}
+
+/* ===== 離脱時に現れるCTAバー ===== */
+.bc-owner-editorial .bc-oe-ctabar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 55;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0));
+  background: var(--bc-oe-bg);
+  border-top: 1px solid var(--bc-oe-line);
+  transform: translateY(110%);
+  opacity: 0;
+  transition: transform 0.26s var(--bc-oe-ease-out), opacity 0.26s var(--bc-oe-ease-out);
+}
+.bc-owner-editorial .bc-oe-ctabar.bc-oe-show {
+  transform: none;
+  opacity: 1;
+}
+
+/* ===== 右下収納式SNSドック ===== */
+.bc-owner-editorial .bc-oe-social-dock {
+  position: fixed;
+  z-index: 56;
+  right: max(14px, calc(50vw - 17rem + 14px));
+  bottom: calc(84px + env(safe-area-inset-bottom, 0));
+  transform: translateX(150%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s var(--bc-oe-ease-out), opacity 0.3s var(--bc-oe-ease-out);
+}
+.bc-owner-editorial .bc-oe-social-dock.bc-oe-show {
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+}
+.bc-owner-editorial .bc-oe-social-links {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+.bc-owner-editorial .bc-oe-social-link {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  text-decoration: none;
+  color: var(--bc-oe-brand-fg, #fff);
+  background: var(--bc-oe-brand-bg, rgba(244, 242, 236, 0.05));
+  border: 1px solid var(--bc-oe-brand-bg, var(--bc-oe-line));
+  opacity: 0;
+  transform: translateY(14px) scale(0.6);
+  pointer-events: none;
+  transform-origin: 50% 120%;
+  transition: transform 0.24s var(--bc-oe-ease-out), opacity 0.24s var(--bc-oe-ease-out), filter 0.2s var(--bc-oe-ease);
+}
+.bc-owner-editorial .bc-oe-social-dock.bc-oe-open .bc-oe-social-link {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.bc-owner-editorial .bc-oe-social-dock.bc-oe-open .bc-oe-social-link:nth-child(3) {
+  transition-delay: 0.02s;
+}
+.bc-owner-editorial .bc-oe-social-dock.bc-oe-open .bc-oe-social-link:nth-child(2) {
+  transition-delay: 0.07s;
+}
+.bc-owner-editorial .bc-oe-social-dock.bc-oe-open .bc-oe-social-link:nth-child(1) {
+  transition-delay: 0.12s;
+}
+.bc-owner-editorial .bc-oe-social-link:active {
+  filter: brightness(1.14);
+}
+.bc-owner-editorial .bc-oe-social-link svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  display: block;
+}
+.bc-owner-editorial .bc-oe-social-abbr {
+  font-family: var(--bc-oe-mono);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  opacity: 0.92;
+  margin-top: 1px;
+}
+.bc-owner-editorial .bc-oe-social-toggle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-appearance: none;
+  border: 1px solid var(--bc-oe-accent-dark, #c14e1e);
+  display: grid;
+  place-items: center;
+  color: var(--bc-oe-accent, #e8703a);
+  background: var(--bc-oe-accent-light, rgba(232, 112, 58, 0.14));
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.42);
+  transition: transform 0.12s var(--bc-oe-ease), background 0.2s var(--bc-oe-ease), color 0.2s var(--bc-oe-ease), border-color 0.2s var(--bc-oe-ease);
+}
+.bc-owner-editorial .bc-oe-social-toggle:active {
+  transform: scale(0.94);
+}
+.bc-owner-editorial .bc-oe-tg {
+  grid-area: 1 / 1;
+  display: flex;
+  transition: opacity 0.2s var(--bc-oe-ease), transform 0.3s var(--bc-oe-ease-out);
+}
+.bc-owner-editorial .bc-oe-tg svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bc-owner-editorial .bc-oe-tg-close {
+  opacity: 0;
+  transform: rotate(-90deg);
+}
+.bc-owner-editorial .bc-oe-social-dock.bc-oe-open .bc-oe-social-toggle {
+  color: var(--bc-oe-ink);
+  background: rgba(244, 242, 236, 0.08);
+  border-color: var(--bc-oe-line);
+}
+.bc-owner-editorial .bc-oe-social-dock.bc-oe-open .bc-oe-tg-open {
+  opacity: 0;
+  transform: rotate(90deg);
+}
+.bc-owner-editorial .bc-oe-social-dock.bc-oe-open .bc-oe-tg-close {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===== Reveal（スクロール発火の汎用フォールバック） ===== */
+.bc-owner-editorial .bc-oe-rv {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.7s var(--bc-oe-ease), transform 0.7s var(--bc-oe-ease);
+}
+.bc-owner-editorial .bc-oe-rv.bc-oe-in {
+  opacity: 1;
+  transform: none;
+}
+.bc-owner-editorial .bc-oe-rv.bc-oe-d1 {
+  transition-delay: 0.09s;
+}
+.bc-owner-editorial .bc-oe-rv.bc-oe-d2 {
+  transition-delay: 0.18s;
+}
+.bc-owner-editorial .bc-oe-rv.bc-oe-d3 {
+  transition-delay: 0.27s;
+}
+
+/* ===== モーション層 — reduced-motion 非設定 & 対応ブラウザのみ ===== */
+@media (prefers-reduced-motion: no-preference) {
+  .bc-owner-editorial .bc-oe-hero-photo {
+    animation: bc-oe-photoSettle 1.5s var(--bc-oe-ease-out) both;
+  }
+  @keyframes bc-oe-photoSettle {
+    from { transform: scale(1.08); opacity: 0; }
+    42% { opacity: 1; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .bc-owner-editorial .bc-oe-hero .bc-oe-kick-en {
+    animation: bc-oe-trackIn 0.9s var(--bc-oe-ease-out) 0.55s both;
+  }
+  @keyframes bc-oe-trackIn {
+    from { letter-spacing: 0.62em; opacity: 0; }
+    to { letter-spacing: 0.28em; opacity: 1; }
+  }
+  .bc-owner-editorial .bc-oe-hero .bc-oe-name-ja {
+    animation: bc-oe-carveIn 1s var(--bc-oe-ease-out) 0.68s both;
+  }
+  @keyframes bc-oe-carveIn {
+    from { clip-path: inset(0 0 106% 0); transform: translateY(12px); }
+    to { clip-path: inset(0 0 0 0); transform: none; }
+  }
+  .bc-owner-editorial .bc-oe-hero .bc-oe-fade-up {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: bc-oe-heroIn 0.8s var(--bc-oe-ease-out) both;
+  }
+  .bc-owner-editorial .bc-oe-hero .bc-oe-fu1 { animation-delay: 0.9s; }
+  .bc-owner-editorial .bc-oe-hero .bc-oe-fu2 { animation-delay: 1.02s; }
+  .bc-owner-editorial .bc-oe-hero .bc-oe-fu3 { animation-delay: 1.14s; }
+  @keyframes bc-oe-heroIn {
+    to { opacity: 1; transform: none; }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .bc-owner-editorial .bc-oe-hero .bc-oe-chap-inner {
+      animation: bc-oe-heroRecede linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 88svh;
+    }
+    @keyframes bc-oe-heroRecede {
+      to { transform: translateY(-26px) scale(0.975); opacity: 0.28; }
+    }
+    .bc-owner-editorial .bc-oe-hero .bc-oe-ghost {
+      animation: bc-oe-ghostDrift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100svh;
+    }
+    @keyframes bc-oe-ghostDrift {
+      to { transform: translateY(-40px); }
+    }
+    .bc-owner-editorial .bc-oe-hero-media {
+      animation: bc-oe-mediaRecede linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100svh;
+    }
+    @keyframes bc-oe-mediaRecede {
+      to { transform: scale(1.05) translateY(2.5%); opacity: 0.42; }
+    }
+  }
+}
+
+html.bc-owner-editorial {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bc-owner-editorial *,
+  .bc-owner-editorial *::before,
+  .bc-owner-editorial *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .bc-owner-editorial .bc-oe-rv {
+    opacity: 1;
+    transform: none;
+  }
+  .bc-owner-editorial .bc-oe-ctabar {
+    transition: none;
+  }
+  .bc-owner-editorial .bc-oe-scrollhint span {
+    animation: none;
+  }
+}
+/* JS二重防御: matchMedia変化時に data-reduced をラッパーdivへ付与（_proto踏襲） */
+.bc-owner-editorial[data-reduced] *,
+.bc-owner-editorial[data-reduced] *::before,
+.bc-owner-editorial[data-reduced] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+.bc-owner-editorial[data-reduced] .bc-oe-rv {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===== 390px幅での水平スクロール防止 ===== */
+@media (max-width: 390px) {
+  .bc-owner-editorial .bc-oe-name-ja {
+    font-size: clamp(2.6rem, 15vw, 5rem);
+  }
+}

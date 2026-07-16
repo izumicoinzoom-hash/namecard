@@ -1,0 +1,99 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BrightCard カタログ — 10デザイン（C正本ランタイム）</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;
+  font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+  -webkit-font-smoothing:antialiased;color:#fff}
+.stage{position:fixed;inset:0;top:52px;display:flex;overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.stage::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;height:100%;scroll-snap-align:center;position:relative}
+.slide iframe{width:100%;height:100%;border:0;display:block;background:#0a0a0a}
+.tabs{position:fixed;top:0;left:0;right:0;height:52px;z-index:20;display:flex;align-items:center;
+  gap:8px;padding:0 12px;background:rgba(8,8,9,.92);border-bottom:1px solid rgba(255,255,255,.1)}
+.tabs .ttl{font-size:11px;letter-spacing:.16em;font-weight:700;opacity:.72;margin-right:auto}
+.tabs .ttl small{font-weight:500;opacity:.6;letter-spacing:.04em}
+.tab{border:1px solid rgba(255,255,255,.18);background:transparent;color:#fff;
+  font-size:12px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;line-height:1.2}
+.tab small{display:block;font-size:9px;opacity:.6;font-weight:500}
+.tab.on{background:#fff;color:#111;border-color:#fff}
+.nav{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  z-index:15;display:flex;align-items:center;gap:12px;background:rgba(10,10,10,.6);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.14)}
+.arrow{width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.14);
+  color:#fff;font-size:15px;cursor:pointer;display:grid;place-items:center;flex:none}
+.nlabel{font-size:12px;font-weight:600;letter-spacing:.03em;min-width:86px;text-align:center}
+.dots{display:flex;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.32);transition:.25s}
+.dot.on{background:#fff;width:18px;border-radius:3px}
+</style>
+
+<div class="tabs">
+  <span class="ttl">BRIGHTCARD カタログ<small> ／ C正本ランタイム・10デザイン</small></span>
+  <button class="tab on" id="tabC" data-k="C">C系 生成背景<small>bright系5</small></button>
+  <button class="tab" id="tabB" data-k="B">B系 撮影名刺<small>onyx系5</small></button>
+</div>
+<div class="stage" id="stage"></div>
+<div class="nav">
+  <button class="arrow" id="prev" aria-label="前">‹</button>
+  <span class="nlabel" id="nlabel"></span>
+  <div class="dots" id="dots"></div>
+  <button class="arrow" id="next" aria-label="次">›</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var BASE="/digital-namecard/members/";
+  var GROUPS={
+    C:[
+      {dir:"kiyota-sample/", name:"Bright"},
+      {dir:"cmp-aura/",      name:"Aura"},
+      {dir:"cmp-editorial/", name:"Editorial"},
+      {dir:"cmp-washi/",     name:"Washi"},
+      {dir:"cmp-minimal/",   name:"Minimal"}
+    ],
+    B:[
+      {dir:"cmp-onyx/",   name:"Onyx"},
+      {dir:"cmp-alloy/",  name:"Alloy"},
+      {dir:"cmp-kiln/",   name:"Kiln"},
+      {dir:"cmp-flux/",   name:"Flux"},
+      {dir:"cmp-kinari/", name:"Kinari"}
+    ]
+  };
+  var stage=document.getElementById("stage"),dotsWrap=document.getElementById("dots"),nlabel=document.getElementById("nlabel");
+  var curKey="C",cur=0;
+  function build(key){
+    curKey=key;cur=0;stage.innerHTML="";dotsWrap.innerHTML="";
+    GROUPS[key].forEach(function(d,i){
+      var s=document.createElement("div");s.className="slide";
+      var f=document.createElement("iframe");f.src=BASE+d.dir;f.loading=i===0?"eager":"lazy";f.title=d.name;
+      s.appendChild(f);stage.appendChild(s);
+      var dot=document.createElement("span");dot.className="dot"+(i===0?" on":"");dotsWrap.appendChild(dot);
+    });
+    stage.scrollLeft=0;setLabel(0);
+  }
+  function setLabel(i){nlabel.textContent=GROUPS[curKey][i].name;
+    [].forEach.call(dotsWrap.children,function(d,j){d.classList.toggle("on",j===i);});}
+  function setActive(i){if(i===cur)return;cur=i;setLabel(i);}
+  document.getElementById("tabC").addEventListener("click",function(){tab("C");});
+  document.getElementById("tabB").addEventListener("click",function(){tab("B");});
+  function tab(key){if(key===curKey)return;
+    document.getElementById("tabC").classList.toggle("on",key==="C");
+    document.getElementById("tabB").classList.toggle("on",key==="B");build(key);}
+  var raf=null;
+  stage.addEventListener("scroll",function(){if(raf)return;
+    raf=requestAnimationFrame(function(){raf=null;
+      var i=Math.round(stage.scrollLeft/stage.clientWidth);i=Math.max(0,Math.min(4,i));setActive(i);});});
+  function goTo(i){i=Math.max(0,Math.min(4,i));stage.scrollTo({left:i*stage.clientWidth,behavior:"smooth"});}
+  document.getElementById("prev").addEventListener("click",function(){goTo(cur-1);});
+  document.getElementById("next").addEventListener("click",function(){goTo(cur+1);});
+  document.addEventListener("keydown",function(e){
+    if(e.key==="ArrowRight")goTo(cur+1);if(e.key==="ArrowLeft")goTo(cur-1);
+    if(e.key==="c"||e.key==="C")tab("C");if(e.key==="b"||e.key==="B")tab("B");});
+  build("C");
+})();
+</script>
