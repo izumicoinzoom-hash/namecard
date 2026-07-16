@@ -1,0 +1,391 @@
+/**
+ * BrightCard runtime v1 — templates/kinari.css
+ * 「Kinari（和紙）」テンプレ（撮影された物理名刺のスキャン演出 → 縦書きヒーロー → Story → Save & Connect）。
+ * onyx.css と同構造・同作法。トークンとhero部のみ
+ * brightcard/preview/theme-washi.html の <style>（生成り・藍accent・縦書き）を移植。
+ * 全セレクタは bc-kinari- プレフィックス付きクラス名でスコープし、他テンプレへ漏れないようにする。
+ * boot.js は design.template === "kinari" のときのみこのCSSを読み込む。
+ */
+
+html.bc-kinari {
+  --bc-kinari-bg: #eae4d6;
+  --bc-kinari-panel: #f2ecde;
+  --bc-kinari-panel-2: #e0d8c6;
+  --bc-kinari-ink: #23201a;
+  --bc-kinari-ink-dim: #6a6355;
+  --bc-kinari-ink-faint: #9a9280;
+  --bc-kinari-line: rgba(35, 32, 26, 0.14);
+  --bc-kinari-serif: "Shippori Mincho B1", serif;
+  --bc-kinari-sans: "Space Grotesk", system-ui, sans-serif;
+  /* --bc-kinari-accent 系は kinari.js が design.accent から注入 */
+}
+
+.bc-kinari-root {
+  position: relative;
+  background: var(--bc-kinari-bg);
+  color: var(--bc-kinari-ink);
+  font-family: var(--bc-kinari-sans);
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
+}
+.bc-kinari-root,
+.bc-kinari-root *,
+.bc-kinari-fab-wrap,
+.bc-kinari-fab-wrap *,
+.bc-kinari-toast {
+  box-sizing: border-box;
+}
+.bc-kinari-root img,
+.bc-kinari-root svg {
+  max-width: 100%;
+  display: block;
+}
+
+.bc-kinari-noise {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.bc-kinari-app {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 20px;
+  overflow: hidden;
+}
+.bc-kinari-section { padding: 64px 0; position: relative; }
+.bc-kinari-sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 22px; }
+.bc-kinari-chapno { font-family: var(--bc-kinari-sans); font-weight: 600; font-size: 12px; letter-spacing: 0.28em; color: var(--bc-kinari-accent, #35506b); }
+.bc-kinari-sec-label { font-family: var(--bc-kinari-sans); font-weight: 500; font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--bc-kinari-ink-faint); }
+.bc-kinari-rule { height: 1px; background: var(--bc-kinari-line); border: 0; margin: 0; }
+
+.bc-kinari-ghost {
+  position: absolute;
+  top: 8px;
+  right: -4px;
+  font-family: var(--bc-kinari-serif);
+  font-weight: 800;
+  font-size: clamp(64px, 26vw, 120px);
+  line-height: 1;
+  color: rgba(35, 32, 26, 0.045);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+/* ============ 00 intake ============ */
+.bc-kinari-intake-copy { color: var(--bc-kinari-ink-dim); font-size: 14px; margin: 4px 0 24px; }
+/* 撮影フレーム（藍染めの布の上に和紙の名刺が置かれ、カメラで捉えている表現。紺地） */
+.bc-kinari-capture {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--bc-kinari-line);
+  border-radius: 16px;
+  padding: 30px 24px;
+  background: radial-gradient(130% 100% at 50% -10%, #33465b 0%, #1e2b3a 70%);
+  box-shadow: 0 22px 46px -26px rgba(30, 25, 15, 0.45);
+}
+.bc-kinari-capture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 16px;
+  box-shadow: inset 0 0 60px 8px rgba(0, 0, 0, 0.4);
+}
+.bc-kinari-reticle { position: absolute; width: 20px; height: 20px; border: 2px solid #7f9cbd; opacity: 0.9; pointer-events: none; z-index: 3; }
+.bc-kinari-reticle-tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
+.bc-kinari-reticle-tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
+.bc-kinari-reticle-bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
+.bc-kinari-reticle-br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+
+/* 物理名刺（和紙・生成りの紙にわずかに傾けて置かれた実物感） */
+.bc-kinari-meishi {
+  position: relative;
+  z-index: 2;
+  transform: rotate(-1.5deg);
+  border-radius: 6px;
+  padding: 18px 18px 16px 22px;
+  background: linear-gradient(135deg, #f6f1e6 0%, #ece3d1 100%);
+  color: #23201a;
+  box-shadow:
+    0 24px 40px -18px rgba(15, 12, 6, 0.5),
+    0 2px 4px rgba(15, 12, 6, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.bc-kinari-meishi::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23p)'/></svg>");
+}
+.bc-kinari-m-accent { position: absolute; top: 0; left: 0; bottom: 0; width: 5px; border-radius: 6px 0 0 6px; background: var(--bc-kinari-accent, #35506b); }
+.bc-kinari-m-role { font-size: 9.5px; letter-spacing: 0.18em; color: #8a8474; text-transform: uppercase; }
+.bc-kinari-m-name { font-family: var(--bc-kinari-serif); font-weight: 700; font-size: 25px; color: #23201a; margin: 5px 0 1px; letter-spacing: 0.04em; }
+.bc-kinari-m-en { font-size: 10px; letter-spacing: 0.22em; color: #7a7566; }
+.bc-kinari-m-div { height: 1px; background: rgba(35, 32, 26, 0.14); margin: 13px 0 10px; }
+.bc-kinari-m-line { display: flex; gap: 7px; font-size: 10.5px; color: #4a453a; letter-spacing: 0.01em; word-break: break-all; margin-top: 4px; line-height: 1.4; }
+.bc-kinari-mk { color: #9a9384; flex: none; width: 38px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 8.5px; padding-top: 1px; }
+
+.bc-kinari-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  z-index: 4;
+  background: linear-gradient(90deg, transparent, #7f9cbd, transparent);
+  box-shadow: 0 0 16px 3px rgba(127, 156, 189, 0.65);
+  opacity: 0;
+  transform: translateY(0);
+}
+.bc-kinari-capture.bc-kinari-scanning .bc-kinari-scan { animation: bc-kinari-scan 1.7s ease-in-out 1 forwards; }
+@keyframes bc-kinari-scan {
+  0% { opacity: 0; transform: translateY(6px); }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(200px); }
+}
+
+.bc-kinari-extract { margin-top: 20px; border: 1px solid var(--bc-kinari-line); border-radius: 14px; background: var(--bc-kinari-panel); overflow: hidden; }
+.bc-kinari-extract-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--bc-kinari-line); }
+.bc-kinari-extract-h .bc-kinari-t { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bc-kinari-ink-faint); }
+.bc-kinari-extract-h .bc-kinari-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--bc-kinari-accent, #35506b); box-shadow: 0 0 10px var(--bc-kinari-accent, #35506b); }
+.bc-kinari-field {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-top: 1px solid rgba(35, 32, 26, 0.08);
+  opacity: 0;
+  transform: translateY(8px);
+}
+.bc-kinari-field:first-child { border-top: 0; }
+.bc-kinari-field.bc-kinari-on { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+.bc-kinari-field .bc-kinari-k { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc-kinari-ink-faint); }
+.bc-kinari-field .bc-kinari-v { font-size: 13.5px; color: var(--bc-kinari-ink); word-break: break-all; font-family: var(--bc-kinari-serif); font-weight: 500; }
+.bc-kinari-field .bc-kinari-c { font-family: var(--bc-kinari-sans); font-weight: 600; font-size: 11px; color: var(--bc-kinari-accent, #35506b); white-space: nowrap; justify-self: end; font-variant-numeric: tabular-nums; }
+
+/* ============ 01 portrait（縦書きヒーロー） ============ */
+.bc-kinari-hero { padding-top: 40px; }
+.bc-kinari-tag { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--bc-kinari-ink-faint); margin-bottom: 18px; }
+
+.bc-kinari-avatar-wrap {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--bc-kinari-accent, #35506b);
+  box-shadow: 0 12px 28px -14px rgba(35, 32, 26, 0.5);
+  margin: 6px 0 22px;
+  background: var(--bc-kinari-panel-2);
+}
+.bc-kinari-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.bc-kinari-monogram {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--bc-kinari-serif);
+  font-weight: 800;
+  font-size: 34px;
+  color: var(--bc-kinari-accent, #35506b);
+}
+
+/* 縦書きブロック：右から 名 → よみ → tagline（DOMはtagline/yomi/nameの順にrow-reverseで配置）。
+   高さは svh で制御し、390px幅でもはみ出さない */
+.bc-kinari-tategaki {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  gap: 18px;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+.bc-kinari-name-ja {
+  font-family: var(--bc-kinari-serif);
+  font-weight: 800;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: clamp(34px, 12.5vw, 56px);
+  line-height: 1.08;
+  margin: 0;
+  letter-spacing: 0.08em;
+  max-height: 58svh;
+  color: var(--bc-kinari-ink);
+}
+.bc-kinari-yomi {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 12px;
+  letter-spacing: 0.32em;
+  color: var(--bc-kinari-ink-faint);
+  margin: 0;
+  margin-top: 4px;
+  max-height: 58svh;
+}
+.bc-kinari-tagline {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--bc-kinari-serif);
+  font-weight: 600;
+  font-size: 15.5px;
+  line-height: 1.95;
+  color: var(--bc-kinari-accent, #35506b);
+  margin: 0;
+  max-height: 58svh;
+  letter-spacing: 0.08em;
+}
+.bc-kinari-hero-seal-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+.bc-kinari-seal {
+  width: 42px;
+  height: 42px;
+  border-radius: 0;
+  flex: none;
+  background: var(--bc-kinari-accent, #35506b);
+  color: #f4efe4;
+  display: grid;
+  place-items: center;
+  font-family: var(--bc-kinari-serif);
+  font-weight: 700;
+  font-size: 19px;
+  box-shadow: 0 8px 20px -6px rgba(53, 80, 107, 0.4);
+}
+.bc-kinari-name-en { font-size: 13px; letter-spacing: 0.3em; color: var(--bc-kinari-ink-dim); margin-top: 20px; text-transform: uppercase; }
+.bc-kinari-role-line { font-family: var(--bc-kinari-serif); font-size: 15px; color: var(--bc-kinari-ink-dim); margin-top: 10px; }
+
+@media (max-width: 360px) {
+  .bc-kinari-name-ja { font-size: clamp(30px, 11vw, 46px); }
+  .bc-kinari-yomi, .bc-kinari-tagline { max-height: 54svh; }
+}
+
+/* ============ 02 story ============ */
+.bc-kinari-bio { font-size: 14.5px; color: var(--bc-kinari-ink-dim); line-height: 1.9; margin-top: 20px; }
+.bc-kinari-proofs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
+.bc-kinari-proof { border: 1px solid var(--bc-kinari-line); border-radius: 12px; background: var(--bc-kinari-panel); padding: 16px 14px; }
+.bc-kinari-proof .bc-kinari-num { font-family: var(--bc-kinari-serif); font-weight: 800; font-size: 34px; line-height: 1; color: var(--bc-kinari-accent, #35506b); font-variant-numeric: tabular-nums; display: block; }
+.bc-kinari-proof .bc-kinari-lbl { font-size: 11.5px; color: var(--bc-kinari-ink-dim); margin-top: 8px; line-height: 1.5; }
+
+/* ============ 03 save ============ */
+.bc-kinari-contact { border: 1px solid var(--bc-kinari-line); border-radius: 14px; background: var(--bc-kinari-panel); overflow: hidden; margin-top: 20px; }
+.bc-kinari-crow { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-top: 1px solid rgba(35, 32, 26, 0.08); color: var(--bc-kinari-ink); text-decoration: none; }
+.bc-kinari-crow:first-child { border-top: 0; }
+.bc-kinari-crow .bc-kinari-ck { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc-kinari-ink-faint); width: 58px; flex: none; }
+.bc-kinari-crow .bc-kinari-cv { font-size: 13.5px; color: var(--bc-kinari-ink); word-break: break-all; font-family: var(--bc-kinari-serif); }
+.bc-kinari-btns { display: grid; gap: 10px; margin-top: 20px; }
+.bc-kinari-btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: var(--bc-kinari-sans);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+.bc-kinari-btn-primary { background: var(--bc-kinari-accent, #35506b); color: #eef2f6; }
+.bc-kinari-btn-ghost { background: transparent; color: var(--bc-kinari-ink); border: 1px solid var(--bc-kinari-line); }
+
+.bc-kinari-foot { text-align: center; color: var(--bc-kinari-ink-faint); font-size: 11px; letter-spacing: 0.06em; padding: 40px 0 120px; }
+.bc-kinari-powered-by { margin-top: 8px; font-size: 10px; letter-spacing: 0.02em; }
+.bc-kinari-powered-by a { color: var(--bc-kinari-ink-faint); }
+
+/* ============ SNS FAB ============ */
+.bc-kinari-fab-wrap {
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 12px;
+}
+.bc-kinari-fab-main {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 0;
+  cursor: pointer;
+  background: var(--bc-kinari-accent, #35506b);
+  color: #eef2f6;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 30px -8px rgba(53, 80, 107, 0.45);
+  transition: transform 0.3s ease;
+}
+.bc-kinari-fab-main svg { width: 24px; height: 24px; }
+.bc-kinari-fab-wrap[data-open="true"] .bc-kinari-fab-main { transform: rotate(135deg); }
+.bc-kinari-chan {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  box-shadow: 0 8px 20px -6px rgba(35, 32, 26, 0.35);
+  opacity: 0;
+  transform: translateY(14px) scale(0.85);
+  pointer-events: none;
+  transition: opacity 0.32s ease, transform 0.32s ease;
+}
+.bc-kinari-chan svg { width: 24px; height: 24px; }
+.bc-kinari-fab-wrap[data-open="true"] .bc-kinari-chan { opacity: 1; transform: none; pointer-events: auto; }
+.bc-kinari-fab-wrap[data-open="true"] .bc-kinari-chan:nth-child(2) { transition-delay: 0.02s; }
+.bc-kinari-fab-wrap[data-open="true"] .bc-kinari-chan:nth-child(3) { transition-delay: 0.06s; }
+.bc-kinari-fab-wrap[data-open="true"] .bc-kinari-chan:nth-child(4) { transition-delay: 0.1s; }
+
+/* ============ toast ============ */
+.bc-kinari-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translate(-50%, 20px);
+  background: var(--bc-kinari-panel-2);
+  color: var(--bc-kinari-ink);
+  border: 1px solid var(--bc-kinari-line);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+  max-width: 88vw;
+  text-align: center;
+}
+.bc-kinari-toast.bc-kinari-show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ============ reduced motion ============ */
+@media (prefers-reduced-motion: reduce) {
+  .bc-kinari-root *,
+  .bc-kinari-fab-wrap *,
+  .bc-kinari-toast {
+    animation: none !important;
+    transition-duration: 0.001ms !important;
+  }
+  .bc-kinari-field { opacity: 1; transform: none; }
+  .bc-kinari-chan { transition-delay: 0ms !important; }
+  .bc-kinari-scan { display: none; }
+}

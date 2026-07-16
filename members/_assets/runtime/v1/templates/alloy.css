@@ -1,0 +1,358 @@
+/**
+ * BrightCard runtime v1 — templates/alloy.css
+ * 「Alloy」テンプレ（ブラッシュドアルミの物理名刺スキャン演出 → 円形ポートレート → Story → Save & Connect）。
+ * brightcard/preview/theme-alloy.html の <style> を移植。
+ * 全セレクタは bc-alloy- プレフィックス付きクラス名でスコープし、他テンプレへ漏れないようにする。
+ * boot.js は design.template === "alloy" のときのみこのCSSを読み込む。
+ * ルート(.bc-alloy-root)に暗地背景色を必ず設定（onyxで学んだ教訓：body/htmlに頼らずルート要素へ
+ * 背景を当てないと、コンテンツが短いカードでビューポート下部が白くなる）。
+ */
+
+html.bc-alloy {
+  --bc-alloy-bg: #101215;
+  --bc-alloy-panel: #15181c;
+  --bc-alloy-panel-2: #191d22;
+  --bc-alloy-ink: #eef1f4;
+  --bc-alloy-ink-dim: #9aa3ac;
+  --bc-alloy-ink-faint: #626b74;
+  --bc-alloy-line: rgba(238, 241, 244, 0.12);
+  --bc-alloy-serif: "Zen Kaku Gothic New", sans-serif;
+  --bc-alloy-sans: "Space Grotesk", system-ui, sans-serif;
+  /* --bc-alloy-accent 系は alloy.js が design.accent から注入 */
+}
+
+.bc-alloy-root {
+  position: relative;
+  background: var(--bc-alloy-bg);
+  color: var(--bc-alloy-ink);
+  font-family: var(--bc-alloy-sans);
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
+}
+.bc-alloy-root,
+.bc-alloy-root *,
+.bc-alloy-fab-wrap,
+.bc-alloy-fab-wrap *,
+.bc-alloy-toast {
+  box-sizing: border-box;
+}
+.bc-alloy-root img,
+.bc-alloy-root svg {
+  max-width: 100%;
+  display: block;
+}
+
+.bc-alloy-noise {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.bc-alloy-app {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 20px;
+  overflow: hidden;
+}
+.bc-alloy-section { padding: 64px 0; position: relative; }
+.bc-alloy-sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 22px; }
+.bc-alloy-chapno { font-family: var(--bc-alloy-sans); font-weight: 600; font-size: 12px; letter-spacing: 0.28em; color: var(--bc-alloy-accent, #6fa8d6); }
+.bc-alloy-sec-label { font-family: var(--bc-alloy-sans); font-weight: 500; font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--bc-alloy-ink-faint); }
+.bc-alloy-rule { height: 1px; background: var(--bc-alloy-line); border: 0; margin: 0; }
+
+.bc-alloy-ghost {
+  position: absolute;
+  top: 8px;
+  right: -4px;
+  font-family: var(--bc-alloy-serif);
+  font-weight: 900;
+  font-size: clamp(64px, 26vw, 120px);
+  line-height: 1;
+  color: rgba(238, 241, 244, 0.05);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+/* ============ 00 intake ============ */
+.bc-alloy-intake-copy { color: var(--bc-alloy-ink-dim); font-size: 14px; margin: 4px 0 24px; }
+.bc-alloy-capture {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--bc-alloy-line);
+  border-radius: 16px;
+  padding: 30px 24px;
+  background: radial-gradient(130% 100% at 50% -10%, #1c2027 0%, #0c0e11 70%);
+  box-shadow: 0 22px 46px -26px rgba(0, 0, 0, 0.95);
+}
+.bc-alloy-capture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 16px;
+  box-shadow: inset 0 0 60px 8px rgba(0, 0, 0, 0.55);
+}
+.bc-alloy-reticle { position: absolute; width: 20px; height: 20px; border: 2px solid var(--bc-alloy-accent, #6fa8d6); opacity: 0.9; pointer-events: none; z-index: 3; }
+.bc-alloy-reticle-tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
+.bc-alloy-reticle-tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
+.bc-alloy-reticle-bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
+.bc-alloy-reticle-br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+
+/* 物理名刺（ブラッシュドアルミの板・わずかに傾けて置かれた実物感） */
+.bc-alloy-meishi {
+  position: relative;
+  z-index: 2;
+  transform: rotate(-1.5deg);
+  border-radius: 6px;
+  padding: 18px 18px 16px 22px;
+  background: linear-gradient(135deg, #e2e7eb 0%, #bcc4cb 48%, #d8dee3 100%);
+  color: #1b2229;
+  box-shadow:
+    0 24px 40px -18px rgba(0, 0, 0, 0.9),
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.bc-alloy-meishi::before {
+  /* 金属のブラッシュド粒子 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23p)'/></svg>");
+}
+.bc-alloy-meishi::after {
+  /* ヘアラインの縦筋 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0.25;
+  background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.35) 0 1px, transparent 1px 3px);
+}
+.bc-alloy-m-accent { position: absolute; top: 0; left: 0; bottom: 0; width: 5px; border-radius: 6px 0 0 6px; background: var(--bc-alloy-accent, #6fa8d6); }
+.bc-alloy-m-role { font-size: 9.5px; letter-spacing: 0.18em; color: #4b555f; text-transform: uppercase; }
+.bc-alloy-m-name { font-family: var(--bc-alloy-serif); font-weight: 900; font-size: 25px; color: #1b2229; margin: 5px 0 1px; letter-spacing: 0.04em; }
+.bc-alloy-m-en { font-size: 10px; letter-spacing: 0.22em; color: #5b6570; }
+.bc-alloy-m-div { height: 1px; background: rgba(0, 0, 0, 0.12); margin: 13px 0 10px; }
+.bc-alloy-m-line { display: flex; gap: 7px; font-size: 10.5px; color: #333b42; letter-spacing: 0.01em; word-break: break-all; margin-top: 4px; line-height: 1.4; }
+.bc-alloy-mk { color: #6b7580; flex: none; width: 38px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 8.5px; padding-top: 1px; }
+
+.bc-alloy-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  z-index: 4;
+  background: linear-gradient(90deg, transparent, var(--bc-alloy-accent, #6fa8d6), transparent);
+  box-shadow: 0 0 16px 3px rgba(111, 168, 214, 0.7);
+  opacity: 0;
+  transform: translateY(0);
+}
+.bc-alloy-capture.bc-alloy-scanning .bc-alloy-scan { animation: bc-alloy-scan 1.7s ease-in-out 1 forwards; }
+@keyframes bc-alloy-scan {
+  0% { opacity: 0; transform: translateY(6px); }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(200px); }
+}
+
+.bc-alloy-extract { margin-top: 20px; border: 1px solid var(--bc-alloy-line); border-radius: 14px; background: var(--bc-alloy-panel); overflow: hidden; }
+.bc-alloy-extract-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--bc-alloy-line); }
+.bc-alloy-extract-h .bc-alloy-t { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bc-alloy-ink-faint); }
+.bc-alloy-extract-h .bc-alloy-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--bc-alloy-accent, #6fa8d6); box-shadow: 0 0 10px var(--bc-alloy-accent, #6fa8d6); }
+.bc-alloy-field {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-top: 1px solid rgba(238, 241, 244, 0.06);
+  opacity: 0;
+  transform: translateY(8px);
+}
+.bc-alloy-field:first-child { border-top: 0; }
+.bc-alloy-field.bc-alloy-on { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+.bc-alloy-field .bc-alloy-k { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc-alloy-ink-faint); }
+.bc-alloy-field .bc-alloy-v { font-size: 13.5px; color: var(--bc-alloy-ink); word-break: break-all; font-family: var(--bc-alloy-serif); font-weight: 500; }
+.bc-alloy-field .bc-alloy-c { font-family: var(--bc-alloy-sans); font-weight: 600; font-size: 11px; color: var(--bc-alloy-accent, #6fa8d6); white-space: nowrap; justify-self: end; font-variant-numeric: tabular-nums; }
+
+/* ============ 01 portrait ============ */
+.bc-alloy-hero { padding-top: 40px; }
+.bc-alloy-avatar-wrap {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--bc-alloy-accent, #6fa8d6);
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7);
+  margin-bottom: 22px;
+  background: var(--bc-alloy-panel-2);
+}
+.bc-alloy-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.bc-alloy-monogram {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--bc-alloy-serif);
+  font-weight: 900;
+  font-size: 34px;
+  color: var(--bc-alloy-accent, #6fa8d6);
+}
+.bc-alloy-tag { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--bc-alloy-ink-faint); margin-bottom: 14px; }
+.bc-alloy-name-ja {
+  font-family: var(--bc-alloy-serif);
+  font-weight: 900;
+  font-size: clamp(48px, 17vw, 74px);
+  line-height: 1.02;
+  margin: 0;
+  letter-spacing: 0.02em;
+  color: var(--bc-alloy-ink);
+}
+.bc-alloy-name-en { font-size: 13px; letter-spacing: 0.3em; color: var(--bc-alloy-ink-dim); margin-top: 14px; text-transform: uppercase; }
+.bc-alloy-yomi { font-size: 12px; letter-spacing: 0.24em; color: var(--bc-alloy-ink-faint); margin-top: 6px; }
+.bc-alloy-role-line { font-family: var(--bc-alloy-serif); font-size: 15px; color: var(--bc-alloy-ink-dim); margin-top: 20px; }
+.bc-alloy-tagline {
+  font-family: var(--bc-alloy-serif);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--bc-alloy-ink);
+  margin-top: 20px;
+  border-left: 2px solid var(--bc-alloy-accent, #6fa8d6);
+  padding-left: 16px;
+  white-space: pre-wrap;
+}
+
+/* ============ 02 story ============ */
+.bc-alloy-bio { font-size: 14.5px; color: var(--bc-alloy-ink-dim); line-height: 1.9; margin-top: 20px; }
+.bc-alloy-proofs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
+.bc-alloy-proof { border: 1px solid var(--bc-alloy-line); border-radius: 12px; background: var(--bc-alloy-panel); padding: 16px 14px; }
+.bc-alloy-proof .bc-alloy-num { font-family: var(--bc-alloy-serif); font-weight: 900; font-size: 34px; line-height: 1; color: var(--bc-alloy-accent, #6fa8d6); font-variant-numeric: tabular-nums; display: block; }
+.bc-alloy-proof .bc-alloy-lbl { font-size: 11.5px; color: var(--bc-alloy-ink-dim); margin-top: 8px; line-height: 1.5; }
+
+/* ============ 03 save ============ */
+.bc-alloy-contact { border: 1px solid var(--bc-alloy-line); border-radius: 14px; background: var(--bc-alloy-panel); overflow: hidden; margin-top: 20px; }
+.bc-alloy-crow { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-top: 1px solid rgba(238, 241, 244, 0.06); color: var(--bc-alloy-ink); text-decoration: none; }
+.bc-alloy-crow:first-child { border-top: 0; }
+.bc-alloy-crow .bc-alloy-ck { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc-alloy-ink-faint); width: 58px; flex: none; }
+.bc-alloy-crow .bc-alloy-cv { font-size: 13.5px; color: var(--bc-alloy-ink); word-break: break-all; font-family: var(--bc-alloy-serif); }
+.bc-alloy-btns { display: grid; gap: 10px; margin-top: 20px; }
+.bc-alloy-btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: var(--bc-alloy-sans);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+.bc-alloy-btn-primary { background: var(--bc-alloy-accent, #6fa8d6); color: var(--bc-alloy-bg); }
+.bc-alloy-btn-ghost { background: transparent; color: var(--bc-alloy-ink); border: 1px solid var(--bc-alloy-line); }
+
+.bc-alloy-foot { text-align: center; color: var(--bc-alloy-ink-faint); font-size: 11px; letter-spacing: 0.06em; padding: 40px 0 120px; }
+.bc-alloy-powered-by { margin-top: 8px; font-size: 10px; letter-spacing: 0.02em; }
+.bc-alloy-powered-by a { color: var(--bc-alloy-ink-faint); }
+
+/* ============ SNS FAB ============ */
+.bc-alloy-fab-wrap {
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 12px;
+}
+.bc-alloy-fab-main {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 0;
+  cursor: pointer;
+  background: var(--bc-alloy-accent, #6fa8d6);
+  color: var(--bc-alloy-bg);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 30px -8px rgba(111, 168, 214, 0.6);
+  transition: transform 0.3s ease;
+}
+.bc-alloy-fab-main svg { width: 24px; height: 24px; }
+.bc-alloy-fab-wrap[data-open="true"] .bc-alloy-fab-main { transform: rotate(135deg); }
+.bc-alloy-chan {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transform: translateY(14px) scale(0.85);
+  pointer-events: none;
+  transition: opacity 0.32s ease, transform 0.32s ease;
+}
+.bc-alloy-chan svg { width: 24px; height: 24px; }
+.bc-alloy-fab-wrap[data-open="true"] .bc-alloy-chan { opacity: 1; transform: none; pointer-events: auto; }
+.bc-alloy-fab-wrap[data-open="true"] .bc-alloy-chan:nth-child(2) { transition-delay: 0.02s; }
+.bc-alloy-fab-wrap[data-open="true"] .bc-alloy-chan:nth-child(3) { transition-delay: 0.06s; }
+.bc-alloy-fab-wrap[data-open="true"] .bc-alloy-chan:nth-child(4) { transition-delay: 0.1s; }
+.bc-alloy-fab-wrap[data-open="true"] .bc-alloy-chan:nth-child(5) { transition-delay: 0.14s; }
+
+/* ============ toast ============ */
+.bc-alloy-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translate(-50%, 20px);
+  background: var(--bc-alloy-panel-2);
+  color: var(--bc-alloy-ink);
+  border: 1px solid var(--bc-alloy-line);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+  max-width: 88vw;
+  text-align: center;
+}
+.bc-alloy-toast.bc-alloy-show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ============ reduced motion ============ */
+@media (prefers-reduced-motion: reduce) {
+  .bc-alloy-root *,
+  .bc-alloy-fab-wrap *,
+  .bc-alloy-toast {
+    animation: none !important;
+    transition-duration: 0.001ms !important;
+  }
+  .bc-alloy-field { opacity: 1; transform: none; }
+  .bc-alloy-chan { transition-delay: 0ms !important; }
+  .bc-alloy-scan { display: none; }
+}

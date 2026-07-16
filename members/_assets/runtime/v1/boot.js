@@ -185,7 +185,7 @@
 
         loadScript(RUNTIME_BASE + "icons.js", function () {
           var template = (card.design && card.design.template) || DEFAULT_TEMPLATE;
-          var validTemplates = ["bright", "aura", "editorial", "washi", "minimal", "onyx"]; // 実装済みテンプレ一覧
+          var validTemplates = ["bright", "aura", "editorial", "washi", "minimal", "onyx", "alloy", "kiln", "flux", "kinari"]; // 実装済みテンプレ一覧
           if (validTemplates.indexOf(template) === -1) template = DEFAULT_TEMPLATE;
 
           loadCss(RUNTIME_BASE + "templates/" + template + ".css");

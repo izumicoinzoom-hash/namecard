@@ -1,0 +1,372 @@
+/**
+ * BrightCard runtime v1 — templates/flux.css
+ * 「Flux」テンプレ（深夜ネオン・発光ミント。撮影された物理名刺のスキャン演出 → 円形ポートレート → Story → Save & Connect）。
+ * brightcard/preview/theme-flux.html の <style> を移植。
+ * 全セレクタは bc-flux- プレフィックス付きクラス名でスコープし、他テンプレへ漏れないようにする。
+ * boot.js は design.template === "flux" のときのみこのCSSを読み込む。
+ */
+
+html.bc-flux {
+  --bc-flux-bg: #06080c;
+  --bc-flux-panel: #0b0f16;
+  --bc-flux-panel-2: #101620;
+  --bc-flux-ink: #e8eef5;
+  --bc-flux-ink-dim: #8a97a8;
+  --bc-flux-ink-faint: #56637a;
+  --bc-flux-line: rgba(232, 238, 245, 0.12);
+  --bc-flux-serif: "Zen Kaku Gothic New", sans-serif;
+  --bc-flux-sans: "Space Grotesk", system-ui, sans-serif;
+  --bc-flux-mono: "Space Mono", monospace;
+  /* --bc-flux-accent 系は flux.js が design.accent から注入 */
+}
+
+.bc-flux-root {
+  position: relative;
+  background: var(--bc-flux-bg);
+  color: var(--bc-flux-ink);
+  font-family: var(--bc-flux-sans);
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
+}
+.bc-flux-root,
+.bc-flux-root *,
+.bc-flux-fab-wrap,
+.bc-flux-fab-wrap *,
+.bc-flux-toast {
+  box-sizing: border-box;
+}
+.bc-flux-root img,
+.bc-flux-root svg {
+  max-width: 100%;
+  display: block;
+}
+
+.bc-flux-noise {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.bc-flux-app {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 20px;
+  overflow: hidden;
+}
+.bc-flux-section { padding: 64px 0; position: relative; }
+.bc-flux-sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 22px; }
+.bc-flux-chapno { font-family: var(--bc-flux-mono); font-weight: 700; font-size: 12px; letter-spacing: 0.28em; color: var(--bc-flux-accent, #34e6b4); }
+.bc-flux-sec-label { font-family: var(--bc-flux-mono); font-weight: 400; font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--bc-flux-ink-faint); }
+.bc-flux-rule { height: 1px; background: var(--bc-flux-line); border: 0; margin: 0; }
+
+.bc-flux-ghost {
+  position: absolute;
+  top: 8px;
+  right: -4px;
+  font-family: var(--bc-flux-serif);
+  font-weight: 900;
+  font-size: clamp(64px, 26vw, 120px);
+  line-height: 1;
+  color: rgba(232, 238, 245, 0.05);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+/* ============ 00 intake ============ */
+.bc-flux-intake-copy { color: var(--bc-flux-ink-dim); font-size: 14px; margin: 4px 0 24px; }
+.bc-flux-capture {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--bc-flux-line);
+  border-radius: 16px;
+  padding: 30px 24px;
+  background: radial-gradient(130% 100% at 50% -10%, #12161d 0%, #06080c 70%);
+  box-shadow: 0 22px 46px -26px rgba(0, 0, 0, 0.95);
+}
+.bc-flux-capture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 16px;
+  box-shadow: inset 0 0 60px 8px rgba(0, 0, 0, 0.55);
+}
+.bc-flux-reticle { position: absolute; width: 20px; height: 20px; border: 2px solid var(--bc-flux-accent, #34e6b4); opacity: 0.9; pointer-events: none; z-index: 3; box-shadow: 0 0 6px rgba(52, 230, 180, 0.55); }
+.bc-flux-reticle-tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
+.bc-flux-reticle-tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
+.bc-flux-reticle-bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
+.bc-flux-reticle-br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+
+/* 物理名刺（ダークなテックカード。淡いミントの縁とグロウ） */
+.bc-flux-meishi {
+  position: relative;
+  z-index: 2;
+  transform: rotate(-1.5deg);
+  border-radius: 6px;
+  padding: 18px 18px 16px 22px;
+  background: linear-gradient(160deg, #0f1620, #0a0f16);
+  color: #dfe8f0;
+  border: 1px solid rgba(52, 230, 180, 0.35);
+  box-shadow:
+    0 24px 40px -18px rgba(0, 0, 0, 0.9),
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 24px -10px rgba(52, 230, 180, 0.25);
+}
+.bc-flux-meishi::before {
+  /* 薄いグリッド（紙のグレインの代わり） */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(232, 238, 245, 0.05) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg, rgba(232, 238, 245, 0.05) 0 1px, transparent 1px 22px);
+}
+.bc-flux-m-accent { position: absolute; top: 0; left: 0; bottom: 0; width: 5px; border-radius: 6px 0 0 6px; background: var(--bc-flux-accent, #34e6b4); box-shadow: 0 0 10px var(--bc-flux-accent, #34e6b4); }
+.bc-flux-m-role { font-size: 9.5px; letter-spacing: 0.18em; color: var(--bc-flux-ink-faint); text-transform: uppercase; }
+.bc-flux-m-name { font-family: var(--bc-flux-serif); font-weight: 700; font-size: 25px; color: #dfe8f0; margin: 5px 0 1px; letter-spacing: 0.04em; }
+.bc-flux-m-en { font-size: 10px; letter-spacing: 0.22em; color: var(--bc-flux-ink-dim); }
+.bc-flux-m-div { height: 1px; background: rgba(232, 238, 245, 0.12); margin: 13px 0 10px; }
+.bc-flux-m-line { display: flex; gap: 7px; font-size: 10.5px; color: #c3ccd8; letter-spacing: 0.01em; word-break: break-all; margin-top: 4px; line-height: 1.4; }
+.bc-flux-mk { color: var(--bc-flux-ink-faint); flex: none; width: 38px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 8.5px; padding-top: 1px; font-family: var(--bc-flux-mono); }
+
+/* scan line：撮影の走査を1回だけ */
+.bc-flux-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  z-index: 4;
+  background: linear-gradient(90deg, transparent, var(--bc-flux-accent, #34e6b4), transparent);
+  box-shadow: 0 0 16px 3px rgba(52, 230, 180, 0.7);
+  opacity: 0;
+  transform: translateY(0);
+}
+.bc-flux-capture.bc-flux-scanning .bc-flux-scan { animation: bc-flux-scan 1.7s ease-in-out 1 forwards; }
+@keyframes bc-flux-scan {
+  0% { opacity: 0; transform: translateY(6px); }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(200px); }
+}
+
+.bc-flux-extract { margin-top: 20px; border: 1px solid var(--bc-flux-line); border-radius: 14px; background: var(--bc-flux-panel); overflow: hidden; }
+.bc-flux-extract-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--bc-flux-line); }
+.bc-flux-extract-h .bc-flux-t { font-family: var(--bc-flux-mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bc-flux-ink-faint); }
+.bc-flux-extract-h .bc-flux-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--bc-flux-accent, #34e6b4); box-shadow: 0 0 10px var(--bc-flux-accent, #34e6b4); }
+.bc-flux-field {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-top: 1px solid rgba(232, 238, 245, 0.06);
+  opacity: 0;
+  transform: translateY(8px);
+}
+.bc-flux-field:first-child { border-top: 0; }
+.bc-flux-field.bc-flux-on { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+.bc-flux-field .bc-flux-k { font-family: var(--bc-flux-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc-flux-ink-faint); }
+.bc-flux-field .bc-flux-v { font-size: 13.5px; color: var(--bc-flux-ink); word-break: break-all; font-family: var(--bc-flux-serif); font-weight: 700; }
+.bc-flux-field .bc-flux-c {
+  font-family: var(--bc-flux-mono);
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--bc-flux-accent, #34e6b4);
+  white-space: nowrap;
+  justify-self: end;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 12px rgba(52, 230, 180, 0.35);
+}
+
+/* ============ 01 portrait ============ */
+.bc-flux-hero { padding-top: 40px; }
+.bc-flux-avatar-wrap {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--bc-flux-accent, #34e6b4);
+  box-shadow: 0 0 24px -4px rgba(52, 230, 180, 0.5);
+  margin-bottom: 22px;
+  background: var(--bc-flux-panel-2);
+}
+.bc-flux-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.bc-flux-monogram {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--bc-flux-serif);
+  font-weight: 900;
+  font-size: 34px;
+  color: var(--bc-flux-accent, #34e6b4);
+  text-shadow: 0 0 16px rgba(52, 230, 180, 0.35);
+}
+.bc-flux-tag { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--bc-flux-ink-faint); margin-bottom: 14px; }
+.bc-flux-name-ja {
+  font-family: var(--bc-flux-serif);
+  font-weight: 900;
+  font-size: clamp(40px, 15vw, 74px);
+  line-height: 1.05;
+  margin: 0;
+  letter-spacing: 0.02em;
+  color: var(--bc-flux-ink);
+  text-shadow: 0 0 24px rgba(52, 230, 180, 0.25);
+  word-break: break-word;
+}
+.bc-flux-name-en { font-size: 13px; letter-spacing: 0.3em; color: var(--bc-flux-ink-dim); margin-top: 14px; text-transform: uppercase; }
+.bc-flux-yomi { font-size: 12px; letter-spacing: 0.24em; color: var(--bc-flux-ink-faint); margin-top: 6px; }
+.bc-flux-role-line { font-family: var(--bc-flux-serif); font-weight: 700; font-size: 15px; color: var(--bc-flux-ink-dim); margin-top: 20px; }
+.bc-flux-tagline {
+  font-family: var(--bc-flux-serif);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--bc-flux-ink);
+  margin-top: 20px;
+  border-left: 2px solid var(--bc-flux-accent, #34e6b4);
+  padding-left: 16px;
+  white-space: pre-wrap;
+}
+
+/* ============ 02 story ============ */
+.bc-flux-bio { font-size: 14.5px; color: var(--bc-flux-ink-dim); line-height: 1.9; margin-top: 20px; }
+.bc-flux-proofs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
+.bc-flux-proof { border: 1px solid var(--bc-flux-line); border-radius: 12px; background: var(--bc-flux-panel); padding: 16px 14px; }
+.bc-flux-proof .bc-flux-num {
+  font-family: var(--bc-flux-serif);
+  font-weight: 900;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--bc-flux-accent, #34e6b4);
+  font-variant-numeric: tabular-nums;
+  display: block;
+  text-shadow: 0 0 12px rgba(52, 230, 180, 0.35);
+}
+.bc-flux-proof .bc-flux-lbl { font-size: 11.5px; color: var(--bc-flux-ink-dim); margin-top: 8px; line-height: 1.5; }
+
+/* ============ 03 save ============ */
+.bc-flux-contact { border: 1px solid var(--bc-flux-line); border-radius: 14px; background: var(--bc-flux-panel); overflow: hidden; margin-top: 20px; }
+.bc-flux-crow { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-top: 1px solid rgba(232, 238, 245, 0.06); color: var(--bc-flux-ink); text-decoration: none; }
+.bc-flux-crow:first-child { border-top: 0; }
+.bc-flux-crow .bc-flux-ck { font-family: var(--bc-flux-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc-flux-ink-faint); width: 58px; flex: none; }
+.bc-flux-crow .bc-flux-cv { font-size: 13.5px; color: var(--bc-flux-ink); word-break: break-all; font-family: var(--bc-flux-serif); font-weight: 700; }
+.bc-flux-btns { display: grid; gap: 10px; margin-top: 20px; }
+.bc-flux-btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: var(--bc-flux-sans);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+.bc-flux-btn-primary { background: var(--bc-flux-accent, #34e6b4); color: var(--bc-flux-bg); }
+.bc-flux-btn-ghost { background: transparent; color: var(--bc-flux-ink); border: 1px solid var(--bc-flux-line); }
+
+.bc-flux-foot { font-family: var(--bc-flux-mono); text-align: center; color: var(--bc-flux-ink-faint); font-size: 11px; letter-spacing: 0.2em; padding: 40px 0 120px; }
+.bc-flux-powered-by { margin-top: 8px; font-size: 10px; letter-spacing: 0.02em; }
+.bc-flux-powered-by a { color: var(--bc-flux-ink-faint); }
+
+/* ============ SNS FAB ============ */
+.bc-flux-fab-wrap {
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 12px;
+}
+.bc-flux-fab-main {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 0;
+  cursor: pointer;
+  background: var(--bc-flux-accent, #34e6b4);
+  color: var(--bc-flux-bg);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 30px -8px rgba(52, 230, 180, 0.6);
+  transition: transform 0.3s ease;
+}
+.bc-flux-fab-main svg { width: 24px; height: 24px; }
+.bc-flux-fab-wrap[data-open="true"] .bc-flux-fab-main { transform: rotate(135deg); }
+.bc-flux-chan {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transform: translateY(14px) scale(0.85);
+  pointer-events: none;
+  transition: opacity 0.32s ease, transform 0.32s ease;
+}
+.bc-flux-chan svg { width: 24px; height: 24px; }
+.bc-flux-fab-wrap[data-open="true"] .bc-flux-chan { opacity: 1; transform: none; pointer-events: auto; }
+.bc-flux-fab-wrap[data-open="true"] .bc-flux-chan:nth-child(2) { transition-delay: 0.02s; }
+.bc-flux-fab-wrap[data-open="true"] .bc-flux-chan:nth-child(3) { transition-delay: 0.06s; }
+.bc-flux-fab-wrap[data-open="true"] .bc-flux-chan:nth-child(4) { transition-delay: 0.1s; }
+.bc-flux-fab-wrap[data-open="true"] .bc-flux-chan:nth-child(5) { transition-delay: 0.14s; }
+
+/* ============ toast ============ */
+.bc-flux-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translate(-50%, 20px);
+  background: var(--bc-flux-panel-2);
+  color: var(--bc-flux-ink);
+  border: 1px solid var(--bc-flux-line);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+  max-width: 88vw;
+  text-align: center;
+}
+.bc-flux-toast.bc-flux-show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ============ reduced motion ============ */
+@media (prefers-reduced-motion: reduce) {
+  .bc-flux-root *,
+  .bc-flux-fab-wrap *,
+  .bc-flux-toast {
+    animation: none !important;
+    transition-duration: 0.001ms !important;
+  }
+  .bc-flux-field { opacity: 1; transform: none; }
+  .bc-flux-chan { transition-delay: 0ms !important; }
+  .bc-flux-scan { display: none; }
+}
