@@ -11,7 +11,8 @@
  * Works章は card.products[]（新規スキーマ・任意）: {category,name,url,desc,price}。
  * 未指定なら章ごと非表示。価格は文字列そのまま表示（例「料金：要見積」）。
  * Philosophy章は card.philosophy{label,text}（任意）。
- * QRは card.qr.svg（インラインSVG文字列）があればそのまま挿入、無ければ非表示。
+ * QRは card.qr.svg（インラインSVG文字列）があれば core.renderQr() 経由で挿入、
+ * 無ければ非表示（core未提供時は旧ロジックへフォールバック）。
  * Works章の導入コピーは任意フィールド card.worksIntro（未指定なら省略）。
  *
  * モーション: CSS Scroll-Driven（animation-timeline:scroll()）＋
@@ -334,7 +335,20 @@
     if (snsWrap) contactChapChildren.push(snsWrap);
     contactChapChildren.push(el("div", { class: "bc-oe-save-wrap" }, [saveBtn, saveNote]));
 
-    if (qr && nonEmpty(qr.svg)) {
+    // QR描画は core.renderQr（統一ヘルパ）に委譲。owner-editorial固有クラス
+    // （bc-oe-qr / bc-oe-qr-code / bc-oe-cap）を追加付与し、既存CSS・見た目は不変。
+    if (core.renderQr) {
+      var qrNode = core.renderQr(card);
+      if (qrNode) {
+        qrNode.classList.add("bc-oe-qr", "bc-oe-rv", "bc-oe-d3");
+        var qrCodeEl = qrNode.querySelector(".bc-qr-code");
+        if (qrCodeEl) qrCodeEl.classList.add("bc-oe-qr-code");
+        var qrCapEl = qrNode.querySelector(".bc-qr-cap");
+        if (qrCapEl) qrCapEl.classList.add("bc-oe-cap");
+        contactChapChildren.push(qrNode);
+      }
+    } else if (qr && nonEmpty(qr.svg)) {
+      // core.renderQr 未提供時のフォールバック（旧ロジックそのまま）
       contactChapChildren.push(
         el("div", { class: "bc-oe-qr bc-oe-rv bc-oe-d3" }, [
           el("div", { class: "bc-oe-qr-code", role: "img", "aria-label": "連絡先QRコード", html: qr.svg }),

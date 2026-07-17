@@ -177,6 +177,7 @@ digital-namecard/
 - **写真2系統**を `photo.sh` が1コマンドで生成（上限検査込み）。
 - **SNS出し分け**: `sns`にあるものだけ描画・0件なら保存ボタンのみ・浮遊列は先頭4件＋保存ボタン。URL正規化は index.ts の normalizeSocialUrl 移植。
 - **脱CDN**: lucideは廃止しSVGパスを `icons.js` にインライン（unpkg障害＝全カードのアイコン消失を排除）。Google Fontsのみ外部依存として継続（swap＋フォールバック）。
+- **QR統一方針（P3c・2026-07-17）**: Contact章「Scan to save」パネルのQRは `card.js` の `qr:{svg:"<インラインSVG文字列>"}`（MECARDエンコード）が正。`tools/qr.sh mecard` がビルド時に静的生成する（segno優先・qrcode SVGフォールバック、いずれもpipローカル・実行時CDN依存ゼロ）。描画は `core.js` の共通ヘルパ `BrightCardCore.renderQr(card)` に統一（card.qr.svgが無ければnullを返しパネル非表示）。owner-editorialはこれを標準搭載（現行の見た目・クラスは維持したまま内部委譲）、他テンプレ（bright/aura/onyx等）は現時点では追加しない任意opt-in（NFC＋URLが主導線のためスコープ外）。§1.3の「URL＋QR画像」納品物（`tools/qr.sh url`）とは別物＝混同しないこと。
 
 ---
 

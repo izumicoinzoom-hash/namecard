@@ -380,6 +380,44 @@
     return s ? s.charAt(0) : "?";
   }
 
+  // ---------- QR（Contact章「Scan to save」パネル） ----------
+
+  /**
+   * card.qr.svg（qr.sh でビルド時に静的生成したインラインSVG文字列。MECARDエンコード）
+   * があれば、それを内包した「クリーム地パネル＋Scan to saveキャプション」のDOM要素を
+   * 返す。無ければ null（呼び出し側は非表示のまま）。
+   * 外部ライブラリ/CDNへは一切依存しない（qr.svg は静的文字列を innerHTML するだけ）。
+   *
+   * 返す要素は汎用クラス（bc-qr / bc-qr-code / bc-qr-cap）のみを持つ「素のDOMノード」。
+   * 見た目はテンプレ側CSSで着せ替える（owner-editorial は現行の bc-oe-qr* クラスを
+   * 追加付与して既存スタイルをそのまま適用＝挙動不変）。他テンプレが opt-in する場合は
+   * 同様に自テンプレのスコープCSSで bc-qr* を装飾する。
+   */
+  function renderQr(card) {
+    var qr = card && card.qr;
+    if (!qr || !isNonEmpty(qr.svg)) return null;
+
+    var wrap = document.createElement("div");
+    wrap.className = "bc-qr";
+
+    var codeBox = document.createElement("div");
+    codeBox.className = "bc-qr-code";
+    codeBox.setAttribute("role", "img");
+    codeBox.setAttribute("aria-label", "連絡先QRコード");
+    codeBox.innerHTML = qr.svg;
+    wrap.appendChild(codeBox);
+
+    var cap = document.createElement("div");
+    cap.className = "bc-qr-cap";
+    var label = document.createElement("b");
+    label.textContent = "Scan to save";
+    cap.appendChild(label);
+    cap.appendChild(document.createTextNode("スマホのカメラで読み取ると、連絡先を保存できます。"));
+    wrap.appendChild(cap);
+
+    return wrap;
+  }
+
   // ---------- スクロール制御・reveal ----------
 
   function initScrollReveal(root) {
@@ -428,6 +466,7 @@
     vcardFilename: vcardFilename,
     deriveAccentPalette: deriveAccentPalette,
     monogramInitial: monogramInitial,
+    renderQr: renderQr,
     initScrollReveal: initScrollReveal,
     initProgressBar: initProgressBar,
     initFloatingSns: initFloatingSns,
