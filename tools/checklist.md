@@ -9,12 +9,19 @@
 - [ ] 1. `members/_template/` を `members/<slug>/` へコピー
 - [ ] 2. `card.js` を記入（§2スキーマ。必須は `name.ja` のみ）
 - [ ] 3. `tools/photo.sh <元画像> members/<slug>` で写真2系統を自動生成（容量検査込み）
-- [ ] 4. `index.html` の head 4行を書き換え（title / description / og:title / og:image）
+- [ ] 4. `index.html` の head **5行**を書き換え（title / description / og:title / og:image / **og:url**）＝`SLUG`を全て会員slugに置換。さらに **theme-color をテンプレ意匠に合わせて調整**し、**テンプレ固有の Google Fonts `<link>` を追加**（onyx/kinari/flux/owner-editorial 等・`members/cmp-<template>/index.html` を参照。未追加だと無言でシステムフォントに劣化）
 - [ ] 5. ローカル確認: `python3 -m http.server` を `digital-namecard/` 直下で起動し、
       `http://localhost:<port>/members/<slug>/index.html?debug=1` で欠落チェック
 - [ ] 6. `tools/deploy.sh member <slug>`（本番反映。MVP段階では実行しない／将来運用）
 - [ ] 7. iPhone実機QA（表示崩れ・vCard保存・LINE/Instagramアプリ内ブラウザでのOGP）
-- [ ] 8. `tools/qr.sh <公開URL> members/<slug>/qr.png` でQR生成、URL＋QRを納品
+- [ ] 8. **物理カード同梱用QR**: `tools/qr.sh url <公開URL> members/<slug>/qr.png` でPNG生成、URL＋QRを納品（全会員共通）。
+       **※ページ内QR**（`card.qr.svg`）は **owner-editorial テンプレのみ描画**。使う場合だけ `tools/qr.sh mecard "<氏名>" "<TEL>" "<Email>" "<URL>" "<社名>"` の出力を card.js の `qr:{svg}` に貼る（他テンプレに貼っても画面には出ない＝無駄作業なので注意）。
+
+### ★テンプレ別の落とし穴（2026-07-17 パイプラインテスト検出）
+- **テンプレ固有フィールドは `_template/card.js` のコメントスタブ＋ `members/cmp-<template>/card.js` を必ず参照**：`background`(C系) / `metrics`(B系差別化) / `products`・`worksIntro`・`qr`(owner-editorial)。素の雛形だけ見ると存在に気づけない。
+- **owner-editorial のヒーローは二重露光写真専用**（顔上半分を全画面拡大）。通常のヘッドショットを当てると超クローズアップで破綻する。専用加工写真を用意すること。
+- **`about` は owner-editorial では非表示**（philosophy/products を使う）。テンプレごとに対応フィールドが異なる点に注意。
+- **写真は必ず `tools/photo.sh` 経由**（`photo-data.js`＝vCard埋込サムネイルが生成される）。photo.jpg だけ手置きすると vCard に写真が入らない事故になる。
 - [ ] 9. `card.js` の `updates[]` に日付・内容を追記（`?v=N` バンプ＝課金1回の記録）
 
 ## 表記チェック（§8: 日本語表記ゆれ対策）

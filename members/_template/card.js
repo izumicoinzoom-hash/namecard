@@ -31,13 +31,21 @@ window.CARD = {
 
   // ===== デザイン =====
   design: {
-    // 現在使えるテンプレート: "bright"（ダーク・フォト型）
+    // テンプレート（全11種）:
+    //   標準/C系（生成背景＋額装ポートレート）: bright / aura / editorial / washi / minimal
+    //   差別化/B系（撮影名刺→抽出→章立て）    : onyx / alloy / kiln / flux / kinari
+    //   オーナー（GQ最上位・products/qr対応）  : owner-editorial
+    // ★テンプレ固有の追加フィールド（background / metrics / products / worksIntro / qr）は
+    //   下のコメントスタブ＋ members/cmp-<template>/card.js の実例を参照して記入すること。
     template: "bright",
     // アクセントカラー（16進）。省略時はテンプレ既定色（ember系）
     accent: "#c0392b",
     // ヒーロー写真の表示位置（CSS object-position）。省略時 "center top"
     photoPosition: "center top",
   },
+
+  // ===== 背景（C系テンプレ bright/aura/editorial/washi/minimal のみ使用） =====
+  // background: { ref: "bright/01" }, // _assets/backgrounds/<ref>.webp を参照。会員独自画像は { src: "bg.jpg" }
 
   // ===== 氏名（必須は name.ja のみ） =====
   name: {
@@ -102,6 +110,15 @@ window.CARD = {
   links: [
     // { label: "note", url: "", desc: "" },
   ],
+
+  // ===== テンプレ固有フィールド（該当テンプレのみ有効・他テンプレは無視。実例=members/cmp-<template>/card.js） =====
+  // ▼ 差別化B系（onyx/alloy/kiln/flux/kinari）: Story章の実績メトリクス（0件可）
+  // metrics: [ { value: 28, suffix: "", label: "ブランド設計" }, { static: "SNS", label: "写真起点の導線" } ],
+  // ▼ owner-editorial のみ: Works章の商品紹介（worksIntro=導入文 / products=各商品。0件可）
+  // worksIntro: "",
+  // products: [ { category: "", name: "", url: "", desc: "", price: "料金：要見積" } ],
+  // ▼ owner-editorial が標準描画するQR。tools/qr.sh mecard で生成した静的SVGを貼る（他テンプレは非描画）
+  // qr: { svg: "<svg ...>...</svg>" },
 
   // ===== vCard（連絡先保存）関連 =====
   vcard: {

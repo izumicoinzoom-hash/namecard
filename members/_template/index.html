@@ -4,20 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<!-- ▼▼ 会員ごとに書き換えるのはこの4行だけ（OGPはクローラがJS実行しないため静的に持つ） ▼▼ -->
+<!-- ▼▼ 会員ごとに書き換えるのはこの5行（OGPはクローラがJS実行しないため静的に持つ）。SLUG=会員slugに全て置換 ▼▼ -->
 <title>氏名 | Name In Romaji</title>
 <meta name="description" content="氏名 - 会社名 役職">
 <meta property="og:title" content="氏名 | Name In Romaji">
 <meta property="og:image" content="https://withbt.com/card/SLUG/photo.jpg">
-<!-- ▲▲ ここまで ▲▲ -->
+<meta property="og:url" content="https://withbt.com/card/SLUG/">
+<!-- ▲▲ ここまで（下の theme-color と Google Fonts はテンプレ意匠に合わせて調整＝members/cmp-<template>/index.html を参照） ▲▲ -->
 
 <meta property="og:type" content="profile">
-<meta property="og:url" content="https://withbt.com/card/SLUG/">
 <meta name="twitter:card" content="summary_large_image">
+<!-- theme-color はテンプレに合わせて調整（暗系=#0a0a0a / 明系 kiln=#efe7d8・kinari=#eae4d6 等） -->
 <meta name="theme-color" content="#0a0a0a">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- ★テンプレ固有の Google Fonts <link> をここに追加（onyx/kinari/flux/owner-editorial 等）。
+     どのフォントが必要かは members/cmp-<template>/index.html を参照してコピーする。
+     bright/paper系は Noto Sans JP + Inter。未指定だと無言でシステムフォントに劣化する。 -->
 
 <!-- card.js = 会員データ本体（このファイルを編集する）。photo-data.js = vCard埋込用サムネイル -->
 <script src="card.js?v=1"></script>

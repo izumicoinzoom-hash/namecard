@@ -217,7 +217,8 @@ case "$1" in
     gen_url_png "$2" "$3"
     ;;
   mecard)
-    [ $# -ge 5 ] && [ $# -le 6 ] || usage
+    # $1=mecard を含むため、必須は氏名/TEL/Email/URL/社名の5つ＝$#6、出力パス指定で$#7
+    [ $# -ge 6 ] && [ $# -le 7 ] || usage
     gen_mecard_svg "$2" "$3" "$4" "$5" "$6" "${7:-}"
     ;;
   *)
