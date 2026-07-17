@@ -712,26 +712,53 @@
       </div>
     </section>
 
-    <!-- 7. カード素材 -->
+    <!-- 7. ラインとカード素材 -->
     <section class="card">
-      <div class="sec-title"><span class="num">7</span>物理NFCカード素材<span class="sec-note">税込・デジタル制作費込み</span></div>
-      <div class="pick-grid" id="materialPicks">
-        <label class="pick-card">
-          <input type="radio" name="material" value="black" checked>
-          <div class="t"><span class="dot"></span>黒（無地PVC）<span class="price">¥4,900</span></div>
-          <div class="d">NTAG215 黒無地カード</div>
-        </label>
-        <label class="pick-card">
-          <input type="radio" name="material" value="wood">
-          <div class="t"><span class="dot"></span>木（チェリーウッド）<span class="price">¥5,400</span></div>
-          <div class="d">NTAG215 木製カード</div>
-        </label>
-        <label class="pick-card">
-          <input type="radio" name="material" value="aluminum">
-          <div class="t"><span class="dot"></span>アルミ（ヘアラインシルバー）<span class="price">¥5,900</span></div>
-          <div class="d">NTAG215 メタリックカード</div>
-        </label>
+      <div class="sec-title"><span class="num">7</span>ラインと物理NFCカード素材<span class="sec-note">税込・デジタル制作費込み</span></div>
+
+      <div class="field">
+        <label>ライン<span class="req">必須</span></label>
+        <div class="pick-grid" id="linePicks">
+          <label class="pick-card">
+            <input type="radio" name="line" value="standard" checked>
+            <div class="t"><span class="dot"></span>標準</div>
+            <div class="d">生成背景・額装ポートレート5種</div>
+          </label>
+          <label class="pick-card">
+            <input type="radio" name="line" value="diff">
+            <div class="t"><span class="dot"></span>差別化</div>
+            <div class="d">撮影名刺型5種（名刺を撮る→AI抽出→章立て）</div>
+          </label>
+          <label class="pick-card">
+            <input type="radio" name="line" value="owner">
+            <div class="t"><span class="dot"></span>オーナー<span class="price">¥14,800</span></div>
+            <div class="d">GQ級最上位1種（アルミ固定・単一デザイン）</div>
+          </label>
+        </div>
       </div>
+
+      <div class="field">
+        <label>カード素材<span class="req">必須</span></label>
+        <div class="pick-grid" id="materialPicks">
+          <label class="pick-card" data-material="black">
+            <input type="radio" name="material" value="black" checked>
+            <div class="t"><span class="dot"></span>黒（無地PVC）<span class="price" id="priceBlack">¥4,900</span></div>
+            <div class="d">NTAG215 黒無地カード</div>
+          </label>
+          <label class="pick-card" data-material="wood">
+            <input type="radio" name="material" value="wood">
+            <div class="t"><span class="dot"></span>木（チェリーウッド）<span class="price" id="priceWood">¥5,400</span></div>
+            <div class="d">NTAG215 木製カード</div>
+          </label>
+          <label class="pick-card" data-material="aluminum">
+            <input type="radio" name="material" value="aluminum">
+            <div class="t"><span class="dot"></span>アルミ（ヘアラインシルバー）<span class="price" id="priceAluminum">¥5,900</span></div>
+            <div class="d">NTAG215 メタリックカード</div>
+          </label>
+        </div>
+        <p class="row-hint" id="ownerNote" style="display:none;">オーナーラインは素材をアルミに固定した単一価格（¥14,800）です。</p>
+      </div>
+
       <p class="row-hint" style="margin-top:8px;">価格はデジタル名刺ページの制作費とNFCカード1枚を含む一括金額です。カードをスマートフォンにかざすだけで専用ページが開きます（名入れ印刷はございません）。</p>
     </section>
 
@@ -740,7 +767,7 @@
       <div class="sec-title"><span class="num">8</span>ご確認事項</div>
       <ul class="terms">
         <li>納品物は「<strong>公開URL</strong>」「<strong>QRコード画像</strong>」「<strong>物理NFCカード</strong>」の3点です。ページのソースファイルは納品対象に含まれません。編集・更新は弊社（合同会社WBT）が承ります。</li>
-        <li>更新は都度課金となります（軽微修正 ¥1,650〜。初回公開から1ヶ月以内の軽微修正は1回まで無償）。</li>
+        <li>更新は都度課金です（月額サブスクリプションはございません）。軽微修正は標準¥1,650／差別化¥1,980／オーナー¥3,300〜。初回公開から1ヶ月以内の軽微修正は1回まで無償（標準・差別化）、オーナーは初年度1回の軽微更新を無償同梱いたします。</li>
       </ul>
     </section>
 
@@ -786,11 +813,25 @@
   const WBT_CONTACT_EMAIL = "izumi.coinzoom@gmail.com";
   // ▲▲
 
-  const MATERIALS = {
-    black:    { label: "黒（無地PVC）",         price: "¥4,900" },
-    wood:     { label: "木（チェリーウッド）",   price: "¥5,400" },
-    aluminum: { label: "アルミ（ヘアラインシルバー）", price: "¥5,900" },
+  const MATERIAL_LABELS = {
+    black:    "黒（無地PVC）",
+    wood:     "木（チェリーウッド）",
+    aluminum: "アルミ（ヘアラインシルバー）",
   };
+  // 3ライン×素材の確定価格（税込・カード込み。BRIGHTCARD-TEMPLATE-DESIGN.md §6が正本）
+  const PRICE_MATRIX = {
+    standard: { black: 4900, wood: 5400, aluminum: 5900 },
+    diff:     { black: 6900, wood: 7400, aluminum: 7900 },
+    owner:    { aluminum: 14800 },
+  };
+  const LINE_LABELS = {
+    standard: "標準（生成背景・額装ポートレート5種）",
+    diff:     "差別化（撮影名刺型5種）",
+    owner:    "オーナー（GQ級最上位1種・アルミ固定）",
+  };
+  function formatYen(n){
+    return "¥" + n.toLocaleString("ja-JP");
+  }
   const DESIGNS = {
     bright:    "Bright（ダーク×写真）",
     paper:     "Paper（白紙面）",
@@ -910,6 +951,35 @@
     });
     snsList.appendChild(item);
   });
+
+  /* ---------- ライン選択 ⇔ 素材選択の連動 ---------- */
+  const ownerNote = $("#ownerNote");
+  function updateLineUI(){
+    const line = document.querySelector('input[name="line"]:checked');
+    const lineVal = line ? line.value : "standard";
+    const matrix = PRICE_MATRIX[lineVal] || PRICE_MATRIX.standard;
+    ["black", "wood", "aluminum"].forEach(function(m){
+      const card = document.querySelector('.pick-card[data-material="' + m + '"]');
+      const input = card.querySelector('input[name="material"]');
+      const priceEl = document.getElementById("price" + m.charAt(0).toUpperCase() + m.slice(1));
+      if (matrix[m] != null){
+        card.style.display = "";
+        input.disabled = false;
+        priceEl.textContent = formatYen(matrix[m]);
+      } else {
+        card.style.display = "none";
+        input.disabled = true;
+      }
+    });
+    if (lineVal === "owner"){
+      document.querySelector('.pick-card[data-material="aluminum"] input').checked = true;
+      ownerNote.style.display = "block";
+    } else {
+      ownerNote.style.display = "none";
+    }
+  }
+  $$('input[name="line"]').forEach(function(r){ r.addEventListener("change", updateLineUI); });
+  updateLineUI();
 
   /* ---------- ユーティリティ ---------- */
   function val(id){
@@ -1061,9 +1131,12 @@
     lines.push("顔写真の提出方法: " + (PHOTO_METHODS[data.photoMethod] || data.photoMethod));
     lines.push("");
 
-    lines.push("■ 物理NFCカード素材");
-    const m = MATERIALS[data.material];
-    lines.push((m ? m.label : data.material) + "　" + (m ? m.price : "") + "（税込・デジタル制作費込み）");
+    lines.push("■ ライン・物理NFCカード素材");
+    lines.push(LINE_LABELS[data.line] || data.line);
+    const mLabel = MATERIAL_LABELS[data.material] || data.material;
+    const matrix = PRICE_MATRIX[data.line] || {};
+    const price = matrix[data.material];
+    lines.push(mLabel + "　" + (price != null ? formatYen(price) : "") + "（税込・デジタル制作費込み）");
     lines.push("");
 
     lines.push("---");
@@ -1113,7 +1186,7 @@
         note: "",
       },
       updates: [
-        { date: todayStr(), note: "Web申込フォームより受信（未制作・材質:" + data.material + "／写真:" + data.photoMethod + "）" },
+        { date: todayStr(), note: "Web申込フォームより受信（未制作・ライン:" + data.line + "／材質:" + data.material + "／写真:" + data.photoMethod + "）" },
       ],
     };
     const json = JSON.stringify(obj, null, 2);
@@ -1206,6 +1279,7 @@
       accent: val("accent") || "#8a6d3b",
       slug: val("slug"),
       photoMethod: radioVal("photoMethod") || "later",
+      line: radioVal("line") || "standard",
       material: radioVal("material") || "black",
     };
 
