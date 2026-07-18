@@ -1,0 +1,91 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BrightCard デモ見本 — 11デザイン×11人</title>
+<meta name="description" content="1データ1デザインの売り切り型デジタル名刺。11のデザインを、それぞれ別の架空事業者で。物理NFCカード同梱。">
+<meta property="og:title" content="BrightCard デモ見本 — 11デザイン×11人">
+<meta property="og:description" content="11デザインを、それぞれ別の架空事業者で。専用デザインのデジタル名刺＋物理NFCカード同梱。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://withbt.com/card/_demo.html">
+<meta property="og:image" content="https://withbt.com/card/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://withbt.com/card/og.jpg">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;
+  font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+  -webkit-font-smoothing:antialiased;color:#fff}
+.stage{position:fixed;inset:0;top:52px;display:flex;overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.stage::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;height:100%;scroll-snap-align:center;position:relative}
+.slide iframe{width:100%;height:100%;border:0;display:block;background:#0a0a0a}
+.bar{position:fixed;top:0;left:0;right:0;height:52px;z-index:20;display:flex;align-items:center;
+  gap:8px;padding:0 14px;background:rgba(8,8,9,.92);border-bottom:1px solid rgba(255,255,255,.1)}
+.bar .ttl{font-size:12px;letter-spacing:.16em;font-weight:700}
+.bar .ttl small{font-weight:500;opacity:.6;letter-spacing:.04em;margin-left:6px}
+.nav{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  z-index:15;display:flex;align-items:center;gap:12px;background:rgba(10,10,10,.6);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.14)}
+.arrow{width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.14);
+  color:#fff;font-size:15px;cursor:pointer;display:grid;place-items:center;flex:none}
+.arrow:hover{background:rgba(255,255,255,.26)}
+.nlabel{font-size:12px;font-weight:600;letter-spacing:.03em;min-width:150px;text-align:center}
+.dots{display:flex;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.32);transition:.25s}
+.dot.on{background:#fff;width:18px;border-radius:3px}
+</style>
+
+<div class="bar">
+  <span class="ttl">BRIGHTCARD デモ見本<small>1データ1デザイン・11の別人物サンプル（架空）</small></span>
+</div>
+<div class="stage" id="stage"></div>
+<div class="nav">
+  <button class="arrow" id="prev" aria-label="前">‹</button>
+  <span class="nlabel" id="nlabel"></span>
+  <div class="dots" id="dots"></div>
+  <button class="arrow" id="next" aria-label="次">›</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // ★相対パス（_demo.html と同じ階層に各デモカードフォルダがある）。ローカル・本番(withbt.com/card/)両対応。
+  var DESIGNS=[
+    {dir:"demo-bright/",    name:"Bright — 北野 大地（工務店）"},
+    {dir:"demo-aura/",      name:"Aura — 花村 恵（美容室）"},
+    {dir:"demo-editorial/", name:"Editorial — 高瀬 玲（経営コンサル）"},
+    {dir:"demo-washi/",     name:"Washi — 白石 宗一（税理士）"},
+    {dir:"demo-minimal/",   name:"Minimal — 南 悠（IT）"},
+    {dir:"demo-onyx/",      name:"Onyx — 佐伯 里佳（不動産）"},
+    {dir:"demo-alloy/",     name:"Alloy — 高橋 亮（精密鈑金）"},
+    {dir:"demo-kiln/",      name:"Kiln — 森 一馬（陶芸）"},
+    {dir:"demo-flux/",      name:"Flux — 安藤 蓮（デザイン）"},
+    {dir:"demo-kinari/",    name:"Kinari — 山本 直子（呉服）"},
+    {dir:"demo-owner/",     name:"Owner（GQ）— 山岡 誠（珈琲店）"}
+  ];
+  var stage=document.getElementById("stage"),dotsWrap=document.getElementById("dots"),nlabel=document.getElementById("nlabel");
+  var cur=0;
+  DESIGNS.forEach(function(d,i){
+    var s=document.createElement("div");s.className="slide";
+    var f=document.createElement("iframe");f.src=d.dir;f.loading=i===0?"eager":"lazy";f.title=d.name;
+    s.appendChild(f);stage.appendChild(s);
+    var dot=document.createElement("span");dot.className="dot"+(i===0?" on":"");dotsWrap.appendChild(dot);
+  });
+  function setLabel(i){nlabel.textContent=DESIGNS[i].name;
+    [].forEach.call(dotsWrap.children,function(d,j){d.classList.toggle("on",j===i);});}
+  function setActive(i){if(i===cur)return;cur=i;setLabel(i);}
+  setLabel(0);
+  var raf=null;
+  stage.addEventListener("scroll",function(){if(raf)return;
+    raf=requestAnimationFrame(function(){raf=null;
+      var i=Math.round(stage.scrollLeft/stage.clientWidth);
+      i=Math.max(0,Math.min(DESIGNS.length-1,i));setActive(i);});});
+  function goTo(i){i=Math.max(0,Math.min(DESIGNS.length-1,i));
+    stage.scrollTo({left:i*stage.clientWidth,behavior:"smooth"});}
+  document.getElementById("prev").addEventListener("click",function(){goTo(cur-1);});
+  document.getElementById("next").addEventListener("click",function(){goTo(cur+1);});
+  document.addEventListener("keydown",function(e){
+    if(e.key==="ArrowRight")goTo(cur+1);if(e.key==="ArrowLeft")goTo(cur-1);});
+})();
+</script>
