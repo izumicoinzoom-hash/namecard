@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BrightCard | 専用デザインのデジタル名刺＋物理NFCカード</title>
+<meta name="description" content="スマホで見られる、専用デザインの名刺。物理NFCカード同梱。連絡先保存・SNS導線まで。月額0円、更新は必要な時だけ。">
+<meta property="og:title" content="BrightCard | 専用デザインのデジタル名刺">
+<meta property="og:description" content="タップで開く物理NFCカード同梱。制作代行の1/4〜1/10で専用デザイン＋公開URL。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --bg-2:#131313;
+    --bg-3:#191919;
+    --line:rgba(255,255,255,.10);
+    --line-soft:rgba(255,255,255,.06);
+    --ink:#f2efe9;
+    --ink-dim:rgba(242,239,233,.68);
+    --ink-faint:rgba(242,239,233,.42);
+    --ember:#e8703a;
+    --ember-soft:rgba(232,112,58,.14);
+    --ember-line:rgba(232,112,58,.45);
+    --serif:'Shippori Mincho B1','Noto Sans JP',serif;
+    --sans:'Space Grotesk','Noto Sans JP',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);overflow-x:hidden;max-width:100%}
+  body{
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.7;
+    font-size:15px;
+  }
+  img,svg{max-width:100%;display:block}
+  a{color:inherit}
+  .wrap{max-width:640px;margin:0 auto;padding:0 24px}
+  @media (min-width:760px){ .wrap{padding:0 40px} }
+
+  /* reduced motion */
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .7s ease, transform .7s ease}
+    .reveal.is-in{opacity:1;transform:none}
+  }
+
+  /* ---------- header mini ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:30;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 24px;background:rgba(10,10,10,.72);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .topbar .mark{font-family:var(--serif);font-weight:800;font-size:15px;letter-spacing:.06em}
+  .topbar .mark em{font-style:normal;color:var(--ember)}
+  .topbar .cta-mini{
+    font-family:var(--sans);font-size:11.5px;letter-spacing:.05em;font-weight:600;
+    color:var(--ink);border:1px solid var(--line);border-radius:999px;
+    padding:7px 14px;white-space:nowrap;text-decoration:none;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;padding:60px 0 46px;
+    background:
+      radial-gradient(120% 70% at 50% -10%, rgba(232,112,58,.16), transparent 60%),
+      var(--bg);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .hero .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:11px;letter-spacing:.18em;color:var(--ember);
+    font-weight:600;margin-bottom:22px;
+  }
+  .hero .eyebrow::before{content:"";width:16px;height:1px;background:var(--ember)}
+  .hero h1{
+    font-family:var(--serif);font-weight:800;
+    font-size:clamp(28px,7.4vw,38px);
+    line-height:1.45;letter-spacing:.01em;margin:0 0 20px;
+  }
+  .hero h1 .accent{color:var(--ember)}
+  .hero p.sub{
+    font-size:14.5px;color:var(--ink-dim);line-height:1.9;margin:0 0 34px;max-width:46ch;
+  }
+  .card-preview{
+    margin:0 0 34px;border:1px solid var(--line);border-radius:16px;
+    background:linear-gradient(160deg,var(--bg-3),var(--bg-2));
+    padding:22px;display:flex;align-items:center;gap:16px;
+  }
+  .card-preview .chip{
+    flex:none;width:44px;height:44px;border-radius:10px;
+    background:var(--ember-soft);border:1px solid var(--ember-line);
+    display:grid;place-items:center;color:var(--ember);
+  }
+  .card-preview .chip svg{width:22px;height:22px}
+  .card-preview .txt{font-size:12.5px;color:var(--ink-faint);line-height:1.7}
+  .card-preview .txt b{color:var(--ink);font-weight:600}
+
+  .btn-primary{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;padding:17px 20px;border-radius:999px;
+    background:var(--ember);color:#0a0a0a;text-decoration:none;
+    font-family:var(--sans);font-weight:700;font-size:14.5px;letter-spacing:.02em;
+    border:1px solid var(--ember);
+  }
+  .btn-primary svg{width:16px;height:16px;flex:none}
+  .btn-ghost{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;padding:16px 20px;border-radius:999px;margin-top:12px;
+    background:transparent;color:var(--ink);text-decoration:none;
+    font-family:var(--sans);font-weight:600;font-size:13.5px;
+    border:1px solid var(--line);
+  }
+
+  /* ---------- section shell ---------- */
+  section{padding:56px 0}
+  section.alt{background:var(--bg-2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
+  .kicker{
+    font-size:11px;letter-spacing:.16em;color:var(--ember);font-weight:600;margin-bottom:10px;
+  }
+  h2{
+    font-family:var(--serif);font-weight:800;font-size:clamp(21px,5.6vw,26px);
+    line-height:1.5;margin:0 0 14px;
+  }
+  .lead{color:var(--ink-dim);font-size:13.5px;line-height:1.85;margin:0 0 30px;max-width:48ch}
+
+  /* ---------- features ---------- */
+  .feat-list{display:flex;flex-direction:column;gap:14px}
+  .feat{
+    display:flex;gap:14px;align-items:flex-start;
+    border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--bg-2);
+  }
+  .feat .ic{
+    flex:none;width:38px;height:38px;border-radius:9px;
+    background:var(--ember-soft);border:1px solid var(--ember-line);
+    display:grid;place-items:center;color:var(--ember);
+  }
+  .feat .ic svg{width:19px;height:19px}
+  .feat h3{font-size:14px;font-weight:600;margin:0 0 5px;font-family:var(--sans);color:var(--ink)}
+  .feat p{font-size:12.5px;color:var(--ink-faint);margin:0;line-height:1.75}
+
+  /* ---------- catalog cta ---------- */
+  .catalog-box{
+    border:1px solid var(--ember-line);border-radius:16px;padding:26px 22px;
+    background:linear-gradient(160deg, var(--ember-soft), transparent 70%);
+    text-align:center;
+  }
+  .catalog-box .num{
+    font-family:var(--serif);font-weight:800;font-size:34px;color:var(--ember);line-height:1;margin-bottom:8px;
+  }
+  .catalog-box p{font-size:13px;color:var(--ink-dim);margin:0 0 20px;line-height:1.8}
+  .link-arrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--sans);font-weight:700;font-size:13.5px;color:var(--ember);
+    text-decoration:none;border-bottom:1px solid var(--ember-line);padding-bottom:3px;
+  }
+  .link-arrow svg{width:14px;height:14px}
+
+  .lines-grid{margin-top:26px;display:flex;flex-direction:column;gap:12px}
+  .line-card{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:var(--bg-2)}
+  .line-card .tag{
+    display:inline-block;font-size:10.5px;letter-spacing:.1em;font-weight:700;
+    color:var(--bg);background:var(--ink-faint);border-radius:5px;padding:2px 8px;margin-bottom:9px;
+  }
+  .line-card.owner .tag{background:var(--ember);color:#0a0a0a}
+  .line-card h4{font-family:var(--serif);font-size:15px;font-weight:800;margin:0 0 6px}
+  .line-card p{font-size:12px;color:var(--ink-faint);margin:0;line-height:1.7}
+
+  /* ---------- pricing ---------- */
+  .price-note{
+    font-size:13px;color:var(--ember);font-weight:600;text-align:center;
+    border:1px dashed var(--ember-line);border-radius:12px;padding:16px;margin:0 0 30px;
+    background:var(--ember-soft);line-height:1.8;
+  }
+  .plan{
+    border-radius:18px;padding:24px 22px;margin-bottom:18px;border:1px solid var(--line);background:var(--bg-2);
+    position:relative;
+  }
+  .plan.owner{
+    border:1px solid var(--ember-line);
+    background:linear-gradient(160deg, rgba(232,112,58,.12), var(--bg-2) 60%);
+  }
+  .plan .badge{
+    position:absolute;top:-11px;left:22px;font-size:10.5px;font-weight:700;letter-spacing:.08em;
+    background:var(--ember);color:#0a0a0a;border-radius:999px;padding:4px 12px;
+  }
+  .plan .pl-name{font-size:11px;letter-spacing:.12em;color:var(--ink-faint);font-weight:600;margin-bottom:6px}
+  .plan .pl-title{font-family:var(--serif);font-size:19px;font-weight:800;margin:0 0 10px}
+  .plan .pl-desc{font-size:12.5px;color:var(--ink-dim);margin:0 0 18px;line-height:1.75}
+  .pl-materials{display:flex;flex-direction:column;gap:8px}
+  .pl-mat{
+    display:flex;align-items:center;justify-content:space-between;
+    border-top:1px solid var(--line-soft);padding-top:8px;font-size:12.5px;
+  }
+  .pl-mat:first-child{border-top:0;padding-top:0}
+  .pl-mat .mname{color:var(--ink-dim)}
+  .pl-mat .mprice{font-family:var(--sans);font-weight:700;font-size:15px;color:var(--ink)}
+  .plan.owner .pl-mat .mprice{color:var(--ember);font-size:18px}
+  .price-fine{font-size:11px;color:var(--ink-faint);text-align:center;margin-top:6px;line-height:1.8}
+
+  /* ---------- why ---------- */
+  .compare-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+  .compare-table th,.compare-table td{
+    border:1px solid var(--line);padding:11px 10px;text-align:left;vertical-align:top;
+  }
+  .compare-table th{color:var(--ink-faint);font-weight:600;font-size:10.5px;letter-spacing:.04em;background:var(--bg-3)}
+  .compare-table td.hl{color:var(--ember);font-weight:700}
+  .compare-table .row-label{color:var(--ink-dim);font-weight:600;white-space:nowrap}
+
+  /* ---------- final cta ---------- */
+  .final-cta{text-align:center}
+  .final-cta h2{margin-bottom:10px}
+  .line-cta{
+    margin-top:14px;font-size:12.5px;color:var(--ink-faint);text-align:center;
+  }
+  .line-cta a{color:var(--ink-dim);text-decoration:underline;text-decoration-color:var(--line)}
+
+  footer{
+    padding:34px 0 46px;text-align:center;border-top:1px solid var(--line-soft);
+  }
+  footer .copy{font-size:11.5px;color:var(--ink-faint)}
+  footer .credit{font-size:10px;color:rgba(242,239,233,.28);margin-top:6px;letter-spacing:.06em}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="mark">Bright<em>Card</em></span>
+  <a class="cta-mini" href="apply.html">申込む</a>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">DIGITAL NAMECARD</span>
+    <h1>スマホで見られる、<br><span class="accent">専用デザイン</span>の名刺。</h1>
+    <p class="sub">タップで開く物理NFCカード同梱。連絡先保存・SNS導線まで、これ一つで完結します。</p>
+
+    <div class="card-preview">
+      <span class="chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="2.4"/><path d="M7 10h.01M11 10h6M11 14h6"/></svg>
+      </span>
+      <span class="txt">かざすだけで開く<br><b>1枚のNFCカード</b>が名刺ページへ案内します</span>
+    </div>
+
+    <a class="btn-primary" href="#pricing">
+      料金を見る
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </a>
+    <a class="btn-ghost" href="_catalog.html" target="_blank" rel="noopener">
+      11デザインを見る
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M8 7h9v9"/></svg>
+    </a>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <div class="kicker reveal">WHAT YOU GET</div>
+    <h2 class="reveal">1枚のカードでできること</h2>
+    <p class="lead reveal">名刺交換のその場で、あなたの世界観ごと手渡せます。</p>
+
+    <div class="feat-list">
+      <div class="feat reveal">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="2.5" width="12" height="19" rx="2.4"/><path d="M11 18h2"/></svg></span>
+        <div><h3>スマホで見られる自己紹介サイト</h3><p>専用デザインの1ページ。事業内容・実績・想いを、名刺交換した相手がその場で確認できます。</p></div>
+      </div>
+      <div class="feat reveal">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.8-9.4-9.2C1.2 8.6 3 5.5 6.2 5.2c2-.2 3.4 1 4.8 2.6 1.4-1.6 2.8-2.8 4.8-2.6 3.2.3 5 3.4 3.6 6.6C19 16.2 12 21 12 21z"/></svg></span>
+        <div><h3>ワンタップで連絡先保存</h3><p>vCard形式でスマホの連絡先へそのまま保存。あとで探して打ち込む手間がありません。</p></div>
+      </div>
+      <div class="feat reveal">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="6" r="2.6"/><circle cx="18" cy="18" r="2.6"/><path d="M8.4 10.8l7.2-3.6M8.4 13.2l7.2 3.6"/></svg></span>
+        <div><h3>SNS・LINE導線</h3><p>公式LINE・Instagram・Xなどの導線を1ページに集約。フォロー・友だち追加まで一気通貫。</p></div>
+      </div>
+      <div class="feat reveal">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="2.4"/><path d="M3 9.5h18"/><circle cx="7" cy="15" r="1"/></svg></span>
+        <div><h3>物理NFCカード同梱</h3><p>相手のスマホにかざすと名刺ページが開きます。渡す所作そのものが印象になります。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="designs">
+  <div class="wrap">
+    <div class="kicker reveal">DESIGN</div>
+    <h2 class="reveal">デザインは11種・3ライン</h2>
+    <p class="lead reveal">1データ×複数デザイン。同じ内容でも、まとう世界観を選べます。</p>
+
+    <div class="catalog-box reveal">
+      <div class="num">11</div>
+      <p>清田兼明の実データで11デザインを見比べられるライブ見本です。</p>
+      <a class="link-arrow" href="_catalog.html" target="_blank" rel="noopener">
+        11デザインを見る
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M8 7h9v9"/></svg>
+      </a>
+    </div>
+
+    <div class="lines-grid">
+      <div class="line-card reveal">
+        <span class="tag">標準</span>
+        <h4>生成背景の額装ポートレート</h4>
+        <p>AIで生成した背景に額装風のポートレートを配置。量産NFC名刺と同価格帯で、専用デザインの入口として。</p>
+      </div>
+      <div class="line-card reveal">
+        <span class="tag">差別化</span>
+        <h4>撮影名刺型</h4>
+        <p>お手持ちの名刺を撮影→AIが情報を抽出→章立てのページに再構成。「名刺を撮る」だけで仕上がる主力ライン。</p>
+      </div>
+      <div class="line-card owner reveal">
+        <span class="tag">オーナー</span>
+        <h4>GQ級 最上位</h4>
+        <p>雑誌のインタビューページのような最上位仕立て。作品・商品紹介つき、材質はアルミ固定の単一価格。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="kicker reveal">PRICE（税込・カード込み）</div>
+    <h2 class="reveal">料金</h2>
+    <p class="lead reveal">制作代行¥2〜5万・プロ撮影¥1.5万が参照点。その1/4〜1/10で専用デザイン＋物理カード＋公開URLが手に入ります。</p>
+
+    <div class="price-note reveal">月額¥0。更新は必要な時だけ、外注より安い都度払い。</div>
+
+    <div class="plan owner reveal">
+      <span class="badge">オーナー</span>
+      <div class="pl-name">OWNER LINE</div>
+      <div class="pl-title">GQ級最上位</div>
+      <p class="pl-desc">実QR・作品/商品紹介つき。材質はアルミ固定の単一構成です。</p>
+      <div class="pl-materials">
+        <div class="pl-mat"><span class="mname">アルミ（ヘアラインシルバー）</span><span class="mprice">¥14,800</span></div>
+      </div>
+    </div>
+
+    <div class="plan reveal">
+      <span class="pl-name" style="margin-left:0">差別化ライン</span>
+      <div class="pl-title">撮影名刺型</div>
+      <p class="pl-desc">名刺を撮る→AIが抽出→章立てで再構成。素材は3種から選べます。</p>
+      <div class="pl-materials">
+        <div class="pl-mat"><span class="mname">黒（PVC）</span><span class="mprice">¥6,900</span></div>
+        <div class="pl-mat"><span class="mname">木（チェリーウッド）</span><span class="mprice">¥7,400</span></div>
+        <div class="pl-mat"><span class="mname">アルミ（ヘアラインシルバー）</span><span class="mprice">¥7,900</span></div>
+      </div>
+    </div>
+
+    <div class="plan reveal">
+      <span class="pl-name" style="margin-left:0">標準ライン</span>
+      <div class="pl-title">生成背景＋額装ポートレート</div>
+      <p class="pl-desc">量産NFC名刺と同価格帯で、専用デザインの入口として。</p>
+      <div class="pl-materials">
+        <div class="pl-mat"><span class="mname">黒（PVC）</span><span class="mprice">¥4,900</span></div>
+        <div class="pl-mat"><span class="mname">木（チェリーウッド）</span><span class="mprice">¥5,400</span></div>
+        <div class="pl-mat"><span class="mname">アルミ（ヘアラインシルバー）</span><span class="mprice">¥5,900</span></div>
+      </div>
+    </div>
+
+    <p class="price-fine reveal">物理NFCカード同梱。更新は都度課金・半額原則。</p>
+  </div>
+</section>
+
+<section class="alt" id="why">
+  <div class="wrap">
+    <div class="kicker reveal">WHY BRIGHTCARD</div>
+    <h2 class="reveal">なぜBrightCardか</h2>
+    <p class="lead reveal">量産NFC名刺（¥2,980〜4,980）と同価格帯でありながら、専用デザインと物理カードを両立します。</p>
+
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <table class="compare-table reveal">
+        <thead>
+          <tr><th></th><th>量産NFC名刺</th><th>制作代行</th><th>BrightCard</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">価格帯</td>
+            <td>¥2,980〜4,980</td>
+            <td>¥20,000〜50,000</td>
+            <td class="hl">¥4,900〜14,800</td>
+          </tr>
+          <tr>
+            <td class="row-label">デザイン</td>
+            <td>テンプレ共通</td>
+            <td>専用</td>
+            <td class="hl">専用</td>
+          </tr>
+          <tr>
+            <td class="row-label">物理カード</td>
+            <td>あり</td>
+            <td>別途手配</td>
+            <td class="hl">同梱</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="apply" class="final-cta">
+  <div class="wrap">
+    <div class="kicker reveal">APPLY</div>
+    <h2 class="reveal">申込む</h2>
+    <p class="lead reveal" style="margin-left:auto;margin-right:auto">お手持ちの名刺や情報をもとに、専用デザインの1枚を制作します。</p>
+    <a class="btn-primary reveal" href="apply.html">
+      申込フォームへ
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+    <p class="line-cta reveal"><a href="#">LINEで相談する →</a></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="copy">© 2026 合同会社WBT</div>
+    <div class="credit">BrightCard</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  if(!("IntersectionObserver" in window)){
+    document.querySelectorAll(".reveal").forEach(function(el){el.classList.add("is-in");});
+    return;
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add("is-in");
+        io.unobserve(entry.target);
+      }
+    });
+  },{threshold:.12,rootMargin:"0px 0px -8% 0px"});
+  document.querySelectorAll(".reveal").forEach(function(el){io.observe(el);});
+})();
+</script>
+
+</body>
+</html>
