@@ -133,17 +133,40 @@ SNS対応: `line-official / line / whatsapp / instagram / x / facebook / youtube
 
 ---
 
-## 3. パターンカタログ（5パターン）
+## 3. デザインカタログ（11テンプレ・3ライン）※2026-07-17 統合で全面更新
 
-| # | パターン | 世界観・レイアウト | 配色 | 想定業種 | 昇華元 |
-|---|---|---|---|---|---|
-| 1 | **Bright**（ダーク・フォト） | 全画面ヒーロー写真・力強い | 黒`#0a0a0a`＋accent自由（既定ember） | 建設・製造・自動車・不動産・運送 | yonekawa＋dark.ts |
-| 2 | **Paper**（ライト・フォト） | 白紙面・清潔・グレイン質感 | 紙白`#F8FAFC`＋accent（既定`#0284C7`） | 士業・医療・保険・コンサル・教育 | 本人版index.html（Products/From WBT除去） |
-| 3 | **Editorial**（雑誌） | Playfair＋章番号＋引用符 | 黒＋金`#d4af37` | ブランド志向経営者・高級飲食・美容 | editorial/index.html |
-| 4 | **Washi**（和紙・活版） | 中央揃え・飾り罫・静けさ | 生成り`#f4ede0`＋墨＋金茶 | 士業（伝統系）・和食・旅館・工芸 | preview/b-letterpress.html |
-| 5 | **Minimal**（白・写真任意） | 丸アバター＋チップ型役職・余白主体 | 白＋黒＋accent一点 | IT・若手経営者・写真なし会員 | preview/a-minimal.html（KENMEI誤記修正） |
+3ラインで販売（価格は§6）。全テンプレは共通ランタイム（card.js の `design.template` 1語で切替）。ライブ見本＝`withbt.com/card/_catalog.html`（清田実データで11デザイン）。
 
-**全パターン共通制約:** ①name.ja以外は省略可・空はセクションごと非表示 ②写真なし→頭文字モノグラム ③長さ耐性（会社名〜25字/positions1〜4/sns0〜8等で崩れない） ④共通セクション語彙（hero/about/philosophy/businesses/links/contact/sns/footer/saveCTA）は増減不可 ⑤accent1色で着せ替え ⑥会員版にProducts/From WBT枠は存在させない。フッターは`© YYYY 氏名`＋小さく`Powered by BrightCard（合同会社WBT）`のみ。清田さん本人版index.htmlは本システムの外で現状凍結。
+### 標準ライン（C系・生成AI背景＋額装ポートレート／量産NFC名刺と同価格帯）
+| テンプレ | 世界観 | 配色 | 想定業種 |
+|---|---|---|---|
+| **bright** | ダーク・シネマ／角丸縦フレーム | 黒＋accent(既定ember) | 建設・製造・自動車・運送 |
+| **aura** | 柔光ボケ／円フレーム | 明＋accent | 医療・美容・サロン |
+| **editorial** | 雑誌／左フレーム右明朝 | 黒＋金系 | ブランド志向経営者・高級飲食 |
+| **washi** | 和紙・額装・落款 | 生成り＋墨 | 士業(伝統)・和食・工芸 |
+| **minimal** | 白余白・小円アバター | 白＋accent一点 | IT・若手・写真なし |
+
+背景＝生成AI画像（`background.ref` → `_assets/backgrounds/<ref>.webp`）。切り抜き不要のフレーム内配置。
+
+### 差別化ライン（B系・撮影名刺型：名刺を撮る→AI抽出→章立て構成）
+| テンプレ | 世界観 | 配色 |
+|---|---|---|
+| **onyx** | 漆黒エディトリアル・明朝 | 黒＋橙 |
+| **alloy** | ブラッシュドアルミ・寒色ゴシック | 冷灰＋スチール青 |
+| **kiln** | 明・クラフト紙・木 | 生成り＋焦茶 |
+| **flux** | 深夜ネオン・モノ字 | 深紺＋発光ミント |
+| **kinari** | 明・和紙・縦書きヒーロー | 生成り＋藍 |
+
+構成＝撮影名刺インテイク→抽出フィールド→01 Portrait→02 Story→03 Save＋収納式FAB。Story章に `metrics[]` を使用。
+
+### オーナーライン（GQ最上位・清田本人版を吸収）
+| テンプレ | 世界観 |
+|---|---|
+| **owner-editorial** | 二重露光ヒーロー＋刻印モーション＋sticky-stack章＋実QR＋Works章 |
+
+`products[]`(Works章・要見積)/`qr:{svg}`(MECARD静的SVG)/`philosophy` を使用。
+
+**全テンプレ共通制約:** ①name.ja以外は省略可・空はセクション非表示 ②写真なし→頭文字モノグラム ③長さ耐性（会社名〜25字/positions1〜4/sns0〜8） ④共通ランタイム(boot/core/icons/templates)・**card.js1箇所編集**・全カード一斉修正はruntime1箇所上書き ⑤accent1色で着せ替え ⑥**「From WBT自己宣伝枠」は入れない**（会員自身の商品＝owner-editorialのproductsは可）。フッターは`© YYYY 氏名`＋小さく`Powered by BrightCard（合同会社WBT）`のみ。
 
 ---
 
