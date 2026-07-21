@@ -536,6 +536,7 @@
     <p class="lead">
       ご記入いただいた内容で専用デザインの名刺ページ＋物理NFCカードを制作します。<strong>掲載したくない項目は空欄のままで結構です。</strong>
       最後まで入力したら「内容を作成する」ボタンを押し、表示された内容を<strong>コピーしてLINEまたはメールで清田まで送信</strong>してください（この画面から自動送信はされません）。
+      まだデザインをお決めでない方は、<a href="_demo.html" target="_blank" rel="noopener">11種のデザイン見本（デモ）はこちら</a>からご覧いただけます。
     </p>
   </div>
 
@@ -979,7 +980,25 @@
     }
   }
   $$('input[name="line"]').forEach(function(r){ r.addEventListener("change", updateLineUI); });
-  updateLineUI();
+  /* LP（index.html）の価格カードからの ?line= / ?material= プリセレクト */
+  (function preselectFromQuery(){
+    try {
+      const q = new URLSearchParams(location.search);
+      const lineParam = q.get("line");
+      const matParam = q.get("material");
+      if (lineParam && ["standard","diff","owner"].indexOf(lineParam) !== -1){
+        const r = document.querySelector('input[name="line"][value="' + lineParam + '"]');
+        if (r) r.checked = true;
+      }
+      updateLineUI(); // ライン反映＋素材の表示/無効化＋オーナーのアルミ強制
+      if (matParam && ["black","wood","aluminum"].indexOf(matParam) !== -1){
+        const mr = document.querySelector('input[name="material"][value="' + matParam + '"]');
+        if (mr && !mr.disabled) mr.checked = true; // owner等で非表示の素材は無視
+      }
+    } catch (e) {
+      updateLineUI();
+    }
+  })();
 
   /* ---------- ユーティリティ ---------- */
   function val(id){
