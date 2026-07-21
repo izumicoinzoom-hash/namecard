@@ -1,9 +1,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>BrightCard デモ見本 — 11デザイン×11人</title>
-<meta name="description" content="1データ1デザインの売り切り型デジタル名刺。11のデザインを、それぞれ別の架空事業者で。物理NFCカード同梱。">
-<meta property="og:title" content="BrightCard デモ見本 — 11デザイン×11人">
-<meta property="og:description" content="11デザインを、それぞれ別の架空事業者で。専用デザインのデジタル名刺＋物理NFCカード同梱。">
+<title>BrightCard デモ見本 — 11デザイン×3ライン</title>
+<meta name="description" content="1データ1デザインの売り切り型デジタル名刺。11のデザインを、標準・差別化・オーナーの3ラインで、それぞれ別の架空事業者で。物理NFCカード同梱。">
+<meta property="og:title" content="BrightCard デモ見本 — 11デザイン×3ライン">
+<meta property="og:description" content="11デザインを標準・差別化・オーナーの3ラインで。専用デザインのデジタル名刺＋物理NFCカード同梱。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://withbt.com/card/_demo.html">
 <meta property="og:image" content="https://withbt.com/card/og.jpg">
@@ -20,24 +20,36 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;
 .slide{flex:0 0 100%;height:100%;scroll-snap-align:center;position:relative}
 .slide iframe{width:100%;height:100%;border:0;display:block;background:#0a0a0a}
 .bar{position:fixed;top:0;left:0;right:0;height:52px;z-index:20;display:flex;align-items:center;
-  gap:8px;padding:0 14px;background:rgba(8,8,9,.92);border-bottom:1px solid rgba(255,255,255,.1)}
-.bar .ttl{font-size:12px;letter-spacing:.16em;font-weight:700}
-.bar .ttl small{font-weight:500;opacity:.6;letter-spacing:.04em;margin-left:6px}
+  justify-content:center;gap:8px;padding:0 12px;background:rgba(8,8,9,.94);
+  border-bottom:1px solid rgba(255,255,255,.1)}
+.bar .brand{position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  font-size:10px;letter-spacing:.14em;font-weight:700;opacity:.5}
+/* 上部：3ラインの凡例（中央・常に全表示） */
+.legend{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:nowrap;white-space:nowrap}
+.lg{display:flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.02em;
+  font-weight:600;opacity:.92;white-space:nowrap}
+.lg i{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.lg b{font-weight:600;opacity:.6;font-size:10px}
 .nav{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
-  z-index:15;display:flex;align-items:center;gap:12px;background:rgba(10,10,10,.6);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.14)}
+  z-index:15;display:flex;align-items:center;gap:12px;background:rgba(10,10,10,.92);
+  padding:8px 12px;border-radius:22px;border:1px solid rgba(255,255,255,.14)}
 .arrow{width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.14);
   color:#fff;font-size:15px;cursor:pointer;display:grid;place-items:center;flex:none}
 .arrow:hover{background:rgba(255,255,255,.26)}
-.nlabel{font-size:12px;font-weight:600;letter-spacing:.03em;min-width:150px;text-align:center}
+/* 下部ラベル：ラインバッジ＋価格帯（上段）／人物名（下段） */
+.nlabel{display:flex;flex-direction:column;gap:1px;line-height:1.3;min-width:186px;text-align:center}
+.nlabel .lchip{font-size:11px;font-weight:700;letter-spacing:.02em;
+  display:flex;align-items:center;justify-content:center;gap:5px}
+.nlabel .lchip i{width:7px;height:7px;border-radius:50%;display:inline-block;flex:none}
+.nlabel .pname{font-size:11px;font-weight:500;opacity:.82;letter-spacing:.02em}
 .dots{display:flex;gap:6px}
 .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.32);transition:.25s}
 .dot.on{background:#fff;width:18px;border-radius:3px}
 </style>
 
 <div class="bar">
-  <span class="ttl">BRIGHTCARD デモ見本<small>1データ1デザイン・11の別人物サンプル（架空）</small></span>
+  <span class="brand">BRIGHTCARD</span>
+  <div class="legend" id="legend"></div>
 </div>
 <div class="stage" id="stage"></div>
 <div class="nav">
@@ -50,30 +62,50 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;
 <script>
 (function(){
   "use strict";
+  // 3ライン（設計書§6の価格ライン）。デモを見ながら「このデザイン＝どのライン・いくら」を意識できるようにする。
+  var LINES={
+    standard:{short:"標準",  label:"標準ライン",  price:"¥4,900〜", color:"#6E8BA6"},
+    diff:    {short:"差別化", label:"差別化ライン", price:"¥6,900〜", color:"#E8703A"},
+    owner:   {short:"オーナー",label:"オーナーライン",price:"¥14,800", color:"#C0A062"}
+  };
   // ★相対パス（_demo.html と同じ階層に各デモカードフォルダがある）。ローカル・本番(withbt.com/card/)両対応。
   var DESIGNS=[
-    {dir:"demo-bright/",    name:"Bright — 北野 大地（工務店）"},
-    {dir:"demo-aura/",      name:"Aura — 花村 恵（美容室）"},
-    {dir:"demo-editorial/", name:"Editorial — 高瀬 玲（経営コンサル）"},
-    {dir:"demo-washi/",     name:"Washi — 白石 宗一（税理士）"},
-    {dir:"demo-minimal/",   name:"Minimal — 南 悠（IT）"},
-    {dir:"demo-onyx/",      name:"Onyx — 佐伯 里佳（不動産）"},
-    {dir:"demo-alloy/",     name:"Alloy — 高橋 亮（精密鈑金）"},
-    {dir:"demo-kiln/",      name:"Kiln — 森 一馬（陶芸）"},
-    {dir:"demo-flux/",      name:"Flux — 安藤 蓮（デザイン）"},
-    {dir:"demo-kinari/",    name:"Kinari — 山本 直子（呉服）"},
-    {dir:"demo-owner/",     name:"Owner（GQ）— 山岡 誠（珈琲店）"}
+    {dir:"demo-bright/",    line:"standard", name:"Bright — 北野 大地（工務店）"},
+    {dir:"demo-aura/",      line:"standard", name:"Aura — 花村 恵（美容室）"},
+    {dir:"demo-editorial/", line:"standard", name:"Editorial — 高瀬 玲（経営コンサル）"},
+    {dir:"demo-washi/",     line:"standard", name:"Washi — 白石 宗一（税理士）"},
+    {dir:"demo-minimal/",   line:"standard", name:"Minimal — 南 悠（IT）"},
+    {dir:"demo-onyx/",      line:"diff",     name:"Onyx — 佐伯 里佳（不動産）"},
+    {dir:"demo-alloy/",     line:"diff",     name:"Alloy — 高橋 亮（精密鈑金）"},
+    {dir:"demo-kiln/",      line:"diff",     name:"Kiln — 森 一馬（陶芸）"},
+    {dir:"demo-flux/",      line:"diff",     name:"Flux — 安藤 蓮（デザイン）"},
+    {dir:"demo-kinari/",    line:"diff",     name:"Kinari — 山本 直子（呉服）"},
+    {dir:"demo-owner/",     line:"owner",    name:"Owner（GQ）— 山岡 誠（珈琲店）"}
   ];
-  var stage=document.getElementById("stage"),dotsWrap=document.getElementById("dots"),nlabel=document.getElementById("nlabel");
+  var stage=document.getElementById("stage"),dotsWrap=document.getElementById("dots"),
+      nlabel=document.getElementById("nlabel"),legend=document.getElementById("legend");
   var cur=0;
+  // 上部凡例（3ライン）を描画
+  ["standard","diff","owner"].forEach(function(k){
+    var L=LINES[k],el=document.createElement("span");el.className="lg";
+    el.innerHTML='<i style="background:'+L.color+'"></i>'+L.short;
+    legend.appendChild(el);
+  });
   DESIGNS.forEach(function(d,i){
     var s=document.createElement("div");s.className="slide";
     var f=document.createElement("iframe");f.src=d.dir;f.loading=i===0?"eager":"lazy";f.title=d.name;
     s.appendChild(f);stage.appendChild(s);
     var dot=document.createElement("span");dot.className="dot"+(i===0?" on":"");dotsWrap.appendChild(dot);
   });
-  function setLabel(i){nlabel.textContent=DESIGNS[i].name;
-    [].forEach.call(dotsWrap.children,function(d,j){d.classList.toggle("on",j===i);});}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function setLabel(i){
+    var d=DESIGNS[i],L=LINES[d.line];
+    nlabel.innerHTML='<span class="lchip" style="color:'+L.color+'">'+
+      '<i style="background:'+L.color+'"></i>'+L.label+' '+L.price+'</span>'+
+      '<span class="pname">'+esc(d.name)+'</span>';
+    [].forEach.call(dotsWrap.children,function(dot,j){dot.classList.toggle("on",j===i);});
+  }
   function setActive(i){if(i===cur)return;cur=i;setLabel(i);}
   setLabel(0);
   var raf=null;
