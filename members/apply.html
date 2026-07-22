@@ -664,62 +664,9 @@
       <button type="button" class="btn-add" id="addLink">＋ リンクを追加</button>
     </section>
 
-    <!-- 6. デザイン選択 -->
+    <!-- 6. ラインとカード素材 -->
     <section class="card">
-      <div class="sec-title"><span class="num">6</span>デザインパターンの選択<span class="sec-note">いずれか1つ</span></div>
-      <div class="pick-grid cols-2" id="designPicks">
-        <label class="pick-card">
-          <input type="radio" name="design" value="bright">
-          <div class="t"><span class="dot"></span>Bright <small>ダーク×写真</small></div>
-          <div class="d">全画面ヒーロー写真で力強く。建設・製造・自動車・不動産向け</div>
-        </label>
-        <label class="pick-card">
-          <input type="radio" name="design" value="paper" checked>
-          <div class="t"><span class="dot"></span>Paper <small>白紙面</small></div>
-          <div class="d">清潔感のある白基調。士業・医療・保険・コンサル・教育向け</div>
-        </label>
-        <label class="pick-card">
-          <input type="radio" name="design" value="editorial">
-          <div class="t"><span class="dot"></span>Editorial <small>雑誌×金</small></div>
-          <div class="d">雑誌調の高級感。ブランド志向の経営者・高級飲食・美容向け</div>
-        </label>
-        <label class="pick-card">
-          <input type="radio" name="design" value="washi">
-          <div class="t"><span class="dot"></span>Washi <small>和紙×活版</small></div>
-          <div class="d">和の静けさと余白。伝統系士業・和食・旅館・工芸向け</div>
-        </label>
-        <label class="pick-card" style="grid-column:1 / -1;">
-          <input type="radio" name="design" value="minimal">
-          <div class="t"><span class="dot"></span>Minimal <small>白ミニマル</small></div>
-          <div class="d">余白を活かしたシンプル構成。IT・若手経営者・お写真なしの方にも最適</div>
-        </label>
-      </div>
-
-      <div class="field-row cols-2" style="margin-top:6px;">
-        <div class="field">
-          <label for="accent">アクセントカラー<span class="ex">指定なければおまかせ</span></label>
-          <input type="color" id="accent" name="accent" value="#8a6d3b">
-        </div>
-        <div class="field">
-          <label for="slug">URLスラッグ<span class="opt">（任意・半角英数）</span></label>
-          <input type="text" id="slug" name="slug" placeholder="例：kiyota-kemmei" autocomplete="off">
-        </div>
-      </div>
-
-      <div class="field">
-        <label>顔写真の提出方法</label>
-        <div class="chk-grid" id="photoMethod">
-          <label class="chk-pill"><input type="radio" name="photoMethod" value="line" checked><span>LINEで送付</span></label>
-          <label class="chk-pill"><input type="radio" name="photoMethod" value="email"><span>メールで送付</span></label>
-          <label class="chk-pill"><input type="radio" name="photoMethod" value="later"><span>後日提出</span></label>
-          <label class="chk-pill"><input type="radio" name="photoMethod" value="none"><span>写真なし（モノグラム表示）</span></label>
-        </div>
-      </div>
-    </section>
-
-    <!-- 7. ラインとカード素材 -->
-    <section class="card">
-      <div class="sec-title"><span class="num">7</span>ラインと物理NFCカード素材<span class="sec-note">税込・デジタル制作費込み</span></div>
+      <div class="sec-title"><span class="num">6</span>ラインと物理NFCカード素材<span class="sec-note">税込・デジタル制作費込み</span></div>
 
       <div class="field">
         <label>ライン<span class="req">必須</span></label>
@@ -765,6 +712,33 @@
       </div>
 
       <p class="row-hint" style="margin-top:8px;"><span class="bw">価格は</span><span class="bw">デジタル名刺ページの</span><span class="bw">制作費と</span><span class="bw">NFCカード1枚を</span><span class="bw">含む一括金額です。</span><span class="bw">カードを</span><span class="bw">スマートフォンにかざすだけで</span><span class="bw">専用ページが開きます</span><span class="bw">（名入れ印刷はございません）。</span></p>
+    </section>
+
+    <!-- 7. デザイン選択 -->
+    <section class="card">
+      <div class="sec-title"><span class="num">7</span>デザインパターンの選択<span class="sec-note">選択中のラインに応じて表示・いずれか1つ</span></div>
+      <div class="pick-grid cols-2" id="designPicks"></div>
+
+      <div class="field-row cols-2" style="margin-top:6px;">
+        <div class="field">
+          <label for="accent">アクセントカラー<span class="ex">指定なければおまかせ</span></label>
+          <input type="color" id="accent" name="accent" value="#8a6d3b">
+        </div>
+        <div class="field">
+          <label for="slug">URLスラッグ<span class="opt">（任意・半角英数）</span></label>
+          <input type="text" id="slug" name="slug" placeholder="例：kiyota-kemmei" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>顔写真の提出方法</label>
+        <div class="chk-grid" id="photoMethod">
+          <label class="chk-pill"><input type="radio" name="photoMethod" value="line" checked><span>LINEで送付</span></label>
+          <label class="chk-pill"><input type="radio" name="photoMethod" value="email"><span>メールで送付</span></label>
+          <label class="chk-pill"><input type="radio" name="photoMethod" value="later"><span>後日提出</span></label>
+          <label class="chk-pill"><input type="radio" name="photoMethod" value="none"><span>写真なし（モノグラム表示）</span></label>
+        </div>
+      </div>
     </section>
 
     <!-- 8. ご確認事項 -->
@@ -837,12 +811,38 @@
   function formatYen(n){
     return "¥" + n.toLocaleString("ja-JP");
   }
+  // ライン別デザインテンプレ（実ランタイムテンプレ名。boot.jsのvalidTemplatesと一致させること）
+  const DESIGN_BY_LINE = {
+    standard: [
+      { value: "bright",    label: "Bright",    small: "ダーク×写真",     d: "力強い額装ポートレート" },
+      { value: "aura",      label: "Aura",      small: "柔らかな光",       d: "中央の円形ポートレート" },
+      { value: "editorial", label: "Editorial", small: "雑誌調",           d: "雑誌調の誌面" },
+      { value: "washi",     label: "Washi",     small: "和紙×活版",       d: "和紙×活版・落款" },
+      { value: "minimal",   label: "Minimal",   small: "白ミニマル",       d: "白基調のミニマル" },
+    ],
+    diff: [
+      { value: "onyx",   label: "Onyx",   small: "黒曜石",         d: "全幅で黒に溶ける重厚な明朝" },
+      { value: "alloy",  label: "Alloy",  small: "アルミ削り出し", d: "精密でモダン" },
+      { value: "kiln",   label: "Kiln",   small: "陶土",           d: "あたたかいマット額装" },
+      { value: "flux",   label: "Flux",   small: "夜光ネオン",     d: "発光ガラス" },
+      { value: "kinari", label: "Kinari", small: "和紙×縦書き",   d: "和紙×縦書き・落款" },
+    ],
+    owner: [
+      { value: "owner-editorial", label: "Owner Editorial", small: "GQ級最上位", d: "二重露光ヒーロー＋章立て" },
+    ],
+  };
   const DESIGNS = {
-    bright:    "Bright（ダーク×写真）",
-    paper:     "Paper（白紙面）",
-    editorial: "Editorial（雑誌×金）",
-    washi:     "Washi（和紙×活版）",
-    minimal:   "Minimal（白ミニマル）",
+    bright:            "Bright（ダーク×写真）",
+    aura:               "Aura（柔らかな光）",
+    editorial:          "Editorial（雑誌調）",
+    washi:              "Washi（和紙×活版）",
+    minimal:            "Minimal（白ミニマル）",
+    onyx:               "Onyx（黒曜石）",
+    alloy:              "Alloy（アルミ削り出し）",
+    kiln:               "Kiln（陶土）",
+    flux:               "Flux（夜光ネオン）",
+    kinari:             "Kinari（和紙×縦書き）",
+    "owner-editorial":  "Owner Editorial（GQ級最上位）",
   };
   const PHOTO_METHODS = {
     line:  "LINEで送付",
@@ -957,8 +957,28 @@
     snsList.appendChild(item);
   });
 
-  /* ---------- ライン選択 ⇔ 素材選択の連動 ---------- */
+  /* ---------- ライン選択 ⇔ 素材選択・デザイン選択の連動 ---------- */
   const ownerNote = $("#ownerNote");
+  const designPicks = $("#designPicks");
+
+  /* ライン変更のたびに該当ラインのデザイン選択肢を再描画（材質フィルタと同じ流儀） */
+  function renderDesignPicks(lineVal){
+    const list = DESIGN_BY_LINE[lineVal] || DESIGN_BY_LINE.standard;
+    designPicks.innerHTML = "";
+    list.forEach(function(d, i){
+      const label = document.createElement("label");
+      label.className = "pick-card";
+      if (list.length % 2 === 1 && i === list.length - 1){
+        label.style.gridColumn = "1 / -1";
+      }
+      label.innerHTML =
+        '<input type="radio" name="design" value="' + d.value + '"' + (i === 0 ? " checked" : "") + '>' +
+        '<div class="t"><span class="dot"></span>' + d.label + ' <small>' + d.small + '</small></div>' +
+        '<div class="d">' + d.d + '</div>';
+      designPicks.appendChild(label);
+    });
+  }
+
   function updateLineUI(){
     const line = document.querySelector('input[name="line"]:checked');
     const lineVal = line ? line.value : "standard";
@@ -982,6 +1002,7 @@
     } else {
       ownerNote.style.display = "none";
     }
+    renderDesignPicks(lineVal);
   }
   $$('input[name="line"]').forEach(function(r){ r.addEventListener("change", updateLineUI); });
   /* LP（index.html）の価格カードからの ?line= / ?material= プリセレクト */
@@ -1175,7 +1196,7 @@
       schemaVersion: 1,
       slug: data.slug || slugify(data.nameRomaji) || "",
       design: {
-        template: data.design || "paper",
+        template: data.design || "bright",
         accent: data.accent || "#8a6d3b",
         photoPosition: "center top",
       },
@@ -1298,7 +1319,7 @@
       sns: collectSns(),
       businesses: collectBusinesses(),
       links: collectLinks(),
-      design: radioVal("design") || "paper",
+      design: radioVal("design") || "bright",
       accent: val("accent") || "#8a6d3b",
       slug: val("slug"),
       photoMethod: radioVal("photoMethod") || "later",
