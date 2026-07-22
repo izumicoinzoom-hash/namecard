@@ -250,6 +250,89 @@ div.bc-owner-editorial {
   white-space: pre-wrap;
 }
 
+/* ===== Proof（実績・任意章 — 誌面 "by the numbers" スプレッド） ===== */
+.bc-owner-editorial .bc-oe-proof-lead {
+  font-family: var(--bc-oe-serif);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--bc-oe-ink-mut);
+  margin: 16px 0 0;
+}
+.bc-owner-editorial .bc-oe-metrics {
+  margin-top: 30px;
+}
+.bc-owner-editorial .bc-oe-metric {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 15px 0;
+  border-top: 1px solid var(--bc-oe-line);
+}
+.bc-owner-editorial .bc-oe-metric-feature {
+  display: block;
+  border-top: none;
+  padding: 0 0 24px;
+}
+.bc-owner-editorial .bc-oe-num {
+  font-family: var(--bc-oe-serif);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--bc-oe-ink);
+  white-space: nowrap;
+}
+.bc-owner-editorial .bc-oe-metric .bc-oe-num {
+  font-size: clamp(1.9rem, 9vw, 2.6rem);
+}
+.bc-owner-editorial .bc-oe-metric-feature .bc-oe-num {
+  font-size: clamp(4.2rem, 24vw, 7rem);
+  line-height: 0.92;
+}
+/* static長文（5文字超）は1段階縮小 */
+.bc-owner-editorial .bc-oe-metric .bc-oe-num.bc-oe-num-long {
+  font-size: clamp(1.3rem, 6vw, 1.7rem);
+}
+.bc-owner-editorial .bc-oe-metric-feature .bc-oe-num.bc-oe-num-long {
+  font-size: clamp(2.2rem, 11vw, 3.2rem);
+}
+.bc-owner-editorial .bc-oe-num-unit {
+  font-size: 0.4em;
+  margin-left: 0.12em;
+  color: var(--bc-oe-ink-mut);
+}
+.bc-owner-editorial .bc-oe-num-bar {
+  display: block;
+  width: 64px;
+  height: 2px;
+  margin-top: 18px;
+  background: var(--bc-oe-accent, #e8703a);
+}
+/* 罫はscaleXで引く（bc-oe-rvの共通translateYではなく専用トランジション） */
+.bc-owner-editorial .bc-oe-num-bar.bc-oe-rv {
+  opacity: 1;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s var(--bc-oe-ease) 0.22s;
+}
+.bc-owner-editorial .bc-oe-num-bar.bc-oe-rv.bc-oe-in {
+  transform: scaleX(1);
+}
+.bc-owner-editorial .bc-oe-metric-label {
+  font-family: var(--bc-oe-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bc-oe-ink-mut);
+}
+.bc-owner-editorial .bc-oe-metric-feature .bc-oe-metric-label {
+  margin-top: 12px;
+  color: var(--bc-oe-accent, #e8703a);
+}
+.bc-owner-editorial .bc-oe-metric:not(.bc-oe-metric-feature) .bc-oe-metric-label {
+  text-align: right;
+}
+
 /* ===== Ventures (credit lines) ===== */
 .bc-owner-editorial .bc-oe-credits {
   margin-top: 22px;
@@ -806,6 +889,10 @@ html.bc-owner-editorial {
     opacity: 1;
     transform: none;
   }
+  /* Proof章のaccent罫は最終状態（引き切った状態）で静的表示 */
+  .bc-owner-editorial .bc-oe-num-bar.bc-oe-rv {
+    transform: scaleX(1);
+  }
   .bc-owner-editorial .bc-oe-ctabar {
     transition: none;
   }
@@ -823,6 +910,9 @@ html.bc-owner-editorial {
 .bc-owner-editorial[data-reduced] .bc-oe-rv {
   opacity: 1;
   transform: none;
+}
+.bc-owner-editorial[data-reduced] .bc-oe-num-bar.bc-oe-rv {
+  transform: scaleX(1);
 }
 
 /* ===== 390px幅での水平スクロール防止 ===== */

@@ -1,10 +1,18 @@
 /**
  * BrightCard runtime v1 — templates/onyx.css
- * 「Onyx」テンプレ（撮影された物理名刺のスキャン演出 → 円形ポートレート → Story → Save & Connect）。
- * brightcard/preview/tpl-onyx.html の <style> を移植。
+ * 「Onyx」テンプレ（差別化ライン再設計版・2026-07）。黒曜石・重厚のスキン。
+ * 章構成: 01 Portrait（全幅ブリードヒーロー・写真下端を背景へ黒グラデで溶かす・極細accent内罫の額）→
+ * 02 Proof（serif大型カウンター）→ 03 Story（編集組版）→ 04 Reveal（紙名刺→漆黒鏡面の銘板）→ 05 Save & Connect。
  * 全セレクタは bc-onyx- プレフィックス付きクラス名でスコープし、他テンプレへ漏れないようにする。
  * boot.js は design.template === "onyx" のときのみこのCSSを読み込む。
+ * ルート(.bc-onyx-root)に暗地背景色を必ず設定（短いカードでビューポート下部が白くならないように）。
+ * モーションは CSS + IO + rAF のみ。アニメ対象は transform/opacity 限定。
+ * will-change は hero-media と plate の2箇所のみ。
  */
+
+/* body既定margin(8px)の白帯をonyxスコープでのみ除去（漆黒をエッジまで届かせる） */
+html.bc-onyx { background: #0a0a0a; }
+html.bc-onyx body { margin: 0; }
 
 html.bc-onyx {
   --bc-onyx-bg: #0a0a0a;
@@ -64,7 +72,7 @@ html.bc-onyx {
 }
 .bc-onyx-section { padding: 64px 0; position: relative; }
 .bc-onyx-sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 22px; }
-.bc-onyx-chapno { font-family: var(--bc-onyx-sans); font-weight: 600; font-size: 12px; letter-spacing: 0.28em; color: var(--bc-onyx-accent, #e8703a); }
+.bc-onyx-chapno { font-family: var(--bc-onyx-serif); font-weight: 800; font-size: 12px; letter-spacing: 0.28em; color: var(--bc-onyx-accent, #e8703a); }
 .bc-onyx-sec-label { font-family: var(--bc-onyx-sans); font-weight: 500; font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--bc-onyx-ink-faint); }
 .bc-onyx-rule { height: 1px; background: var(--bc-onyx-line); border: 0; margin: 0; }
 
@@ -82,18 +90,250 @@ html.bc-onyx {
   z-index: 0;
 }
 
-/* ============ 00 intake ============ */
-.bc-onyx-intake-copy { color: var(--bc-onyx-ink-dim); font-size: 14px; margin: 4px 0 24px; }
-.bc-onyx-capture {
+/* 共通スクロールreveal（core.initScrollReveal が .reveal → .visible を付与） */
+.bc-onyx-root .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bc-onyx-root .reveal.visible { opacity: 1; transform: none; }
+
+/* ============ 01 portrait（全幅ブリード・黒曜石の額） ============ */
+.bc-onyx-hero {
+  min-height: 100svh;
+  padding-top: 28px;
+  padding-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.bc-onyx-hero .bc-onyx-sec-head { margin-bottom: 18px; }
+
+.bc-onyx-hero-media {
+  /* 全幅ブリード（app の padding 20px を打ち消す）。ヒーローの主役は写真そのもの */
+  position: relative;
+  width: calc(100% + 40px);
+  margin: 0 -20px;
+  will-change: transform, opacity;
+  animation: bc-onyx-hero-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.bc-onyx-hero-media::before {
+  /* 美術館の額: 極細1pxの内側accent罫 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  outline: 1px solid var(--bc-onyx-accent-border, rgba(232, 112, 58, 0.2));
+  outline-offset: -14px;
+}
+.bc-onyx-hero-media::after {
+  /* 写真下端を背景へ黒グラデで溶かす（黒曜石に沈む） */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(transparent, var(--bc-onyx-bg));
+}
+.bc-onyx-hero-photo {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--bc-onyx-panel-2);
+}
+.bc-onyx-hero-photo img { width: 100%; height: 100%; object-fit: cover; }
+.bc-onyx-hero-monogram {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 40%, var(--bc-onyx-accent-light, rgba(232, 112, 58, 0.08)), var(--bc-onyx-bg) 75%);
+}
+.bc-onyx-hero-monogram span {
+  font-family: var(--bc-onyx-serif);
+  font-weight: 800;
+  font-size: min(30vw, 160px);
+  line-height: 1;
+  color: var(--bc-onyx-accent, #e8703a);
+  opacity: 0.35;
+  user-select: none;
+}
+
+/* hero-id は写真の下に密着（黒地に白serif。グラデが写真と地を縫合する） */
+.bc-onyx-hero-id { margin-top: 4px; }
+.bc-onyx-tag { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--bc-onyx-ink-faint); margin-bottom: 12px; }
+.bc-onyx-name-ja {
+  font-family: var(--bc-onyx-serif);
+  font-weight: 800;
+  font-size: clamp(40px, 14vw, 64px);
+  line-height: 1.05;
+  margin: 0;
+  letter-spacing: 0.02em;
+  color: var(--bc-onyx-ink);
+}
+.bc-onyx-yomi { font-size: 12px; letter-spacing: 0.24em; color: var(--bc-onyx-ink-faint); margin-top: 10px; }
+.bc-onyx-name-en { font-size: 13px; letter-spacing: 0.3em; color: var(--bc-onyx-ink-dim); margin-top: 6px; text-transform: uppercase; }
+.bc-onyx-role-line { font-family: var(--bc-onyx-serif); font-size: 15px; color: var(--bc-onyx-ink-dim); margin-top: 20px; }
+.bc-onyx-tagline {
+  font-family: var(--bc-onyx-serif);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--bc-onyx-ink);
+  margin: 20px 0 0;
+  border-left: 2px solid var(--bc-onyx-accent, #e8703a);
+  padding-left: 16px;
+  white-space: pre-wrap;
+}
+
+/* ヒーローのロード時エントランス（1回のみ・transform/opacityのみ） */
+@keyframes bc-onyx-hero-in {
+  from { opacity: 0; transform: scale(1.045); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes bc-onyx-id-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.bc-onyx-hi-1,
+.bc-onyx-hi-2,
+.bc-onyx-hi-3,
+.bc-onyx-hi-4 { animation: bc-onyx-id-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.bc-onyx-hi-1 { animation-delay: 0.25s; }
+.bc-onyx-hi-2 { animation-delay: 0.35s; }
+.bc-onyx-hi-3 { animation-delay: 0.45s; }
+.bc-onyx-hi-4 { animation-delay: 0.55s; }
+
+/* ============ 02 proof（serif大型カウンター・枠箱なしの罫線組版） ============ */
+.bc-onyx-proof-lead { font-family: var(--bc-onyx-serif); color: var(--bc-onyx-ink-dim); font-size: 13.5px; letter-spacing: 0.04em; margin: 4px 0 10px; }
+.bc-onyx-proof-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 22px;
+  margin-top: 8px;
+}
+.bc-onyx-p-item {
+  padding: 18px 0;
+  border-top: 1px solid var(--bc-onyx-line);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bc-onyx-p-item.bc-onyx-p-on { opacity: 1; transform: none; }
+.bc-onyx-p-feature { grid-column: 1 / -1; border-top: 0; padding-top: 8px; }
+.bc-onyx-num {
+  display: block;
+  font-family: var(--bc-onyx-serif);
+  font-weight: 800;
+  font-size: clamp(30px, 9vw, 40px);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--bc-onyx-ink);
+  font-variant-numeric: tabular-nums;
+}
+.bc-onyx-p-feature .bc-onyx-num { font-size: clamp(48px, 16vw, 72px); }
+.bc-onyx-num-long { font-size: clamp(22px, 6.5vw, 28px); }
+.bc-onyx-p-feature .bc-onyx-num-long { font-size: clamp(34px, 10vw, 48px); }
+.bc-onyx-num-unit {
+  /* 単位はserif小字（刻印ではなく銘の落ち着き） */
+  font-family: var(--bc-onyx-serif);
+  font-size: 0.38em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--bc-onyx-ink-dim);
+  margin-left: 5px;
+}
+.bc-onyx-num-bar {
+  /* 数字下の accent 細罫（scaleX 0→1） */
+  display: block;
+  width: 34px;
+  height: 2px;
+  margin-top: 12px;
+  background: var(--bc-onyx-accent, #e8703a);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
+}
+.bc-onyx-p-on .bc-onyx-num-bar { transform: scaleX(1); }
+.bc-onyx-lbl { font-family: var(--bc-onyx-sans); font-size: 11px; color: var(--bc-onyx-ink-dim); margin-top: 10px; line-height: 1.5; letter-spacing: 0.08em; }
+
+/* ============ 03 story（編集組版: about / philosophy / businesses / links） ============ */
+.bc-onyx-bio {
+  font-family: var(--bc-onyx-serif);
+  font-size: 15.5px;
+  line-height: 2.05;
+  color: var(--bc-onyx-ink-dim);
+  max-width: 40em;
+  margin: 22px 0 0;
+  padding-left: 16px;
+  border-left: 2px solid var(--bc-onyx-accent, #e8703a);
+  white-space: pre-wrap;
+}
+.bc-onyx-philosophy {
+  margin-top: 30px;
+  padding: 24px 0;
+  border-top: 1px solid var(--bc-onyx-line);
+  border-bottom: 1px solid var(--bc-onyx-line);
+}
+.bc-onyx-phi-label { font-family: var(--bc-onyx-sans); font-size: 10px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--bc-onyx-accent, #e8703a); margin-bottom: 10px; }
+.bc-onyx-phi-text {
+  font-family: var(--bc-onyx-serif);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+  color: var(--bc-onyx-ink);
+}
+.bc-onyx-biz-list { margin-top: 28px; }
+.bc-onyx-biz-row {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  padding: 18px 0;
+  border-top: 1px solid var(--bc-onyx-line);
+  text-decoration: none;
+  color: inherit;
+}
+.bc-onyx-biz-no { font-family: var(--bc-onyx-serif); font-weight: 800; font-size: 13px; color: var(--bc-onyx-accent, #e8703a); flex: none; }
+.bc-onyx-biz-main { flex: 1; min-width: 0; }
+.bc-onyx-biz-name { font-family: var(--bc-onyx-serif); font-weight: 700; font-size: 15px; color: var(--bc-onyx-ink); }
+.bc-onyx-biz-role { font-size: 11px; color: var(--bc-onyx-ink-faint); letter-spacing: 0.06em; margin-top: 2px; }
+.bc-onyx-biz-desc { font-size: 12.5px; color: var(--bc-onyx-ink-dim); line-height: 1.8; margin-top: 8px; }
+.bc-onyx-biz-tags { font-size: 11px; color: var(--bc-onyx-ink-faint); letter-spacing: 0.04em; margin-top: 8px; }
+.bc-onyx-biz-arrow { flex: none; align-self: center; color: var(--bc-onyx-ink-faint); }
+.bc-onyx-biz-arrow svg { width: 14px; height: 14px; }
+.bc-onyx-link-list { margin-top: 24px; }
+.bc-onyx-link-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 13px 0;
+  border-top: 1px solid var(--bc-onyx-line);
+  text-decoration: none;
+  color: inherit;
+}
+.bc-onyx-link-main { flex: 1; min-width: 0; }
+.bc-onyx-link-label { font-size: 13px; font-weight: 600; color: var(--bc-onyx-ink); }
+.bc-onyx-link-desc { font-size: 11px; color: var(--bc-onyx-ink-faint); margin-top: 2px; }
+
+/* ============ 04 reveal（紙名刺 → 漆黒鏡面の銘板） ============ */
+.bc-onyx-reveal-copy { font-family: var(--bc-onyx-serif); color: var(--bc-onyx-ink-dim); font-size: 14px; margin: 4px 0 24px; }
+.bc-onyx-stage {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--bc-onyx-line);
   border-radius: 16px;
-  padding: 30px 24px;
+  padding: 34px 24px 40px;
   background: radial-gradient(130% 100% at 50% -10%, #1b1a17 0%, #0c0c0b 70%);
   box-shadow: 0 22px 46px -26px rgba(0, 0, 0, 0.95);
 }
-.bc-onyx-capture::after {
+.bc-onyx-stage::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -101,12 +341,13 @@ html.bc-onyx {
   border-radius: 16px;
   box-shadow: inset 0 0 60px 8px rgba(0, 0, 0, 0.55);
 }
-.bc-onyx-reticle { position: absolute; width: 20px; height: 20px; border: 2px solid var(--bc-onyx-accent, #e8703a); opacity: 0.9; pointer-events: none; z-index: 3; }
+.bc-onyx-reticle { position: absolute; width: 20px; height: 20px; border: 2px solid var(--bc-onyx-accent, #e8703a); opacity: 0.9; pointer-events: none; z-index: 5; }
 .bc-onyx-reticle-tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
 .bc-onyx-reticle-tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
 .bc-onyx-reticle-bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
 .bc-onyx-reticle-br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
 
+/* 紙名刺（Before・現行の紙モックを流用。わずかに傾けて置かれた実物感） */
 .bc-onyx-meishi {
   position: relative;
   z-index: 2;
@@ -121,6 +362,7 @@ html.bc-onyx {
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 .bc-onyx-meishi::before {
+  /* 紙の繊維ノイズ */
   content: "";
   position: absolute;
   inset: 0;
@@ -138,19 +380,100 @@ html.bc-onyx {
 .bc-onyx-m-line { display: flex; gap: 7px; font-size: 10.5px; color: #4a453a; letter-spacing: 0.01em; word-break: break-all; margin-top: 4px; line-height: 1.4; }
 .bc-onyx-mk { color: #9a9384; flex: none; width: 38px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 8.5px; padding-top: 1px; }
 
+/* 紙が退く（Beforeとして机の上に残す） */
+.bc-onyx-meishi-paper {
+  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bc-onyx-meishi-paper.bc-onyx-paper-out {
+  transform: rotate(-4deg) translate(-14px, 10px) scale(0.92);
+  opacity: 0.28;
+}
+
+/* デジタル銘板（After・漆黒鏡面の黒曜石板。上辺1pxハイライト＋左端accent 5px） */
+.bc-onyx-plate {
+  position: relative;
+  z-index: 4;
+  margin-top: -34px;
+  margin-left: 18px;
+  border-radius: 8px;
+  padding: 20px 18px 16px 24px;
+  background: linear-gradient(160deg, #181816, #0c0c0b);
+  color: var(--bc-onyx-ink);
+  border: 1px solid rgba(244, 242, 236, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 28px 46px -18px rgba(0, 0, 0, 0.95),
+    0 2px 5px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transform: translateY(26px) rotate(1.2deg) scale(0.96);
+  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+.bc-onyx-plate::after {
+  /* 鏡面の映り込み（静的な斜光。filter/backdropは使わない） */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.06) 0%, transparent 42%);
+}
+.bc-onyx-plate.bc-onyx-plate-on { opacity: 1; transform: none; }
+.bc-onyx-plate-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 5px;
+  border-radius: 8px 0 0 8px;
+  background: var(--bc-onyx-accent, #e8703a);
+  box-shadow: 0 0 14px var(--bc-onyx-accent-glow, rgba(232, 112, 58, 0.25));
+}
+.bc-onyx-plate-name { font-family: var(--bc-onyx-serif); font-weight: 800; font-size: 28px; letter-spacing: 0.04em; margin: 2px 0 1px; color: var(--bc-onyx-ink); }
+.bc-onyx-plate-en { font-size: 10px; letter-spacing: 0.22em; color: var(--bc-onyx-ink-dim); }
+.bc-onyx-plate-role { font-family: var(--bc-onyx-serif); font-size: 10.5px; color: var(--bc-onyx-ink-dim); letter-spacing: 0.04em; margin-top: 8px; }
+.bc-onyx-plate-rows { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(244, 242, 236, 0.12); }
+.bc-onyx-plate-row { display: flex; gap: 7px; font-size: 10.5px; color: var(--bc-onyx-ink-dim); margin-top: 4px; line-height: 1.4; word-break: break-all; }
+.bc-onyx-plate-row .bc-onyx-mk { color: var(--bc-onyx-ink-faint); }
+.bc-onyx-plate-badge { margin-top: 12px; font-size: 8.5px; letter-spacing: 0.18em; color: var(--bc-onyx-ink-faint); }
+
+/* 銘板内の行 stagger（plate-on 連動・transition-delayのみ） */
+.bc-onyx-plate > *:not(.bc-onyx-plate-accent) {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.bc-onyx-plate.bc-onyx-plate-on > *:not(.bc-onyx-plate-accent) { opacity: 1; transform: none; }
+.bc-onyx-plate.bc-onyx-plate-on > *:nth-child(2) { transition-delay: 0.1s; }
+.bc-onyx-plate.bc-onyx-plate-on > *:nth-child(3) { transition-delay: 0.2s; }
+.bc-onyx-plate.bc-onyx-plate-on > *:nth-child(4) { transition-delay: 0.3s; }
+.bc-onyx-plate.bc-onyx-plate-on > *:nth-child(5) { transition-delay: 0.4s; }
+.bc-onyx-plate.bc-onyx-plate-on > *:nth-child(6) { transition-delay: 0.5s; }
+
+.bc-onyx-reveal-cap {
+  margin-top: 22px;
+  text-align: center;
+  font-family: var(--bc-onyx-serif);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  color: var(--bc-onyx-ink-dim);
+}
+
+/* スキャンライン（IO発火で1回のみ・現行流用） */
 .bc-onyx-scan {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
   height: 2px;
-  z-index: 4;
+  z-index: 6;
   background: linear-gradient(90deg, transparent, var(--bc-onyx-accent, #e8703a), transparent);
   box-shadow: 0 0 16px 3px rgba(232, 112, 58, 0.7);
   opacity: 0;
   transform: translateY(0);
 }
-.bc-onyx-capture.bc-onyx-scanning .bc-onyx-scan { animation: bc-onyx-scan 1.7s ease-in-out 1 forwards; }
+.bc-onyx-stage.bc-onyx-scanning .bc-onyx-scan { animation: bc-onyx-scan 1.7s ease-in-out 1 forwards; }
 @keyframes bc-onyx-scan {
   0% { opacity: 0; transform: translateY(6px); }
   8% { opacity: 1; }
@@ -158,88 +481,37 @@ html.bc-onyx {
   100% { opacity: 0; transform: translateY(200px); }
 }
 
-.bc-onyx-extract { margin-top: 20px; border: 1px solid var(--bc-onyx-line); border-radius: 14px; background: var(--bc-onyx-panel); overflow: hidden; }
-.bc-onyx-extract-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--bc-onyx-line); }
-.bc-onyx-extract-h .bc-onyx-t { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bc-onyx-ink-faint); }
-.bc-onyx-extract-h .bc-onyx-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--bc-onyx-accent, #e8703a); box-shadow: 0 0 10px var(--bc-onyx-accent, #e8703a); }
-.bc-onyx-field {
-  display: grid;
-  grid-template-columns: 64px 1fr auto;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 14px;
-  border-top: 1px solid rgba(244, 242, 236, 0.06);
-  opacity: 0;
-  transform: translateY(8px);
-}
-.bc-onyx-field:first-child { border-top: 0; }
-.bc-onyx-field.bc-onyx-on { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
-.bc-onyx-field .bc-onyx-k { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc-onyx-ink-faint); }
-.bc-onyx-field .bc-onyx-v { font-size: 13.5px; color: var(--bc-onyx-ink); word-break: break-all; font-family: var(--bc-onyx-serif); font-weight: 500; }
-.bc-onyx-field .bc-onyx-c { font-family: var(--bc-onyx-sans); font-weight: 600; font-size: 11px; color: var(--bc-onyx-accent, #e8703a); white-space: nowrap; justify-self: end; font-variant-numeric: tabular-nums; }
-
-/* ============ 01 portrait ============ */
-.bc-onyx-hero { padding-top: 40px; }
-.bc-onyx-avatar-wrap {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid var(--bc-onyx-accent, #e8703a);
-  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7);
-  margin-bottom: 22px;
-  background: var(--bc-onyx-panel-2);
-}
-.bc-onyx-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
-.bc-onyx-monogram {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--bc-onyx-serif);
-  font-weight: 800;
-  font-size: 34px;
-  color: var(--bc-onyx-accent, #e8703a);
-}
-.bc-onyx-tag { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--bc-onyx-ink-faint); margin-bottom: 14px; }
-.bc-onyx-name-ja {
-  font-family: var(--bc-onyx-serif);
-  font-weight: 800;
-  font-size: clamp(48px, 17vw, 74px);
-  line-height: 1.02;
-  margin: 0;
-  letter-spacing: 0.02em;
-  color: var(--bc-onyx-ink);
-}
-.bc-onyx-name-en { font-size: 13px; letter-spacing: 0.3em; color: var(--bc-onyx-ink-dim); margin-top: 14px; text-transform: uppercase; }
-.bc-onyx-yomi { font-size: 12px; letter-spacing: 0.24em; color: var(--bc-onyx-ink-faint); margin-top: 6px; }
-.bc-onyx-role-line { font-family: var(--bc-onyx-serif); font-size: 15px; color: var(--bc-onyx-ink-dim); margin-top: 20px; }
-.bc-onyx-tagline {
-  font-family: var(--bc-onyx-serif);
-  font-weight: 600;
-  font-size: 19px;
-  line-height: 1.7;
-  color: var(--bc-onyx-ink);
-  margin-top: 20px;
-  border-left: 2px solid var(--bc-onyx-accent, #e8703a);
-  padding-left: 16px;
-  white-space: pre-wrap;
-}
-
-/* ============ 02 story ============ */
-.bc-onyx-bio { font-size: 14.5px; color: var(--bc-onyx-ink-dim); line-height: 1.9; margin-top: 20px; }
-.bc-onyx-proofs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
-.bc-onyx-proof { border: 1px solid var(--bc-onyx-line); border-radius: 12px; background: var(--bc-onyx-panel); padding: 16px 14px; }
-.bc-onyx-proof .bc-onyx-num { font-family: var(--bc-onyx-serif); font-weight: 800; font-size: 34px; line-height: 1; color: var(--bc-onyx-accent, #e8703a); font-variant-numeric: tabular-nums; display: block; }
-.bc-onyx-proof .bc-onyx-lbl { font-size: 11.5px; color: var(--bc-onyx-ink-dim); margin-top: 8px; line-height: 1.5; }
-
-/* ============ 03 save ============ */
+/* ============ 05 save ============ */
 .bc-onyx-contact { border: 1px solid var(--bc-onyx-line); border-radius: 14px; background: var(--bc-onyx-panel); overflow: hidden; margin-top: 20px; }
 .bc-onyx-crow { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-top: 1px solid rgba(244, 242, 236, 0.06); color: var(--bc-onyx-ink); text-decoration: none; }
 .bc-onyx-crow:first-child { border-top: 0; }
 .bc-onyx-crow .bc-onyx-ck { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc-onyx-ink-faint); width: 58px; flex: none; }
 .bc-onyx-crow .bc-onyx-cv { font-size: 13.5px; color: var(--bc-onyx-ink); word-break: break-all; font-family: var(--bc-onyx-serif); }
+
+/* QR opt-in（core.renderQr が非nullのときのみDOMが入る） */
+.bc-onyx-root .bc-qr {
+  margin-top: 20px;
+  background: #f6f2ea;
+  border-radius: 14px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.bc-onyx-root .bc-qr-code { width: 100%; max-width: 180px; }
+.bc-onyx-root .bc-qr-code svg { width: 100%; height: auto; display: block; }
+.bc-onyx-root .bc-qr-cap { font-size: 11px; color: #5c554b; text-align: center; line-height: 1.6; }
+.bc-onyx-root .bc-qr-cap b {
+  display: block;
+  font-family: var(--bc-onyx-sans);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bc-onyx-accent-dark, #b55a2e);
+  margin-bottom: 4px;
+}
+
 .bc-onyx-btns { display: grid; gap: 10px; margin-top: 20px; }
 .bc-onyx-btn {
   border: 0;
@@ -330,7 +602,7 @@ html.bc-onyx {
 }
 .bc-onyx-toast.bc-onyx-show { opacity: 1; transform: translate(-50%, 0); }
 
-/* ============ reduced motion ============ */
+/* ============ reduced motion（全停止＋各演出の静的最終状態） ============ */
 @media (prefers-reduced-motion: reduce) {
   .bc-onyx-root *,
   .bc-onyx-fab-wrap *,
@@ -338,7 +610,21 @@ html.bc-onyx {
     animation: none !important;
     transition-duration: 0.001ms !important;
   }
-  .bc-onyx-field { opacity: 1; transform: none; }
-  .bc-onyx-chan { transition-delay: 0ms !important; }
+  /* 01: エントランス無し・最終状態（animation:none で keyframes 初期値も外れる） */
+  .bc-onyx-hero-media,
+  .bc-onyx-hi-1,
+  .bc-onyx-hi-2,
+  .bc-onyx-hi-3,
+  .bc-onyx-hi-4 { opacity: 1; transform: none; }
+  /* 02: カウンター静的・reveal無し */
+  .bc-onyx-p-item { opacity: 1; transform: none; }
+  .bc-onyx-num-bar { transform: scaleX(1); transition-delay: 0ms !important; }
+  /* 03ほか: スクロールrevealは即最終状態 */
+  .bc-onyx-root .reveal { opacity: 1; transform: none; }
+  /* 04: スキャンライン非表示・紙=退き済み・銘板=表示済みの静的状態 */
   .bc-onyx-scan { display: none; }
+  .bc-onyx-meishi-paper { opacity: 0.28; transform: rotate(-4deg) translate(-14px, 10px) scale(0.92); }
+  .bc-onyx-plate { opacity: 1; transform: none; }
+  .bc-onyx-plate > *:not(.bc-onyx-plate-accent) { opacity: 1; transform: none; transition-delay: 0ms !important; }
+  .bc-onyx-chan { transition-delay: 0ms !important; }
 }

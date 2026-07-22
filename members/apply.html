@@ -722,17 +722,17 @@
         <div class="pick-grid" id="linePicks">
           <label class="pick-card">
             <input type="radio" name="line" value="standard" checked>
-            <div class="t"><span class="dot"></span>標準</div>
+            <div class="t"><span class="dot"></span>スタンダード</div>
             <div class="d">生成背景・額装ポートレート5種</div>
           </label>
           <label class="pick-card">
             <input type="radio" name="line" value="diff">
-            <div class="t"><span class="dot"></span>差別化</div>
+            <div class="t"><span class="dot"></span>プレミアム</div>
             <div class="d">撮影名刺型5種（名刺を撮る→AI抽出→章立て）</div>
           </label>
           <label class="pick-card">
             <input type="radio" name="line" value="owner">
-            <div class="t"><span class="dot"></span>オーナー<span class="price">¥14,800</span></div>
+            <div class="t"><span class="dot"></span>マイスター<span class="price">¥14,800</span></div>
             <div class="d">GQ級最上位1種（アルミ固定・単一デザイン）</div>
           </label>
         </div>
@@ -757,7 +757,7 @@
             <div class="d">NTAG215 メタリックカード</div>
           </label>
         </div>
-        <p class="row-hint" id="ownerNote" style="display:none;">オーナーラインは素材をアルミに固定した単一価格（¥14,800）です。</p>
+        <p class="row-hint" id="ownerNote" style="display:none;">マイスターラインは素材をアルミに固定した単一価格（¥14,800）です。</p>
       </div>
 
       <p class="row-hint" style="margin-top:8px;">価格はデジタル名刺ページの制作費とNFCカード1枚を含む一括金額です。カードをスマートフォンにかざすだけで専用ページが開きます（名入れ印刷はございません）。</p>
@@ -768,7 +768,7 @@
       <div class="sec-title"><span class="num">8</span>ご確認事項</div>
       <ul class="terms">
         <li>納品物は「<strong>公開URL</strong>」「<strong>QRコード画像</strong>」「<strong>物理NFCカード</strong>」の3点です。ページのソースファイルは納品対象に含まれません。編集・更新は弊社（合同会社WBT）が承ります。</li>
-        <li>更新は都度課金です（月額サブスクリプションはございません）。軽微修正は標準¥1,650／差別化¥1,980／オーナー¥3,300〜。初回公開から1ヶ月以内の軽微修正は1回まで無償（標準・差別化）、オーナーは初年度1回の軽微更新を無償同梱いたします。</li>
+        <li>更新は都度課金です（月額サブスクリプションはございません）。軽微修正はスタンダード¥1,650／プレミアム¥1,980／マイスター¥3,300〜。初回公開から1ヶ月以内の軽微修正は1回まで無償（スタンダード・プレミアム）、マイスターは初年度1回の軽微更新を無償同梱いたします。</li>
       </ul>
     </section>
 
@@ -826,9 +826,9 @@
     owner:    { aluminum: 14800 },
   };
   const LINE_LABELS = {
-    standard: "標準（生成背景・額装ポートレート5種）",
-    diff:     "差別化（撮影名刺型5種）",
-    owner:    "オーナー（GQ級最上位1種・アルミ固定）",
+    standard: "スタンダード（生成背景・額装ポートレート5種）",
+    diff:     "プレミアム（撮影名刺型5種）",
+    owner:    "マイスター（GQ級最上位1種・アルミ固定）",
   };
   function formatYen(n){
     return "¥" + n.toLocaleString("ja-JP");

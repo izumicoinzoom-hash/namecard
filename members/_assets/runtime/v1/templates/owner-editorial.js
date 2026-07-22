@@ -11,6 +11,10 @@
  * Works章は card.products[]（新規スキーマ・任意）: {category,name,url,desc,price}。
  * 未指定なら章ごと非表示。価格は文字列そのまま表示（例「料金：要見積」）。
  * Philosophy章は card.philosophy{label,text}（任意）。
+ * Proof章（実績）は card.metrics[]（任意・B系と同スキーマ）:
+ * {value:N,suffix,label}=rAFカウントアップ／{static,label}=静的表示。
+ * 0件なら章ごとスキップ（採番も詰める）。見た目は誌面の "by the numbers"
+ * スプレッド（明朝の大数字＋accent罫＋mono小ラベル。枠箱は使わない）。
  * QRは card.qr.svg（インラインSVG文字列）があれば core.renderQr() 経由で挿入、
  * 無ければ非表示（core未提供時は旧ロジックへフォールバック）。
  * Works章の導入コピーは任意フィールド card.worksIntro（未指定なら省略）。
@@ -53,6 +57,20 @@
     var s = String(u || "").trim();
     if (!s) return "";
     return /^https?:\/\//i.test(s) ? s : "https://" + s;
+  }
+
+  // Proof章のカウントアップ（rAF・cubic ease-out）。suffixは別要素なので数字のみ書く。
+  function countUp(target, to, dur) {
+    var start = null;
+    function step(ts) {
+      if (start === null) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      target.textContent = String(Math.round(to * eased));
+      if (p < 1) requestAnimationFrame(step);
+      else target.textContent = String(to);
+    }
+    requestAnimationFrame(step);
   }
 
   // SNSブランド別のドック配色（onyx.js の CHAN_STYLE を踏襲）。未対応typeはaccent色にフォールバック。
@@ -201,6 +219,50 @@
       );
       stack.appendChild(philSection);
       chapterEls.push(philSection);
+    }
+
+    // ---------- Proof（実績・任意。card.metrics[] 0件なら章スキップ＝採番も詰める） ----------
+    var metrics = Array.isArray(card.metrics) ? card.metrics.filter(Boolean) : [];
+    var metricItems = [];
+    var proofSection = null;
+    if (metrics.length) {
+      var proofChap = nextChap();
+      var metricsWrap = el("div", { class: "bc-oe-metrics" });
+      metrics.forEach(function (m, i) {
+        var isStatic = nonEmpty(m.static);
+        var valEl = el("span", { class: "bc-oe-num-val", text: isStatic ? String(m.static) : "0" });
+        var numClass = "bc-oe-num";
+        if (isStatic && String(m.static).length > 5) numClass += " bc-oe-num-long";
+        var numChildren = [valEl];
+        if (!isStatic && nonEmpty(m.suffix)) {
+          numChildren.push(el("span", { class: "bc-oe-num-unit", text: m.suffix }));
+        }
+        var itemChildren = [el("span", { class: numClass }, numChildren)];
+        // 先頭1件はフィーチャー（誌面の大見出し数字＋accent罫）。以降は罫線区切りの行組。
+        var itemClass = "bc-oe-metric bc-oe-rv bc-oe-d" + Math.min(i + 1, 3);
+        if (i === 0) {
+          itemClass += " bc-oe-metric-feature";
+          itemChildren.push(el("span", { class: "bc-oe-num-bar bc-oe-rv", "aria-hidden": "true" }));
+        }
+        itemChildren.push(el("div", { class: "bc-oe-metric-label", text: m.label || "" }));
+        var item = el("div", { class: itemClass }, itemChildren);
+        metricItems.push({ valEl: valEl, isStatic: isStatic, to: parseInt(m.value, 10) || 0 });
+        metricsWrap.appendChild(item);
+      });
+      proofSection = el(
+        "section",
+        { class: "bc-oe-chapter", "data-chap": proofChap, "data-label": "Proof" },
+        [
+          el("span", { class: "bc-oe-ghost", "aria-hidden": "true", text: proofChap }),
+          el("div", { class: "bc-oe-chap-inner" }, [
+            el("div", { class: "bc-oe-kick bc-oe-rv", text: proofChap + " — Proof" }),
+            el("p", { class: "bc-oe-proof-lead bc-oe-rv bc-oe-d1", text: "数字が語る、これまで。" }),
+            metricsWrap,
+          ]),
+        ]
+      );
+      stack.appendChild(proofSection);
+      chapterEls.push(proofSection);
     }
 
     // ---------- Ventures ----------
@@ -364,7 +426,7 @@
     contactChapChildren.push(
       el("div", { class: "bc-oe-foot" }, [
         document.createTextNode("© " + year + " " + (name.ja || "")),
-        el("div", { class: "bc-oe-powered-by", html: "Powered by <a href=\"https://withbt.com\" target=\"_blank\" rel=\"noopener\">BrightCard</a>（合同会社WBT）" }),
+        el("div", { class: "bc-oe-powered-by", html: "Powered by <a href=\"https://withbt.com/card/\" target=\"_blank\" rel=\"noopener\">BrightCard</a>（合同会社WBT）" }),
       ])
     );
 
@@ -463,6 +525,39 @@
       rvEls.forEach(function (e) { io.observe(e); });
     } else {
       rvEls.forEach(function (e) { e.classList.add("bc-oe-in"); });
+    }
+
+    // ---------- Proof カウントアップ（章がIO threshold 0.35に入ったら1回だけ発火） ----------
+    var metricsDone = false;
+    function runMetrics() {
+      if (metricsDone) return;
+      metricsDone = true;
+      metricItems.forEach(function (m) {
+        if (m.isStatic) return;
+        if (reduce) {
+          // reduced-motion: 最終値を即時静的表示（アニメなし）
+          m.valEl.textContent = String(m.to);
+          return;
+        }
+        countUp(m.valEl, m.to, 1100);
+      });
+    }
+    if (metricItems.length && proofSection) {
+      if (!reduce && "IntersectionObserver" in global) {
+        var mio = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              runMetrics();
+              mio.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.35 }
+        );
+        mio.observe(proofSection);
+      } else {
+        runMetrics();
+      }
     }
 
     // ---------- 章スクロールスパイ + CTAバー/ドックの表示切替（rAF1本）----------

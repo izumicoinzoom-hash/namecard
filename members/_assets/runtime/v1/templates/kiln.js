@@ -1,15 +1,17 @@
 /**
  * BrightCard runtime v1 — templates/kiln.js
- * 「Kiln」テンプレ（撮影された物理名刺のスキャン演出 → 円形ポートレート → Story → Save & Connect）。
- * クラフト紙・明るい背景・焦茶accentの意匠版。onyx.js（暗いテーマ）と全く同じ構造で、
- * brightcard/preview/theme-kiln.html + card-kiln.js（トラックB意匠）を、
- * members runtime v1 の契約（card.js 単一データ源・core.js 共通API）へ移植したもの。
- * §runtime共通制約: name.ja以外は省略可・空はセクション（または行）非表示／写真なし→モノグラム／
+ * 「Kiln」テンプレ（差別化ライン再設計版・2026-07）。陶土・木のあたたかさ（陶芸・工芸）の意匠。
+ * 章構成: 01 Portrait（厚マット台紙額装の大判ヒーロー）→ 02 Proof（大型カウンター）→
+ * 03 Story（about/philosophy/businesses/links の編集組版）→ 04 Reveal（紙名刺→釉薬タイル銘板）→
+ * 05 Save & Connect（vCard/共有/QR opt-in）。章番号は動的採番（空章はスキップして詰める）。
+ * 旧「名刺スキャン→抽出表」開幕は廃止（BRIGHTCARD-差別化ライン再設計.md §2・§6準拠）。
+ * §runtime共通制約: name.ja以外は省略可・空はセクション（または行）非表示／写真なし→全面モノグラム／
  * accent1色で着せ替え／Products・From WBT枠は存在しない／フッターは「© YYYY 氏名」＋控えめクレジットのみ。
+ * モーションは CSS + IntersectionObserver + requestAnimationFrame のみ（transform/opacity限定）。
  *
- * データは card.js（C schema）から取る。Bのwindow.CARD（card-kiln.jsの旧データ形式）は使わない。
- * 実績（Story章の proofs 相当）は card.metrics[]（任意）: {value, suffix, label} または {static, label}。
- * 未指定なら Story は about のみ表示し、実績グリッドは描画しない。
+ * データは card.js（C schema）から取る。実績は card.metrics[]（任意）:
+ * {value, suffix, label} または {static, label}。0件なら Proof 章ごとスキップ。
+ * 04章の文言は card.reveal.{copy, caption}（任意）で差し替え可。無ければ既定文言。
  */
 (function (global) {
   "use strict";
@@ -44,7 +46,7 @@
     return /^https?:\/\//i.test(s) ? s : "https://" + s;
   }
 
-  // SNSブランド別のFAB配色・アイコン（theme-kiln.html の .chan 実装を踏襲）。
+  // SNSブランド別のFAB配色・アイコン（現行実装を無変更で続投）。
   // 未対応typeは icons.sns[type] + accent色にフォールバック。
   var CHAN_STYLE = {
     line: {
@@ -94,6 +96,7 @@
     var contacts = card.contacts || {};
     var addr = contacts.address || {};
     var metrics = Array.isArray(card.metrics) ? card.metrics.filter(Boolean) : [];
+    var revealCfg = (card.reveal && typeof card.reveal === "object") ? card.reveal : {};
     var reduce = global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     var palette = core.deriveAccentPalette(design.accent || "#b5602f");
@@ -110,18 +113,172 @@
 
     var app = el("main", { class: "bc-kiln-app" });
 
-    // ---------- 00 Card Intake ----------
-    var fieldConf = { Name: 99, Role: 98, Company: 99, Phone: 97, Mail: 99, Web: 96 };
-    var fieldsData = [
-      { k: "Name", v: name.ja },
-      { k: "Role", v: primary.role },
-      { k: "Company", v: primary.company },
-      { k: "Phone", v: contacts.phone },
-      { k: "Mail", v: contacts.email },
-      { k: "Web", v: displayUrl(contacts.website) },
-    ].filter(function (f) {
-      return nonEmpty(f.v);
-    });
+    // ---------- 動的採番（空章はスキップして詰める。ghost も追従） ----------
+    var chapterNo = 0;
+    function chap() {
+      chapterNo += 1;
+      return (chapterNo < 10 ? "0" : "") + chapterNo;
+    }
+    function secHead(no, label, withRule) {
+      var parts = [
+        el("div", { class: "bc-kiln-ghost", "aria-hidden": "true", text: no }),
+        el("div", { class: "bc-kiln-sec-head" }, [
+          el("span", { class: "bc-kiln-chapno", text: no }),
+          el("span", { class: "bc-kiln-sec-label", text: label }),
+        ]),
+      ];
+      if (withRule) parts.push(el("hr", { class: "bc-kiln-rule" }));
+      return parts;
+    }
+
+    // ---------- 01 Portrait（厚マット台紙額装の大判ヒーロー） ----------
+    var heroNo = chap();
+
+    var heroPhoto = el("div", { class: "bc-kiln-hero-photo" });
+    var img = new Image();
+    img.alt = name.ja ? name.ja + "の顔写真" : "";
+    img.style.objectPosition = design.photoPosition || "center center";
+    var monogramShown = false;
+    img.onerror = function () {
+      if (img.parentNode) img.parentNode.removeChild(img);
+      if (!monogramShown) {
+        monogramShown = true;
+        heroPhoto.appendChild(el("div", { class: "bc-kiln-hero-monogram" }, [
+          el("span", { text: core.monogramInitial(name.ja) }),
+        ]));
+      }
+    };
+    img.src = "photo.jpg";
+    heroPhoto.appendChild(img);
+
+    // クラフト紙マット（写真の周囲 padding）はCSS側。装飾スパン不要（直線・貼り込みの潔さ）
+    var heroMedia = el("div", { class: "bc-kiln-hero-media" }, [heroPhoto]);
+
+    var heroIdChildren = [];
+    if (nonEmpty(primary.role)) {
+      heroIdChildren.push(el("div", { class: "bc-kiln-tag bc-kiln-hi-1", text: primary.role }));
+    }
+    heroIdChildren.push(el("h1", { class: "bc-kiln-name-ja bc-kiln-hi-2", text: (name.ja || "").replace(/\s+/, " ") }));
+
+    var kana = name.kana || {};
+    if (nonEmpty(kana.last) || nonEmpty(kana.first)) {
+      heroIdChildren.push(el("div", { class: "bc-kiln-yomi bc-kiln-hi-3", text: [kana.last, kana.first].filter(nonEmpty).join(" ") }));
+    }
+    if (nonEmpty(name.en)) {
+      heroIdChildren.push(el("div", { class: "bc-kiln-name-en bc-kiln-hi-3", text: name.en }));
+    }
+    var roleLine = buildRoleLine(positions);
+    if (nonEmpty(roleLine)) {
+      heroIdChildren.push(el("div", { class: "bc-kiln-role-line bc-kiln-hi-4", text: roleLine }));
+    }
+    if (nonEmpty(card.tagline)) {
+      heroIdChildren.push(el("p", { class: "bc-kiln-tagline bc-kiln-hi-4", text: card.tagline }));
+    }
+
+    var heroSection = el(
+      "section",
+      { class: "bc-kiln-section bc-kiln-hero", id: "bc-kiln-hero" },
+      secHead(heroNo, "Portrait", false).concat([
+        heroMedia,
+        el("div", { class: "bc-kiln-hero-id" }, heroIdChildren),
+      ])
+    );
+    app.appendChild(heroSection);
+
+    // ---------- 02 Proof（実績・大型カウンター。metrics 0件なら章スキップ） ----------
+    var proofItems = [];
+    if (metrics.length) {
+      var proofNo = chap();
+      var proofList = el("div", { class: "bc-kiln-proof-list" });
+      metrics.forEach(function (m, i) {
+        if (!m) return;
+        var isStatic = nonEmpty(m.static);
+        var valEl = el("span", { class: "bc-kiln-num-val", text: isStatic ? String(m.static) : "0" });
+        var numClass = "bc-kiln-num";
+        if (isStatic && String(m.static).length > 5) numClass += " bc-kiln-num-long";
+        var numEl = el("span", { class: numClass }, [valEl]);
+        if (!isStatic && nonEmpty(m.suffix)) {
+          numEl.appendChild(el("span", { class: "bc-kiln-num-unit", text: m.suffix }));
+        }
+        var item = el("div", { class: "bc-kiln-p-item" + (i === 0 ? " bc-kiln-p-feature" : "") }, [
+          numEl,
+          el("span", { class: "bc-kiln-num-bar", "aria-hidden": "true" }),
+          el("div", { class: "bc-kiln-lbl", text: m.label || "" }),
+        ]);
+        proofItems.push({ item: item, valEl: valEl, isStatic: isStatic, to: parseInt(m.value, 10) || 0 });
+        proofList.appendChild(item);
+      });
+      app.appendChild(el(
+        "section",
+        { class: "bc-kiln-section", id: "bc-kiln-proof" },
+        secHead(proofNo, "Proof", true).concat([
+          el("p", { class: "bc-kiln-proof-lead", text: "数字で見る、これまでの歩み。" }),
+          proofList,
+        ])
+      ));
+    }
+
+    // ---------- 03 Story（about / philosophy / businesses / links の編集組版） ----------
+    var philosophy = card.philosophy || {};
+    var businesses = Array.isArray(card.businesses) ? card.businesses.filter(Boolean) : [];
+    var links = Array.isArray(card.links) ? card.links.filter(function (l) { return l && nonEmpty(l.url); }) : [];
+    var hasStory = nonEmpty(card.about) || nonEmpty(philosophy.text) || businesses.length > 0 || links.length > 0;
+    if (hasStory) {
+      var storyNo = chap();
+      var storyChildren = secHead(storyNo, "Story", true);
+
+      if (nonEmpty(card.about)) {
+        storyChildren.push(el("p", { class: "bc-kiln-bio reveal", text: card.about }));
+      }
+      if (nonEmpty(philosophy.text)) {
+        storyChildren.push(el("div", { class: "bc-kiln-philosophy reveal" }, [
+          nonEmpty(philosophy.label) ? el("div", { class: "bc-kiln-phi-label", text: philosophy.label }) : null,
+          el("div", { class: "bc-kiln-phi-text", text: philosophy.text }),
+        ]));
+      }
+      if (businesses.length) {
+        var bizWrap = el("div", { class: "bc-kiln-biz-list" });
+        businesses.forEach(function (b, i) {
+          var idx = (i + 1 < 10 ? "0" : "") + (i + 1) + ".";
+          var tags = (Array.isArray(b.tags) ? b.tags : []).filter(nonEmpty);
+          var main = el("div", { class: "bc-kiln-biz-main" }, [
+            el("div", { class: "bc-kiln-biz-name", text: b.name || "" }),
+            nonEmpty(b.role) ? el("div", { class: "bc-kiln-biz-role", text: b.role }) : null,
+            nonEmpty(b.desc) ? el("div", { class: "bc-kiln-biz-desc", text: b.desc }) : null,
+            tags.length ? el("div", { class: "bc-kiln-biz-tags", text: tags.join("・") }) : null,
+          ]);
+          var rowChildren = [el("span", { class: "bc-kiln-biz-no", text: idx }), main];
+          var tag = "div";
+          var attrs = { class: "bc-kiln-biz-row reveal" };
+          if (nonEmpty(b.url)) {
+            tag = "a";
+            attrs.href = absoluteUrl(b.url);
+            attrs.target = "_blank";
+            attrs.rel = "noopener";
+            rowChildren.push(el("span", { class: "bc-kiln-biz-arrow", html: icons.contact.externalLink }));
+          }
+          bizWrap.appendChild(el(tag, attrs, rowChildren));
+        });
+        storyChildren.push(bizWrap);
+      }
+      if (links.length) {
+        var linkWrap = el("div", { class: "bc-kiln-link-list" });
+        links.forEach(function (l) {
+          linkWrap.appendChild(el("a", { class: "bc-kiln-link-row reveal", href: absoluteUrl(l.url), target: "_blank", rel: "noopener" }, [
+            el("div", { class: "bc-kiln-link-main" }, [
+              el("div", { class: "bc-kiln-link-label", text: l.label || displayUrl(l.url) }),
+              nonEmpty(l.desc) ? el("div", { class: "bc-kiln-link-desc", text: l.desc }) : null,
+            ]),
+            el("span", { class: "bc-kiln-biz-arrow", html: icons.contact.externalLink }),
+          ]));
+        });
+        storyChildren.push(linkWrap);
+      }
+      app.appendChild(el("section", { class: "bc-kiln-section", id: "bc-kiln-story" }, storyChildren));
+    }
+
+    // ---------- 04 Reveal（紙名刺 → 釉薬タイル銘板。抽出表は存在しない） ----------
+    var revealNo = chap();
 
     var meishiLines = [
       { mk: "Co", value: primary.company },
@@ -147,137 +304,47 @@
         ]));
       });
     }
+    var meishi = el("div", { class: "bc-kiln-meishi bc-kiln-meishi-paper" }, meishiChildren);
 
-    var meishi = el("div", { class: "bc-kiln-meishi" }, meishiChildren);
+    // デジタル銘板（クラフト紙の名刺が、窯から上がった釉薬タイルに生まれ変わる）
+    var plateChildren = [
+      el("span", { class: "bc-kiln-plate-accent", "aria-hidden": "true" }),
+      el("div", { class: "bc-kiln-plate-name", text: name.ja || "" }),
+    ];
+    if (nonEmpty(name.en)) plateChildren.push(el("div", { class: "bc-kiln-plate-en", text: name.en.toUpperCase() }));
+    var plateRole = [primary.role, primary.company].filter(nonEmpty).join(" ／ ");
+    if (nonEmpty(plateRole)) plateChildren.push(el("div", { class: "bc-kiln-plate-role", text: plateRole }));
+    var plateRows = meishiLines.filter(function (l) { return l.mk !== "Co"; }).slice(0, 3);
+    if (plateRows.length) {
+      plateChildren.push(el("div", { class: "bc-kiln-plate-rows" }, plateRows.map(function (l) {
+        return el("div", { class: "bc-kiln-plate-row" }, [
+          el("span", { class: "bc-kiln-mk", text: l.mk }),
+          el("span", { text: l.value }),
+        ]);
+      })));
+    }
+    plateChildren.push(el("div", { class: "bc-kiln-plate-badge", text: "BrightCard ── 章立てデジタル名刺" }));
+    var plate = el("div", { class: "bc-kiln-plate" }, plateChildren);
 
-    var capture = el("div", { class: "bc-kiln-capture", id: "bc-kiln-namecard" }, [
-      el("span", { class: "bc-kiln-reticle bc-kiln-reticle-tl", "aria-hidden": "true" }),
-      el("span", { class: "bc-kiln-reticle bc-kiln-reticle-tr", "aria-hidden": "true" }),
-      el("span", { class: "bc-kiln-reticle bc-kiln-reticle-bl", "aria-hidden": "true" }),
-      el("span", { class: "bc-kiln-reticle bc-kiln-reticle-br", "aria-hidden": "true" }),
+    var stage = el("div", { class: "bc-kiln-stage", id: "bc-kiln-stage" }, [
       el("span", { class: "bc-kiln-scan", "aria-hidden": "true" }),
       meishi,
+      plate,
     ]);
 
-    var fieldEls = [];
-    var extractRows = el("div", { class: "bc-kiln-extract-rows" });
-    fieldsData.forEach(function (f) {
-      var fieldEl = el("div", { class: "bc-kiln-field", "data-conf": String(fieldConf[f.k] || 0) }, [
-        el("span", { class: "bc-kiln-k", text: f.k }),
-        el("span", { class: "bc-kiln-v", text: f.v }),
-        el("span", { class: "bc-kiln-c", text: "0%" }),
-      ]);
-      fieldEls.push(fieldEl);
-      extractRows.appendChild(fieldEl);
-    });
+    var revealSection = el(
+      "section",
+      { class: "bc-kiln-section bc-kiln-reveal", id: "bc-kiln-reveal" },
+      secHead(revealNo, "Reveal", true).concat([
+        el("p", { class: "bc-kiln-reveal-copy", text: nonEmpty(revealCfg.copy) ? revealCfg.copy : "1枚の紙の名刺から、このページは生まれました。" }),
+        stage,
+        el("div", { class: "bc-kiln-reveal-cap reveal", text: nonEmpty(revealCfg.caption) ? revealCfg.caption : "紙の名刺が、章立ての一冊に。" }),
+      ])
+    );
+    app.appendChild(revealSection);
 
-    var extract = el("div", { class: "bc-kiln-extract", "aria-live": "polite" }, [
-      el("div", { class: "bc-kiln-extract-h" }, [
-        el("span", { class: "bc-kiln-t", text: "Extracted Fields" }),
-        el("span", { class: "bc-kiln-dot", "aria-hidden": "true" }),
-      ]),
-      extractRows,
-    ]);
-
-    var intakeSection = el("section", { class: "bc-kiln-section", id: "bc-kiln-intake" }, [
-      el("div", { class: "bc-kiln-ghost", "aria-hidden": "true", text: "00" }),
-      el("div", { class: "bc-kiln-sec-head" }, [
-        el("span", { class: "bc-kiln-chapno", text: "00" }),
-        el("span", { class: "bc-kiln-sec-label", text: "Card Intake" }),
-      ]),
-      el("hr", { class: "bc-kiln-rule" }),
-      el("p", { class: "bc-kiln-intake-copy", text: "写真付きの名刺を読み取り、名前・肩書き・連絡先を自動で抽出します。" }),
-      capture,
-      extract,
-    ]);
-    app.appendChild(intakeSection);
-
-    // ---------- 01 Portrait ----------
-    var avatarWrap = el("div", { class: "bc-kiln-avatar-wrap" });
-    var img = new Image();
-    img.alt = name.ja ? name.ja + "の顔写真" : "";
-    img.style.objectPosition = design.photoPosition || "center center";
-    var monogramShown = false;
-    img.onerror = function () {
-      if (img.parentNode) img.parentNode.removeChild(img);
-      if (!monogramShown) {
-        monogramShown = true;
-        avatarWrap.appendChild(el("div", { class: "bc-kiln-monogram" }, [
-          el("span", { text: core.monogramInitial(name.ja) }),
-        ]));
-      }
-    };
-    img.src = "photo.jpg";
-    avatarWrap.appendChild(img);
-
-    var heroChildren = [
-      el("div", { class: "bc-kiln-ghost", "aria-hidden": "true", text: "01" }),
-      el("div", { class: "bc-kiln-sec-head" }, [
-        el("span", { class: "bc-kiln-chapno", text: "01" }),
-        el("span", { class: "bc-kiln-sec-label", text: "Portrait" }),
-      ]),
-      avatarWrap,
-    ];
-    if (nonEmpty(primary.role)) heroChildren.push(el("div", { class: "bc-kiln-tag", text: primary.role }));
-    heroChildren.push(el("h1", { class: "bc-kiln-name-ja", text: (name.ja || "").replace(/\s+/, " ") }));
-    if (nonEmpty(name.en)) heroChildren.push(el("div", { class: "bc-kiln-name-en", text: name.en }));
-
-    var kana = name.kana || {};
-    if (nonEmpty(kana.last) || nonEmpty(kana.first)) {
-      heroChildren.push(el("div", { class: "bc-kiln-yomi", text: [kana.last, kana.first].filter(nonEmpty).join(" ") }));
-    }
-
-    var roleLine = buildRoleLine(positions);
-    if (nonEmpty(roleLine)) heroChildren.push(el("div", { class: "bc-kiln-role-line", text: roleLine }));
-
-    if (nonEmpty(card.tagline)) heroChildren.push(el("p", { class: "bc-kiln-tagline", text: card.tagline }));
-
-    var heroSection = el("section", { class: "bc-kiln-section bc-kiln-hero", id: "bc-kiln-hero" }, heroChildren);
-    app.appendChild(heroSection);
-
-    // ---------- 02 Story ----------
-    if (nonEmpty(card.about) || metrics.length) {
-      var storyChildren = [
-        el("div", { class: "bc-kiln-ghost", "aria-hidden": "true", text: "02" }),
-        el("div", { class: "bc-kiln-sec-head" }, [
-          el("span", { class: "bc-kiln-chapno", text: "02" }),
-          el("span", { class: "bc-kiln-sec-label", text: "Story" }),
-        ]),
-        el("hr", { class: "bc-kiln-rule" }),
-      ];
-      if (nonEmpty(card.about)) storyChildren.push(el("p", { class: "bc-kiln-bio", text: card.about }));
-
-      var proofEls = [];
-      if (metrics.length) {
-        var proofsGrid = el("div", { class: "bc-kiln-proofs" });
-        metrics.forEach(function (m) {
-          if (!m) return;
-          var numAttrs = { class: "bc-kiln-num" };
-          var numText;
-          if (nonEmpty(m.static)) {
-            numAttrs["data-static"] = m.static;
-            numText = m.static;
-          } else {
-            numAttrs["data-to"] = String(m.value || 0);
-            numAttrs["data-suffix"] = m.suffix || "";
-            numText = "0";
-          }
-          var numEl = el("span", numAttrs, [document.createTextNode(numText)]);
-          var proofEl = el("div", { class: "bc-kiln-proof" }, [
-            numEl,
-            el("div", { class: "bc-kiln-lbl", text: m.label || "" }),
-          ]);
-          proofEls.push(numEl);
-          proofsGrid.appendChild(proofEl);
-        });
-        storyChildren.push(proofsGrid);
-      }
-
-      var storySection = el("section", { class: "bc-kiln-section", id: "bc-kiln-story" }, storyChildren);
-      app.appendChild(storySection);
-    }
-
-    // ---------- 03 Save & Connect ----------
+    // ---------- 05 Save & Connect ----------
+    var saveNo = chap();
     var contactRows = [];
     if (nonEmpty(contacts.phone)) {
       contactRows.push(el("a", { class: "bc-kiln-crow", href: "tel:" + contacts.phone }, [
@@ -334,25 +401,19 @@
       },
     });
 
-    var saveChildren = [
-      el("div", { class: "bc-kiln-ghost", "aria-hidden": "true", text: "03" }),
-      el("div", { class: "bc-kiln-sec-head" }, [
-        el("span", { class: "bc-kiln-chapno", text: "03" }),
-        el("span", { class: "bc-kiln-sec-label", text: "Save & Connect" }),
-      ]),
-      el("hr", { class: "bc-kiln-rule" }),
-    ];
+    var saveChildren = secHead(saveNo, "Save & Connect", true);
     if (contactRows.length) saveChildren.push(el("div", { class: "bc-kiln-contact" }, contactRows));
+    var qrPanel = core.renderQr(card);
+    if (qrPanel) saveChildren.push(qrPanel);
     saveChildren.push(el("div", { class: "bc-kiln-btns" }, [saveBtnPrimary, shareBtn]));
 
-    var saveSection = el("section", { class: "bc-kiln-section", id: "bc-kiln-save" }, saveChildren);
-    app.appendChild(saveSection);
+    app.appendChild(el("section", { class: "bc-kiln-section", id: "bc-kiln-save" }, saveChildren));
 
     // ---------- Footer（C規約: © YYYY 氏名 ＋ Powered by BrightCard） ----------
     var year = new Date().getFullYear();
     app.appendChild(el("div", { class: "bc-kiln-foot" }, [
       document.createTextNode("© " + year + " " + (name.ja || "")),
-      el("div", { class: "bc-kiln-powered-by", html: "Powered by <a href=\"https://withbt.com\" target=\"_blank\" rel=\"noopener\">BrightCard</a>（合同会社WBT）" }),
+      el("div", { class: "bc-kiln-powered-by", html: "Powered by <a href=\"https://withbt.com/card/\" target=\"_blank\" rel=\"noopener\">BrightCard</a>（合同会社WBT）" }),
     ]));
 
     wrap.appendChild(app);
@@ -413,58 +474,70 @@
       requestAnimationFrame(step);
     }
 
-    var intakeDone = false;
-    function runIntake() {
-      if (intakeDone) return;
-      intakeDone = true;
-      if (reduce) {
-        fieldEls.forEach(function (f) {
-          f.classList.add("bc-kiln-on");
-          var c = f.querySelector(".bc-kiln-c");
-          if (c) c.textContent = (f.getAttribute("data-conf") || "0") + "%";
-        });
-        return;
-      }
-      capture.classList.add("bc-kiln-scanning");
-      fieldEls.forEach(function (f, i) {
-        setTimeout(function () {
-          f.classList.add("bc-kiln-on");
-          var conf = parseInt(f.getAttribute("data-conf"), 10) || 0;
-          var cEl = f.querySelector(".bc-kiln-c");
-          if (cEl) countUp(cEl, conf, "%", 700);
-        }, 700 + i * 260);
-      });
-    }
-
+    // 02 Proof: IO発火 → 90msステップの stagger reveal ＋ rAFカウントアップ
     var proofsDone = false;
     function runProofs() {
       if (proofsDone) return;
       proofsDone = true;
-      proofEls.forEach(function (n) {
-        if (n.hasAttribute("data-static")) return;
-        countUp(n, parseInt(n.getAttribute("data-to"), 10) || 0, n.getAttribute("data-suffix") || "", 1100);
+      proofItems.forEach(function (p, i) {
+        if (reduce) {
+          p.item.classList.add("bc-kiln-p-on");
+          if (!p.isStatic) p.valEl.textContent = String(p.to);
+          return;
+        }
+        setTimeout(function () {
+          p.item.classList.add("bc-kiln-p-on");
+          if (!p.isStatic) countUp(p.valEl, p.to, "", 1100);
+        }, i * 90);
       });
     }
-
-    if (reduce) runIntake();
-    else setTimeout(runIntake, 420);
-
-    if (proofEls.length) {
-      if ("IntersectionObserver" in global) {
-        var io = new IntersectionObserver(function (entries) {
+    if (proofItems.length) {
+      if ("IntersectionObserver" in global && !reduce) {
+        var pio = new IntersectionObserver(function (entries) {
           entries.forEach(function (entry) {
             if (!entry.isIntersecting) return;
             runProofs();
-            io.unobserve(entry.target);
+            pio.unobserve(entry.target);
           });
         }, { threshold: 0.35 });
-        var storyEl = document.getElementById("bc-kiln-story");
-        if (storyEl) io.observe(storyEl);
+        var proofSectionEl = document.getElementById("bc-kiln-proof");
+        if (proofSectionEl) pio.observe(proofSectionEl);
         else runProofs();
       } else {
         runProofs();
       }
     }
+
+    // 04 Reveal: IO発火（1回のみ）→ スキャン → 紙が退く(500ms) → 銘板が立つ(900ms)
+    var revealDone = false;
+    function runReveal() {
+      if (revealDone) return;
+      revealDone = true;
+      if (reduce) {
+        // reduce時は静的最終状態（CSS側でも指定済み）。クラス付与のみ。
+        meishi.classList.add("bc-kiln-paper-out");
+        plate.classList.add("bc-kiln-plate-on");
+        return;
+      }
+      stage.classList.add("bc-kiln-scanning");
+      setTimeout(function () { meishi.classList.add("bc-kiln-paper-out"); }, 500);
+      setTimeout(function () { plate.classList.add("bc-kiln-plate-on"); }, 900);
+    }
+    if ("IntersectionObserver" in global && !reduce) {
+      var rio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          runReveal();
+          rio.unobserve(entry.target);
+        });
+      }, { threshold: 0.4 });
+      rio.observe(stage);
+    } else {
+      runReveal();
+    }
+
+    // 03 Story ほか .reveal 要素のスクロール表示（core共通IO）
+    core.initScrollReveal(wrap);
 
     // FAB開閉
     if (normSns.length) {

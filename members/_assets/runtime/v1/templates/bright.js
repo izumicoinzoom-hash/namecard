@@ -279,7 +279,7 @@
     var year = new Date().getFullYear();
     container.appendChild(el("div", { class: "bc-footer" }, [
       document.createTextNode("© " + year + " " + (name.ja || "")),
-      el("div", { class: "bc-powered-by", html: "Powered by <a href=\"https://withbt.com\" target=\"_blank\" rel=\"noopener\">BrightCard</a>（合同会社WBT）" }),
+      el("div", { class: "bc-powered-by", html: "Powered by <a href=\"https://withbt.com/card/\" target=\"_blank\" rel=\"noopener\">BrightCard</a>（合同会社WBT）" }),
     ]));
 
     // ---- Fixed bottom CTA ----

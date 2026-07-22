@@ -1,9 +1,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>BrightCard デモ見本 — 11デザイン×3ライン</title>
-<meta name="description" content="1データ1デザインの売り切り型デジタル名刺。11のデザインを、標準・差別化・オーナーの3ラインで、それぞれ別の架空事業者で。物理NFCカード同梱。">
+<meta name="description" content="1データ1デザインの売り切り型デジタル名刺。11のデザインを、スタンダード・プレミアム・マイスターの3ラインで、それぞれ別の架空事業者で。物理NFCカード同梱。">
 <meta property="og:title" content="BrightCard デモ見本 — 11デザイン×3ライン">
-<meta property="og:description" content="11デザインを標準・差別化・オーナーの3ラインで。専用デザインのデジタル名刺＋物理NFCカード同梱。">
+<meta property="og:description" content="11デザインをスタンダード・プレミアム・マイスターの3ラインで。専用デザインのデジタル名刺＋物理NFCカード同梱。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://withbt.com/card/_demo.html">
 <meta property="og:image" content="https://withbt.com/card/og.jpg">
@@ -48,7 +48,6 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;
 </style>
 
 <div class="bar">
-  <span class="brand">BRIGHTCARD</span>
   <div class="legend" id="legend"></div>
 </div>
 <div class="stage" id="stage"></div>
@@ -64,9 +63,9 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;
   "use strict";
   // 3ライン（設計書§6の価格ライン）。デモを見ながら「このデザイン＝どのライン・いくら」を意識できるようにする。
   var LINES={
-    standard:{short:"標準",  label:"標準ライン",  price:"¥4,900〜", color:"#6E8BA6"},
-    diff:    {short:"差別化", label:"差別化ライン", price:"¥6,900〜", color:"#E8703A"},
-    owner:   {short:"オーナー",label:"オーナーライン",price:"¥14,800", color:"#C0A062"}
+    standard:{short:"スタンダード", label:"スタンダードライン", price:"¥4,900〜", color:"#6E8BA6"},
+    diff:    {short:"プレミアム",  label:"プレミアムライン",  price:"¥6,900〜", color:"#E8703A"},
+    owner:   {short:"マイスター",  label:"マイスターライン",  price:"¥14,800", color:"#C0A062"}
   };
   // ★相対パス（_demo.html と同じ階層に各デモカードフォルダがある）。ローカル・本番(withbt.com/card/)両対応。
   var DESIGNS=[

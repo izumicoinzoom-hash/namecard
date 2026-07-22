@@ -1,10 +1,21 @@
 /**
  * BrightCard runtime v1 — templates/flux.css
- * 「Flux」テンプレ（深夜ネオン・発光ミント。撮影された物理名刺のスキャン演出 → 円形ポートレート → Story → Save & Connect）。
- * brightcard/preview/theme-flux.html の <style> を移植。
+ * 「Flux」テンプレ（差別化ライン再設計版・2026-07。夜光・ネオンの先鋭）。
+ * 章構成: 01 Portrait（全幅ブリード＋ネオンreticle＋ロード時スキャンのヒーロー）→
+ * 02 Proof（Space Monoの発光カウンター）→ 03 Story（編集組版）→
+ * 04 Reveal（紙名刺→発光ガラス銘板）→ 05 Save & Connect。
  * 全セレクタは bc-flux- プレフィックス付きクラス名でスコープし、他テンプレへ漏れないようにする。
  * boot.js は design.template === "flux" のときのみこのCSSを読み込む。
+ * ルート(.bc-flux-root)に暗地背景色を必ず設定（onyxで学んだ教訓：body/htmlに頼らずルート要素へ
+ * 背景を当てないと、コンテンツが短いカードでビューポート下部が白くなる）。
+ * モーションは CSS + IO + rAF のみ。アニメ対象は transform/opacity 限定。
+ * glow は box-shadow / text-shadow の静的表現のみ（filterアニメ禁止）。
+ * will-change は hero-media と plate の2箇所のみ。
  */
+
+/* body既定margin(8px)の白帯をfluxスコープでのみ除去（暗地をエッジまで届かせる） */
+html.bc-flux { background: #06080c; }
+html.bc-flux body { margin: 0; }
 
 html.bc-flux {
   --bc-flux-bg: #06080c;
@@ -65,7 +76,7 @@ html.bc-flux {
 }
 .bc-flux-section { padding: 64px 0; position: relative; }
 .bc-flux-sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 22px; }
-.bc-flux-chapno { font-family: var(--bc-flux-mono); font-weight: 700; font-size: 12px; letter-spacing: 0.28em; color: var(--bc-flux-accent, #34e6b4); }
+.bc-flux-chapno { font-family: var(--bc-flux-mono); font-weight: 700; font-size: 12px; letter-spacing: 0.28em; color: var(--bc-flux-accent, #34e6b4); text-shadow: 0 0 12px rgba(52, 230, 180, 0.35); }
 .bc-flux-sec-label { font-family: var(--bc-flux-mono); font-weight: 400; font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--bc-flux-ink-faint); }
 .bc-flux-rule { height: 1px; background: var(--bc-flux-line); border: 0; margin: 0; }
 
@@ -83,18 +94,277 @@ html.bc-flux {
   z-index: 0;
 }
 
-/* ============ 00 intake ============ */
-.bc-flux-intake-copy { color: var(--bc-flux-ink-dim); font-size: 14px; margin: 4px 0 24px; }
-.bc-flux-capture {
+/* 共通スクロールreveal（core.initScrollReveal が .reveal → .visible を付与） */
+.bc-flux-root .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bc-flux-root .reveal.visible { opacity: 1; transform: none; }
+
+/* 共通 reticle（accentネオンの照準枠。01ヒーローと04撮影台の両方で使う） */
+.bc-flux-reticle { position: absolute; width: 20px; height: 20px; border: 2px solid var(--bc-flux-accent, #34e6b4); opacity: 0.9; pointer-events: none; z-index: 3; box-shadow: 0 0 6px rgba(52, 230, 180, 0.55); }
+.bc-flux-reticle-tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
+.bc-flux-reticle-tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
+.bc-flux-reticle-bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
+.bc-flux-reticle-br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+
+/* 共通スキャンライン（発光の走査。01=ロード時1回／04=IO発火1回） */
+.bc-flux-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  z-index: 4;
+  background: linear-gradient(90deg, transparent, var(--bc-flux-accent, #34e6b4), transparent);
+  box-shadow: 0 0 16px 3px rgba(52, 230, 180, 0.7);
+  opacity: 0;
+  transform: translateY(0);
+}
+
+/* ============ 01 portrait（全幅ブリード＋ネオンreticleの夜光ヒーロー） ============ */
+.bc-flux-hero {
+  min-height: 100svh;
+  padding-top: 28px;
+  padding-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.bc-flux-hero .bc-flux-sec-head { margin-bottom: 18px; }
+.bc-flux-hero::before {
+  /* 薄グリッド地（heroにのみ。夜の都市のドット方眼） */
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -20px;
+  right: -20px;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(232, 238, 245, 0.04) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg, rgba(232, 238, 245, 0.04) 0 1px, transparent 1px 22px);
+}
+.bc-flux-hero > * { position: relative; }
+
+.bc-flux-hero-media {
+  position: relative;
+  width: calc(100% + 40px);
+  margin: 0 -20px;
+  overflow: hidden;
+  background: var(--bc-flux-panel-2);
+  box-shadow: 0 0 34px -10px var(--bc-flux-accent-glow, rgba(52, 230, 180, 0.25));
+  will-change: transform, opacity;
+  animation: bc-flux-hero-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.bc-flux-hero-photo {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--bc-flux-panel-2);
+}
+.bc-flux-hero-photo img { width: 100%; height: 100%; object-fit: cover; }
+.bc-flux-hero-monogram {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 40%, var(--bc-flux-accent-light, rgba(52, 230, 180, 0.08)), var(--bc-flux-bg) 75%);
+}
+.bc-flux-hero-monogram span {
+  font-family: var(--bc-flux-serif);
+  font-weight: 900;
+  font-size: min(30vw, 160px);
+  line-height: 1;
+  color: var(--bc-flux-accent, #34e6b4);
+  opacity: 0.35;
+  text-shadow: 0 0 24px rgba(52, 230, 180, 0.35);
+  user-select: none;
+}
+/* ロード時スキャン（写真上を1回だけ走査。keyframeは04と同系・走行距離のみヒーロー丈） */
+.bc-flux-scan-hero { animation: bc-flux-scan-hero 2s ease-in-out 0.5s 1 forwards; }
+@keyframes bc-flux-scan-hero {
+  0% { opacity: 0; transform: translateY(6px); }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(680px); }
+}
+
+.bc-flux-hero-id { margin-top: 28px; }
+.bc-flux-tag { font-family: var(--bc-flux-mono); font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--bc-flux-ink-faint); margin-bottom: 12px; }
+.bc-flux-name-ja {
+  font-family: var(--bc-flux-serif);
+  font-weight: 900;
+  font-size: clamp(36px, 12.5vw, 58px);
+  line-height: 1.05;
+  margin: 0;
+  letter-spacing: 0.02em;
+  color: var(--bc-flux-ink);
+  text-shadow: 0 0 24px var(--bc-flux-accent-glow, rgba(52, 230, 180, 0.25));
+  word-break: break-word;
+}
+.bc-flux-yomi { font-size: 12px; letter-spacing: 0.24em; color: var(--bc-flux-ink-faint); margin-top: 10px; }
+.bc-flux-name-en { font-family: var(--bc-flux-mono); font-size: 13px; letter-spacing: 0.3em; color: var(--bc-flux-ink-dim); margin-top: 6px; text-transform: uppercase; }
+.bc-flux-role-line { font-family: var(--bc-flux-serif); font-weight: 700; font-size: 15px; color: var(--bc-flux-ink-dim); margin-top: 20px; }
+.bc-flux-tagline {
+  font-family: var(--bc-flux-serif);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--bc-flux-ink);
+  margin: 20px 0 0;
+  border-left: 2px solid var(--bc-flux-accent, #34e6b4);
+  padding-left: 16px;
+  white-space: pre-wrap;
+}
+
+/* ヒーローのロード時エントランス（1回のみ・transform/opacityのみ） */
+@keyframes bc-flux-hero-in {
+  from { opacity: 0; transform: scale(1.045); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes bc-flux-id-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.bc-flux-hi-1,
+.bc-flux-hi-2,
+.bc-flux-hi-3,
+.bc-flux-hi-4 { animation: bc-flux-id-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.bc-flux-hi-1 { animation-delay: 0.25s; }
+.bc-flux-hi-2 { animation-delay: 0.35s; }
+.bc-flux-hi-3 { animation-delay: 0.45s; }
+.bc-flux-hi-4 { animation-delay: 0.55s; }
+
+/* ============ 02 proof（Space Monoの発光カウンター・罫線組版） ============ */
+.bc-flux-proof-lead { color: var(--bc-flux-ink-dim); font-size: 13.5px; letter-spacing: 0.04em; margin: 4px 0 10px; }
+.bc-flux-proof-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 22px;
+  margin-top: 8px;
+}
+.bc-flux-p-item {
+  padding: 18px 0;
+  border-top: 1px solid var(--bc-flux-accent-border, rgba(52, 230, 180, 0.2));
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bc-flux-p-item.bc-flux-p-on { opacity: 1; transform: none; }
+.bc-flux-p-feature { grid-column: 1 / -1; border-top: 0; padding-top: 8px; }
+.bc-flux-num {
+  display: block;
+  font-family: var(--bc-flux-mono);
+  font-weight: 700;
+  font-size: clamp(28px, 8.5vw, 38px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--bc-flux-accent, #34e6b4);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 14px rgba(52, 230, 180, 0.4);
+}
+.bc-flux-p-feature .bc-flux-num { font-size: clamp(44px, 14.5vw, 66px); }
+.bc-flux-num-long { font-size: clamp(20px, 6vw, 26px); }
+.bc-flux-p-feature .bc-flux-num-long { font-size: clamp(30px, 9vw, 44px); }
+.bc-flux-num-unit {
+  /* 単位（monoの小さな添字。発光は本体より控えめに） */
+  font-family: var(--bc-flux-mono);
+  font-size: 0.36em;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--bc-flux-ink-dim);
+  text-shadow: none;
+  margin-left: 5px;
+}
+.bc-flux-num-bar {
+  display: block;
+  width: 34px;
+  height: 2px;
+  margin-top: 12px;
+  background: var(--bc-flux-accent, #34e6b4);
+  box-shadow: 0 0 10px rgba(52, 230, 180, 0.6);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
+}
+.bc-flux-p-on .bc-flux-num-bar { transform: scaleX(1); }
+.bc-flux-lbl { font-size: 11.5px; color: var(--bc-flux-ink-dim); margin-top: 10px; line-height: 1.5; letter-spacing: 0.04em; }
+
+/* ============ 03 story（編集組版: about / philosophy / businesses / links） ============ */
+.bc-flux-bio {
+  font-size: 15.5px;
+  line-height: 2.05;
+  color: var(--bc-flux-ink-dim);
+  max-width: 40em;
+  margin: 22px 0 0;
+  padding-left: 16px;
+  border-left: 2px solid var(--bc-flux-accent, #34e6b4);
+  white-space: pre-wrap;
+}
+.bc-flux-philosophy {
+  margin-top: 30px;
+  padding: 24px 0;
+  border-top: 1px solid var(--bc-flux-line);
+  border-bottom: 1px solid var(--bc-flux-line);
+}
+.bc-flux-phi-label { font-family: var(--bc-flux-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: var(--bc-flux-accent, #34e6b4); text-shadow: 0 0 10px rgba(52, 230, 180, 0.3); margin-bottom: 10px; }
+.bc-flux-phi-text {
+  font-family: var(--bc-flux-serif);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+  color: var(--bc-flux-ink);
+}
+.bc-flux-biz-list { margin-top: 28px; }
+.bc-flux-biz-row {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  padding: 18px 0;
+  border-top: 1px solid var(--bc-flux-line);
+  text-decoration: none;
+  color: inherit;
+}
+.bc-flux-biz-no { font-family: var(--bc-flux-mono); font-weight: 700; font-size: 13px; color: var(--bc-flux-accent, #34e6b4); text-shadow: 0 0 10px rgba(52, 230, 180, 0.3); flex: none; }
+.bc-flux-biz-main { flex: 1; min-width: 0; }
+.bc-flux-biz-name { font-weight: 700; font-size: 15px; color: var(--bc-flux-ink); }
+.bc-flux-biz-role { font-size: 11px; color: var(--bc-flux-ink-faint); letter-spacing: 0.06em; margin-top: 2px; }
+.bc-flux-biz-desc { font-size: 12.5px; color: var(--bc-flux-ink-dim); line-height: 1.8; margin-top: 8px; }
+.bc-flux-biz-tags { font-size: 11px; color: var(--bc-flux-ink-faint); letter-spacing: 0.04em; margin-top: 8px; }
+.bc-flux-biz-arrow { flex: none; align-self: center; color: var(--bc-flux-ink-faint); }
+.bc-flux-biz-arrow svg { width: 14px; height: 14px; }
+.bc-flux-link-list { margin-top: 24px; }
+.bc-flux-link-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 13px 0;
+  border-top: 1px solid var(--bc-flux-line);
+  text-decoration: none;
+  color: inherit;
+}
+.bc-flux-link-main { flex: 1; min-width: 0; }
+.bc-flux-link-label { font-size: 13px; font-weight: 600; color: var(--bc-flux-ink); }
+.bc-flux-link-desc { font-size: 11px; color: var(--bc-flux-ink-faint); margin-top: 2px; }
+
+/* ============ 04 reveal（紙名刺 → 発光ガラス銘板） ============ */
+.bc-flux-reveal-copy { color: var(--bc-flux-ink-dim); font-size: 14px; margin: 4px 0 24px; }
+.bc-flux-stage {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--bc-flux-line);
   border-radius: 16px;
-  padding: 30px 24px;
+  padding: 34px 24px 40px;
   background: radial-gradient(130% 100% at 50% -10%, #12161d 0%, #06080c 70%);
   box-shadow: 0 22px 46px -26px rgba(0, 0, 0, 0.95);
 }
-.bc-flux-capture::after {
+.bc-flux-stage::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -102,13 +372,15 @@ html.bc-flux {
   border-radius: 16px;
   box-shadow: inset 0 0 60px 8px rgba(0, 0, 0, 0.55);
 }
-.bc-flux-reticle { position: absolute; width: 20px; height: 20px; border: 2px solid var(--bc-flux-accent, #34e6b4); opacity: 0.9; pointer-events: none; z-index: 3; box-shadow: 0 0 6px rgba(52, 230, 180, 0.55); }
-.bc-flux-reticle-tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
-.bc-flux-reticle-tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
-.bc-flux-reticle-bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
-.bc-flux-reticle-br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
+.bc-flux-stage.bc-flux-scanning .bc-flux-scan { animation: bc-flux-scan 1.7s ease-in-out 1 forwards; }
+@keyframes bc-flux-scan {
+  0% { opacity: 0; transform: translateY(6px); }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(200px); }
+}
 
-/* 物理名刺（ダークなテックカード。淡いミントの縁とグロウ） */
+/* 紙名刺（Before・消灯したダークなテックカード。淡いミントの縁） */
 .bc-flux-meishi {
   position: relative;
   z-index: 2;
@@ -125,7 +397,7 @@ html.bc-flux {
     0 0 24px -10px rgba(52, 230, 180, 0.25);
 }
 .bc-flux-meishi::before {
-  /* 薄いグリッド（紙のグレインの代わり） */
+  /* 薄いグリッド（紙のグレインの代わり・消灯トーン） */
   content: "";
   position: absolute;
   inset: 0;
@@ -144,130 +416,120 @@ html.bc-flux {
 .bc-flux-m-line { display: flex; gap: 7px; font-size: 10.5px; color: #c3ccd8; letter-spacing: 0.01em; word-break: break-all; margin-top: 4px; line-height: 1.4; }
 .bc-flux-mk { color: var(--bc-flux-ink-faint); flex: none; width: 38px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 8.5px; padding-top: 1px; font-family: var(--bc-flux-mono); }
 
-/* scan line：撮影の走査を1回だけ */
-.bc-flux-scan {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 2px;
-  z-index: 4;
-  background: linear-gradient(90deg, transparent, var(--bc-flux-accent, #34e6b4), transparent);
-  box-shadow: 0 0 16px 3px rgba(52, 230, 180, 0.7);
-  opacity: 0;
-  transform: translateY(0);
+/* 紙が退く（Beforeとして机の上に残す） */
+.bc-flux-meishi-paper {
+  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.bc-flux-capture.bc-flux-scanning .bc-flux-scan { animation: bc-flux-scan 1.7s ease-in-out 1 forwards; }
-@keyframes bc-flux-scan {
-  0% { opacity: 0; transform: translateY(6px); }
-  8% { opacity: 1; }
-  92% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(200px); }
+.bc-flux-meishi-paper.bc-flux-paper-out {
+  transform: rotate(-4deg) translate(-14px, 10px) scale(0.92);
+  opacity: 0.28;
 }
 
-.bc-flux-extract { margin-top: 20px; border: 1px solid var(--bc-flux-line); border-radius: 14px; background: var(--bc-flux-panel); overflow: hidden; }
-.bc-flux-extract-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--bc-flux-line); }
-.bc-flux-extract-h .bc-flux-t { font-family: var(--bc-flux-mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bc-flux-ink-faint); }
-.bc-flux-extract-h .bc-flux-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--bc-flux-accent, #34e6b4); box-shadow: 0 0 10px var(--bc-flux-accent, #34e6b4); }
-.bc-flux-field {
-  display: grid;
-  grid-template-columns: 64px 1fr auto;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 14px;
-  border-top: 1px solid rgba(232, 238, 245, 0.06);
+/* 発光ガラス銘板（After・同素材のガラスが「点灯」する。accent縁＋強い発光＋accentグリッド地） */
+.bc-flux-plate {
+  position: relative;
+  z-index: 4;
+  margin-top: -34px;
+  margin-left: 18px;
+  border-radius: 8px;
+  padding: 20px 18px 16px 24px;
+  background: linear-gradient(160deg, #0f1620, #0a0f16);
+  color: #eaf2f8;
+  border: 1px solid rgba(52, 230, 180, 0.35);
+  box-shadow:
+    0 28px 46px -18px rgba(0, 0, 0, 0.95),
+    0 2px 5px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 24px -10px rgba(52, 230, 180, 0.5),
+    0 0 44px -16px rgba(52, 230, 180, 0.4);
+  opacity: 0;
+  transform: translateY(26px) rotate(1.2deg) scale(0.96);
+  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+.bc-flux-plate::before {
+  /* accentに点灯したグリッド地（紙名刺の消灯グリッドとの対） */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(52, 230, 180, 0.08) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg, rgba(52, 230, 180, 0.08) 0 1px, transparent 1px 22px);
+}
+.bc-flux-plate.bc-flux-plate-on { opacity: 1; transform: none; }
+.bc-flux-plate-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 5px;
+  border-radius: 8px 0 0 8px;
+  background: var(--bc-flux-accent, #34e6b4);
+  box-shadow: 0 0 14px var(--bc-flux-accent, #34e6b4);
+}
+.bc-flux-plate-name { font-family: var(--bc-flux-serif); font-weight: 900; font-size: 28px; letter-spacing: 0.04em; margin: 2px 0 1px; color: #f2f8fc; text-shadow: 0 0 18px var(--bc-flux-accent-glow, rgba(52, 230, 180, 0.25)); }
+.bc-flux-plate-en { font-family: var(--bc-flux-mono); font-size: 10px; letter-spacing: 0.22em; color: var(--bc-flux-accent, #34e6b4); text-shadow: 0 0 10px rgba(52, 230, 180, 0.35); }
+.bc-flux-plate-role { font-size: 10.5px; color: var(--bc-flux-ink-dim); letter-spacing: 0.04em; margin-top: 8px; }
+.bc-flux-plate-rows { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(52, 230, 180, 0.18); }
+.bc-flux-plate-row { display: flex; gap: 7px; font-size: 10.5px; color: #cfdae4; margin-top: 4px; line-height: 1.4; word-break: break-all; }
+.bc-flux-plate-badge { margin-top: 12px; font-family: var(--bc-flux-mono); font-size: 8.5px; letter-spacing: 0.18em; color: var(--bc-flux-ink-faint); }
+
+/* 銘板内の行 stagger（plate-on 連動・transition-delayのみ） */
+.bc-flux-plate > *:not(.bc-flux-plate-accent) {
   opacity: 0;
   transform: translateY(8px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
 }
-.bc-flux-field:first-child { border-top: 0; }
-.bc-flux-field.bc-flux-on { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
-.bc-flux-field .bc-flux-k { font-family: var(--bc-flux-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc-flux-ink-faint); }
-.bc-flux-field .bc-flux-v { font-size: 13.5px; color: var(--bc-flux-ink); word-break: break-all; font-family: var(--bc-flux-serif); font-weight: 700; }
-.bc-flux-field .bc-flux-c {
-  font-family: var(--bc-flux-mono);
-  font-weight: 700;
-  font-size: 11px;
-  color: var(--bc-flux-accent, #34e6b4);
-  white-space: nowrap;
-  justify-self: end;
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 12px rgba(52, 230, 180, 0.35);
-}
+.bc-flux-plate.bc-flux-plate-on > *:not(.bc-flux-plate-accent) { opacity: 1; transform: none; }
+.bc-flux-plate.bc-flux-plate-on > *:nth-child(2) { transition-delay: 0.1s; }
+.bc-flux-plate.bc-flux-plate-on > *:nth-child(3) { transition-delay: 0.2s; }
+.bc-flux-plate.bc-flux-plate-on > *:nth-child(4) { transition-delay: 0.3s; }
+.bc-flux-plate.bc-flux-plate-on > *:nth-child(5) { transition-delay: 0.4s; }
+.bc-flux-plate.bc-flux-plate-on > *:nth-child(6) { transition-delay: 0.5s; }
 
-/* ============ 01 portrait ============ */
-.bc-flux-hero { padding-top: 40px; }
-.bc-flux-avatar-wrap {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid var(--bc-flux-accent, #34e6b4);
-  box-shadow: 0 0 24px -4px rgba(52, 230, 180, 0.5);
-  margin-bottom: 22px;
-  background: var(--bc-flux-panel-2);
-}
-.bc-flux-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
-.bc-flux-monogram {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--bc-flux-serif);
-  font-weight: 900;
-  font-size: 34px;
-  color: var(--bc-flux-accent, #34e6b4);
-  text-shadow: 0 0 16px rgba(52, 230, 180, 0.35);
-}
-.bc-flux-tag { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--bc-flux-ink-faint); margin-bottom: 14px; }
-.bc-flux-name-ja {
-  font-family: var(--bc-flux-serif);
-  font-weight: 900;
-  font-size: clamp(40px, 15vw, 74px);
-  line-height: 1.05;
-  margin: 0;
-  letter-spacing: 0.02em;
-  color: var(--bc-flux-ink);
-  text-shadow: 0 0 24px rgba(52, 230, 180, 0.25);
-  word-break: break-word;
-}
-.bc-flux-name-en { font-size: 13px; letter-spacing: 0.3em; color: var(--bc-flux-ink-dim); margin-top: 14px; text-transform: uppercase; }
-.bc-flux-yomi { font-size: 12px; letter-spacing: 0.24em; color: var(--bc-flux-ink-faint); margin-top: 6px; }
-.bc-flux-role-line { font-family: var(--bc-flux-serif); font-weight: 700; font-size: 15px; color: var(--bc-flux-ink-dim); margin-top: 20px; }
-.bc-flux-tagline {
+.bc-flux-reveal-cap {
+  margin-top: 22px;
+  text-align: center;
   font-family: var(--bc-flux-serif);
   font-weight: 700;
-  font-size: 19px;
-  line-height: 1.7;
-  color: var(--bc-flux-ink);
-  margin-top: 20px;
-  border-left: 2px solid var(--bc-flux-accent, #34e6b4);
-  padding-left: 16px;
-  white-space: pre-wrap;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  color: var(--bc-flux-ink-dim);
 }
 
-/* ============ 02 story ============ */
-.bc-flux-bio { font-size: 14.5px; color: var(--bc-flux-ink-dim); line-height: 1.9; margin-top: 20px; }
-.bc-flux-proofs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
-.bc-flux-proof { border: 1px solid var(--bc-flux-line); border-radius: 12px; background: var(--bc-flux-panel); padding: 16px 14px; }
-.bc-flux-proof .bc-flux-num {
-  font-family: var(--bc-flux-serif);
-  font-weight: 900;
-  font-size: 34px;
-  line-height: 1;
-  color: var(--bc-flux-accent, #34e6b4);
-  font-variant-numeric: tabular-nums;
-  display: block;
-  text-shadow: 0 0 12px rgba(52, 230, 180, 0.35);
-}
-.bc-flux-proof .bc-flux-lbl { font-size: 11.5px; color: var(--bc-flux-ink-dim); margin-top: 8px; line-height: 1.5; }
-
-/* ============ 03 save ============ */
+/* ============ 05 save ============ */
 .bc-flux-contact { border: 1px solid var(--bc-flux-line); border-radius: 14px; background: var(--bc-flux-panel); overflow: hidden; margin-top: 20px; }
 .bc-flux-crow { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-top: 1px solid rgba(232, 238, 245, 0.06); color: var(--bc-flux-ink); text-decoration: none; }
 .bc-flux-crow:first-child { border-top: 0; }
 .bc-flux-crow .bc-flux-ck { font-family: var(--bc-flux-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bc-flux-ink-faint); width: 58px; flex: none; }
 .bc-flux-crow .bc-flux-cv { font-size: 13.5px; color: var(--bc-flux-ink); word-break: break-all; font-family: var(--bc-flux-serif); font-weight: 700; }
+
+/* QR opt-in（core.renderQr が非nullのときのみDOMが入る） */
+.bc-flux-root .bc-qr {
+  margin-top: 20px;
+  background: #f6f3ec;
+  border-radius: 14px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.bc-flux-root .bc-qr-code { width: 100%; max-width: 180px; }
+.bc-flux-root .bc-qr-code svg { width: 100%; height: auto; display: block; }
+.bc-flux-root .bc-qr-cap { font-size: 11px; color: #5c554b; text-align: center; line-height: 1.6; }
+.bc-flux-root .bc-qr-cap b {
+  display: block;
+  font-family: var(--bc-flux-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bc-flux-accent-dark, #28b38c);
+  margin-bottom: 4px;
+}
+
 .bc-flux-btns { display: grid; gap: 10px; margin-top: 20px; }
 .bc-flux-btn {
   border: 0;
@@ -283,7 +545,7 @@ html.bc-flux {
   text-decoration: none;
   display: block;
 }
-.bc-flux-btn-primary { background: var(--bc-flux-accent, #34e6b4); color: var(--bc-flux-bg); }
+.bc-flux-btn-primary { background: var(--bc-flux-accent, #34e6b4); color: var(--bc-flux-bg); box-shadow: 0 0 24px -8px rgba(52, 230, 180, 0.5); }
 .bc-flux-btn-ghost { background: transparent; color: var(--bc-flux-ink); border: 1px solid var(--bc-flux-line); }
 
 .bc-flux-foot { font-family: var(--bc-flux-mono); text-align: center; color: var(--bc-flux-ink-faint); font-size: 11px; letter-spacing: 0.2em; padding: 40px 0 120px; }
@@ -358,7 +620,7 @@ html.bc-flux {
 }
 .bc-flux-toast.bc-flux-show { opacity: 1; transform: translate(-50%, 0); }
 
-/* ============ reduced motion ============ */
+/* ============ reduced motion（全停止＋各演出の静的最終状態） ============ */
 @media (prefers-reduced-motion: reduce) {
   .bc-flux-root *,
   .bc-flux-fab-wrap *,
@@ -366,7 +628,21 @@ html.bc-flux {
     animation: none !important;
     transition-duration: 0.001ms !important;
   }
-  .bc-flux-field { opacity: 1; transform: none; }
-  .bc-flux-chan { transition-delay: 0ms !important; }
+  /* 01: エントランス無し・最終状態（animation:none で keyframes 初期値も外れる） */
+  .bc-flux-hero-media,
+  .bc-flux-hi-1,
+  .bc-flux-hi-2,
+  .bc-flux-hi-3,
+  .bc-flux-hi-4 { opacity: 1; transform: none; }
+  /* 02: カウンター静的・reveal無し */
+  .bc-flux-p-item { opacity: 1; transform: none; }
+  .bc-flux-num-bar { transform: scaleX(1); transition-delay: 0ms !important; }
+  /* 03ほか: スクロールrevealは即最終状態 */
+  .bc-flux-root .reveal { opacity: 1; transform: none; }
+  /* 04: スキャンライン非表示（01ヒーロー側も同クラスで停止）・紙=退き済み・銘板=点灯済みの静的状態 */
   .bc-flux-scan { display: none; }
+  .bc-flux-meishi-paper { opacity: 0.28; transform: rotate(-4deg) translate(-14px, 10px) scale(0.92); }
+  .bc-flux-plate { opacity: 1; transform: none; }
+  .bc-flux-plate > *:not(.bc-flux-plate-accent) { opacity: 1; transform: none; transition-delay: 0ms !important; }
+  .bc-flux-chan { transition-delay: 0ms !important; }
 }
