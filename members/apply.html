@@ -38,7 +38,11 @@
     }
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%}
+  html,body{margin:0;padding:0;overflow-x:hidden;max-width:100%}
+  /* 文節折り返し: inline-blockは内部で折り返さないため、改行は必ず文節（span）境界で起きる。
+     max-width:100%は極端に狭い画面での溢れ防止（その場合のみ内部折り返しに戻る） */
+  .bw{display:inline-block;max-width:100%}
   body{
     background:var(--bg);
     color:var(--ink);
@@ -534,9 +538,9 @@
     <h1>BrightCard デジタル名刺<br>Web申込フォーム</h1>
     <div class="org">発行：合同会社WBT　担当：清田 兼明（Kemmei Kiyota）</div>
     <p class="lead">
-      ご記入いただいた内容で専用デザインの名刺ページ＋物理NFCカードを制作します。<strong>掲載したくない項目は空欄のままで結構です。</strong>
-      最後まで入力したら「内容を作成する」ボタンを押し、表示された内容を<strong>コピーしてLINEまたはメールで清田まで送信</strong>してください（この画面から自動送信はされません）。
-      まだデザインをお決めでない方は、<a href="_demo.html" target="_blank" rel="noopener">11種のデザイン見本（デモ）はこちら</a>からご覧いただけます。
+      <span class="bw">ご記入いただいた内容で</span><span class="bw">専用デザインの</span><span class="bw">名刺ページ＋</span><span class="bw">物理NFCカードを</span><span class="bw">制作します。</span> <strong><span class="bw">掲載したくない項目は</span><span class="bw">空欄のままで</span><span class="bw">結構です。</span></strong>
+      <span class="bw">最後まで入力したら</span><span class="bw">「内容を作成する」</span><span class="bw">ボタンを押し、</span><span class="bw">表示された内容を</span><strong><span class="bw">コピーして</span><span class="bw">LINEまたはメールで</span><span class="bw">清田まで送信</span></strong><span class="bw">してください</span><span class="bw">（この画面から</span><span class="bw">自動送信はされません）。</span>
+      <span class="bw">まだデザインを</span><span class="bw">お決めでない方は、</span><a href="_demo.html" target="_blank" rel="noopener"><span class="bw">11種のデザイン見本</span><span class="bw">（デモ）はこちら</span></a><span class="bw">からご覧いただけます。</span>
     </p>
   </div>
 
@@ -572,7 +576,7 @@
         <label>会社名・役職<span class="opt">（任意・最大4件・追加できます）</span></label>
         <div class="rows" id="positionRows"></div>
         <button type="button" class="btn-add" id="addPosition">＋ 会社・肩書を追加</button>
-        <p class="row-hint">複数の会社・肩書をお持ちの場合は上から順にご記入ください（最大4件）</p>
+        <p class="row-hint"><span class="bw">複数の会社・肩書を</span><span class="bw">お持ちの場合は</span><span class="bw">上から順に</span><span class="bw">ご記入ください</span><span class="bw">（最大4件）</span></p>
       </div>
 
       <div class="field">
@@ -757,18 +761,18 @@
             <div class="d">NTAG215 メタリックカード</div>
           </label>
         </div>
-        <p class="row-hint" id="ownerNote" style="display:none;">マイスターラインは素材をアルミに固定した単一価格（¥14,800）です。</p>
+        <p class="row-hint" id="ownerNote" style="display:none;"><span class="bw">マイスターラインは</span><span class="bw">素材をアルミに</span><span class="bw">固定した</span><span class="bw">単一価格</span><span class="bw">（¥14,800）です。</span></p>
       </div>
 
-      <p class="row-hint" style="margin-top:8px;">価格はデジタル名刺ページの制作費とNFCカード1枚を含む一括金額です。カードをスマートフォンにかざすだけで専用ページが開きます（名入れ印刷はございません）。</p>
+      <p class="row-hint" style="margin-top:8px;"><span class="bw">価格は</span><span class="bw">デジタル名刺ページの</span><span class="bw">制作費と</span><span class="bw">NFCカード1枚を</span><span class="bw">含む一括金額です。</span><span class="bw">カードを</span><span class="bw">スマートフォンにかざすだけで</span><span class="bw">専用ページが開きます</span><span class="bw">（名入れ印刷はございません）。</span></p>
     </section>
 
     <!-- 8. ご確認事項 -->
     <section class="card">
       <div class="sec-title"><span class="num">8</span>ご確認事項</div>
       <ul class="terms">
-        <li>納品物は「<strong>公開URL</strong>」「<strong>QRコード画像</strong>」「<strong>物理NFCカード</strong>」の3点です。ページのソースファイルは納品対象に含まれません。編集・更新は弊社（合同会社WBT）が承ります。</li>
-        <li>更新は都度課金です（月額サブスクリプションはございません）。軽微修正はスタンダード¥1,650／プレミアム¥1,980／マイスター¥3,300〜。初回公開から1ヶ月以内の軽微修正は1回まで無償（スタンダード・プレミアム）、マイスターは初年度1回の軽微更新を無償同梱いたします。</li>
+        <li><span class="bw">納品物は</span><span class="bw">「<strong>公開URL</strong>」</span><span class="bw">「<strong>QRコード画像</strong>」</span><span class="bw">「<strong>物理NFCカード</strong>」</span><span class="bw">の3点です。</span><span class="bw">ページのソースファイルは</span><span class="bw">納品対象に含まれません。</span><span class="bw">編集・更新は</span><span class="bw">弊社（合同会社WBT）が</span><span class="bw">承ります。</span></li>
+        <li><span class="bw">更新は都度課金です</span><span class="bw">（月額サブスクリプションはございません）。</span><span class="bw">軽微修正は</span><span class="bw">スタンダード¥1,650／</span><span class="bw">プレミアム¥1,980／</span><span class="bw">マイスター¥3,300〜。</span><span class="bw">初回公開から</span><span class="bw">1ヶ月以内の</span><span class="bw">軽微修正は</span><span class="bw">1回まで無償</span><span class="bw">（スタンダード・プレミアム）、</span><span class="bw">マイスターは</span><span class="bw">初年度1回の</span><span class="bw">軽微更新を</span><span class="bw">無償同梱いたします。</span></li>
       </ul>
     </section>
 
@@ -789,20 +793,20 @@
       </div>
       <div class="toast" id="copyToast">コピーしました。LINEで清田さんに貼り付けて送ってください。</div>
       <p class="next-note">
-        「内容をコピー」を押した後は、LINEのトーク画面（清田兼明）を開いて貼り付けて送信してください。「LINEで送る」「メールで送る」ボタンは各アプリを直接開き、本文が自動で入力された状態になります（送信は手動です）。
+        <span class="bw">「内容をコピー」を押した後は、</span><span class="bw">LINEのトーク画面</span><span class="bw">（清田兼明）を開いて</span><span class="bw">貼り付けて送信してください。</span><span class="bw">「LINEで送る」</span><span class="bw">「メールで送る」ボタンは</span><span class="bw">各アプリを直接開き、</span><span class="bw">本文が自動で</span><span class="bw">入力された状態になります</span><span class="bw">（送信は手動です）。</span>
       </p>
     </div>
 
     <details class="cardjs-box">
       <summary>清田さん用データ（card.js）を見る・コピーする</summary>
-      <p class="cardjs-note">このテキストをそのまま <code>members/&lt;slug&gt;/card.js</code> に貼り付ければ制作に使えます。</p>
+      <p class="cardjs-note"><span class="bw">このテキストをそのまま</span> <span class="bw"><code>members/&lt;slug&gt;/card.js</code></span> <span class="bw">に貼り付ければ</span><span class="bw">制作に使えます。</span></p>
       <pre class="cardjs-pre" id="cardjsText"></pre>
       <button type="button" class="action-btn copy" id="copyCardjsBtn" style="width:100%;">card.js をコピー</button>
       <div class="toast" id="cardjsToast">card.js をコピーしました。</div>
     </details>
   </div>
 
-  <footer class="doc-footer">合同会社WBT ／ BrightCard デジタル名刺　ご不明点は担当・清田までお気軽にお問い合わせください</footer>
+  <footer class="doc-footer"><span class="bw">合同会社WBT ／</span> <span class="bw">BrightCard デジタル名刺　</span><span class="bw">ご不明点は</span><span class="bw">担当・清田まで</span><span class="bw">お気軽に</span><span class="bw">お問い合わせください</span></footer>
 
 </div>
 
