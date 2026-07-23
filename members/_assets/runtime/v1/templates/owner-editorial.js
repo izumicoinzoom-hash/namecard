@@ -8,7 +8,9 @@
  * accent1色で着せ替え／フッターは「© YYYY 氏名」＋控えめクレジットのみ。
  *
  * データは card.js（C schema）から取る。
- * Works章は card.products[]（新規スキーマ・任意）: {category,name,url,desc,price}。
+ * Works章は card.products[]（新規スキーマ・任意）: {category,name,url,desc,price,image}。
+ * image（任意）はpage相対のシネマ画像。指定時のみ写真ブロックを商品名の前に差す
+ * （§KIYOTA-MAISTER 3-2）。404はonerrorでmediaノード除去しテキストのみへフォールバック。
  * 未指定なら章ごと非表示。価格は文字列そのまま表示（例「料金：要見積」）。
  * Philosophy章は card.philosophy{label,text}（任意）。
  * Proof章（実績）は card.metrics[]（任意・B系と同スキーマ）:
@@ -316,6 +318,12 @@
         var nameChildren = [document.createTextNode(p.name)];
         if (nonEmpty(p.url)) nameChildren.push(el("span", { class: "bc-oe-arr", text: "↗" }));
         var prodChildren = [];
+        if (nonEmpty(p.image)) {
+          var pImg = el("img", { src: p.image, alt: p.name + " のイメージ", loading: "lazy", decoding: "async" });
+          var pMedia = el("div", { class: "bc-oe-p-media" }, [pImg]);
+          pImg.onerror = function () { if (pMedia.parentNode) pMedia.parentNode.removeChild(pMedia); };
+          prodChildren.push(pMedia);
+        }
         if (nonEmpty(p.category)) prodChildren.push(el("div", { class: "bc-oe-p-cat", text: p.category }));
         prodChildren.push(el("div", { class: "bc-oe-p-name" }, nameChildren));
         if (nonEmpty(p.desc)) prodChildren.push(el("div", { class: "bc-oe-p-desc", text: p.desc }));

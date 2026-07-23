@@ -434,6 +434,32 @@ div.bc-owner-editorial {
 .bc-owner-editorial a.bc-oe-product:active .bc-oe-p-cta {
   opacity: 0.7;
 }
+/* ===== Works 画像（任意・image指定時のみ／§KIYOTA-MAISTER 3-3） ===== */
+.bc-owner-editorial .bc-oe-p-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--bc-oe-line-soft);
+  background: #111010;
+  margin-bottom: 14px;
+}
+.bc-owner-editorial .bc-oe-p-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* 下辺を黒地へ溶かし、ember光をヒーローscrimと同調させる */
+.bc-owner-editorial .bc-oe-p-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(10, 10, 10, 0.45), rgba(10, 10, 10, 0) 42%),
+    radial-gradient(120% 80% at 70% 20%, var(--bc-oe-accent-light, rgba(232, 112, 58, 0.08)), transparent 60%);
+}
+.bc-owner-editorial .bc-oe-p-media + .bc-oe-p-cat { margin-top: 0; }
 
 /* ===== Contact ===== */
 .bc-owner-editorial .bc-oe-rows {
